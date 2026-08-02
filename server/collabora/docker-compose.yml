@@ -1,0 +1,72 @@
+# Collabora Online + Spind-WOPI-Brücke
+#
+#   docker compose -p spind-collabora up -d --build
+#
+# Collabora rendert nur — die Dokumente liefert die WOPI-Brücke, die per
+# WebDAV auf die Hetzner Storage Box zugreift. Beide Dienste lauschen nur
+# auf 127.0.0.1; nach außen geht ausschließlich der Caddy-Gateway
+# (doc.example.de).
+
+name: spind-collabora
+
+services:
+  collabora:
+    image: collabora/code:24.04.13.2.1
+    container_name: spind-collabora
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9980:9980"
+    environment:
+      # Erlaubte WOPI-Hosts (die Brücke). Regex, Punkte escapen.
+      aliasgroup1: "https://doc\\.example\\.de:443"
+      DONT_GEN_SSL_CERT: "true"
+      extra_params: >-
+        --o:ssl.enable=false
+        --o:ssl.termination=true
+        --o:net.proto=IPv4
+        --o:logging.level=warning
+        --o:home_mode.enable=true
+        --o:security.seccomp=true
+        --o:admin_console.enable=false
+    # Collabora sperrt jedes Dokument in ein eigenes Jail — dafür braucht es
+    # Mount-Namespaces (SYS_ADMIN) und seinen setuid-Helfer coolmount.
+    # no-new-privileges würde genau den blockieren ("Operation not
+    # permitted" beim Fork der Kind-Prozesse).
+    cap_add:
+      - MKNOD
+      - SYS_ADMIN
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:9980/hosting/discovery >/dev/null"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
+  wopi:
+    build: ./wopi
+    image: spind/wopi:latest
+    container_name: spind-wopi
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9981:9981"
+    env_file:
+      - wopi.env
+    environment:
+      # Containerinterner Weg zu Collabora (Discovery); der Browser sieht
+      # nur PUBLIC_URL.
+      COLLABORA_URL: http://collabora:9980
+      PUBLIC_URL: https://doc.example.de
+    depends_on:
+      - collabora
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: "20m"
+        max-file: "3"

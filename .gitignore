@@ -1,0 +1,10 @@
+.build/
+.xcbuild/
+dist/
+*.xcodeproj
+.DS_Store
+*.log
+server/collabora/wopi.env
+Config.xcconfig
+.dmg-build/
+dist/

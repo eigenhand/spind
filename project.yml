@@ -1,0 +1,100 @@
+name: Spind
+configFiles:
+  Debug: Config.xcconfig
+  Release: Config.xcconfig
+options:
+  bundleIdPrefix: dev.eigenhand
+  deploymentTarget:
+    macOS: "14.0"
+packages:
+  SpindPackage:
+    path: .
+settings:
+  base:
+    DEVELOPMENT_TEAM: $(SPIND_TEAM_ID)
+    CODE_SIGN_STYLE: Automatic
+    SWIFT_VERSION: "5.10"
+targets:
+  Spind:
+    type: application
+    platform: macOS
+    sources:
+      - Sources/SpindApp
+      - Resources/Assets.xcassets
+    dependencies:
+      - package: SpindPackage
+        product: SpindCore
+      - target: SpindFileProvider
+        embed: true
+    info:
+      path: xcode/Spind-Info.plist
+      properties:
+        CFBundleDisplayName: Spind
+        SpindAppGroup: $(SPIND_APP_GROUP)
+        LSUIElement: true
+        LSMinimumSystemVersion: "14.0"
+    entitlements:
+      path: xcode/Spind.entitlements
+      properties:
+        keychain-access-groups:
+          - $(SPIND_APP_GROUP)
+        com.apple.security.application-groups:
+          - $(SPIND_APP_GROUP)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(SPIND_BUNDLE_ID)
+        PRODUCT_NAME: Spind
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  SpindFileProvider:
+    type: app-extension
+    platform: macOS
+    sources:
+      - Sources/SpindFileProvider
+    dependencies:
+      - package: SpindPackage
+        product: SpindCore
+    info:
+      path: xcode/SpindFileProvider-Info.plist
+      properties:
+        CFBundleDisplayName: Spind File Provider
+        SpindAppGroup: $(SPIND_APP_GROUP)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.fileprovider-nonui
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).FileProviderExtension
+          NSExtensionFileProviderDocumentGroup: $(SPIND_APP_GROUP)
+          NSExtensionFileProviderSupportsEnumeration: true
+          NSExtensionFileProviderActions:
+            - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.keep
+              NSExtensionFileProviderActionName: Auf dem Computer behalten
+              NSExtensionFileProviderActionActivationRule: TRUEPREDICATE
+            - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.free
+              NSExtensionFileProviderActionName: Platz freigeben
+              NSExtensionFileProviderActionActivationRule: TRUEPREDICATE
+            - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.share
+              NSExtensionFileProviderActionName: Ordner teilen (Zugang kopieren)
+              NSExtensionFileProviderActionActivationRule: TRUEPREDICATE
+            # Bewusst TRUEPREDICATE: ein fehlerhaft ausgewertetes Prädikat
+            # lässt die Aktion im Finder komplett verschwinden. Nicht
+            # unterstützte Dateitypen meldet die App verständlich zurück.
+            - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.edit
+              NSExtensionFileProviderActionName: Im Browser gemeinsam bearbeiten
+              NSExtensionFileProviderActionActivationRule: TRUEPREDICATE
+            - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.versions
+              NSExtensionFileProviderActionName: Versionsverlauf anzeigen
+              NSExtensionFileProviderActionActivationRule: TRUEPREDICATE
+        NSFileProviderDecorations:
+          - Identifier: dev.eigenhand.spind.shared
+            BadgeImageType: com.apple.icon-decoration.badge.person
+            Label: Geteilter Ordner
+    entitlements:
+      path: xcode/SpindFileProvider.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        keychain-access-groups:
+          - $(SPIND_APP_GROUP)
+        com.apple.security.application-groups:
+          - $(SPIND_APP_GROUP)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(SPIND_BUNDLE_ID).fileprovider

@@ -1,0 +1,16 @@
+// Signierung und App-Gruppe.
+//
+//   cp Config.example.xcconfig Config.xcconfig
+//
+// und dort die eigene Team-ID eintragen. Sie steht in Xcode unter
+// Settings → Accounts → Manage Certificates, oder im Zertifikat selbst
+// im Feld "OU" (nicht die Zeichenfolge in Klammern hinter dem Namen —
+// das ist eine andere).
+//
+// Die App-Gruppe verbindet App und Finder-Erweiterung. Sie muss mit der
+// Team-ID beginnen; den hinteren Teil kannst du frei wählen, solange er
+// überall gleich bleibt.
+
+SPIND_TEAM_ID = ABCDE12345
+SPIND_APP_GROUP = $(SPIND_TEAM_ID).dev.eigenhand.spind
+SPIND_BUNDLE_ID = dev.eigenhand.spind.app

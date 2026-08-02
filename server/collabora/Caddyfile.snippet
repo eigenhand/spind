@@ -1,0 +1,55 @@
+# --- doc.example.de: Collabora Online + Spind-WOPI-Brücke ---------------
+# In deploy/gateway/Caddyfile einfügen (eigener Site-Block), danach
+#   docker compose -p lifeos-gateway -f deploy/gateway/docker-compose.yml \
+#     exec gateway caddy reload --config /etc/caddy/Caddyfile
+
+doc.example.de {
+	encode zstd gzip
+
+	@scanner path /.env* /.git* /wp-* /wordpress* /phpmyadmin* /pma* /xmlrpc.php \
+ /vendor/* /cgi-bin/* /actuator/* /_ignition/* /setup.php /config.php
+	handle @scanner {
+		respond 404
+	}
+
+	# Dokumente bis 100 MB bearbeiten
+	request_body {
+		max_size 100MB
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "same-origin"
+		X-Robots-Tag "noindex, nofollow, noarchive, nosnippet, noimageindex"
+		-Server
+	}
+
+	handle /robots.txt {
+		header Content-Type "text/plain"
+		respond "User-agent: *
+Disallow: /
+" 200
+	}
+
+	# WOPI-Brücke: liefert Dokumente von der Storage Box und speichert sie
+	# (/new legt neue Dokumente an — wird von Freigabe-Seiten cross-origin
+	# aufgerufen, deshalb muss auch OPTIONS hier landen)
+	@bridge path /wopi/* /edit /edit/* /new /health
+	handle @bridge {
+		reverse_proxy 127.0.0.1:9981 {
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# Collabora Online (inkl. WebSocket /cool/…/ws — Caddy leitet Upgrades
+	# automatisch weiter)
+	handle {
+		reverse_proxy 127.0.0.1:9980 {
+			header_up X-Forwarded-For {remote_host}
+			header_up X-Real-IP {remote_host}
+			flush_interval -1
+		}
+	}
+}
