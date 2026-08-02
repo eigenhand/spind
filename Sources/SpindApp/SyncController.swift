@@ -612,6 +612,17 @@ final class SyncController: ObservableObject {
         else { return }
         try? FileManager.default.removeItem(at: requestURL)
 
+        // Der Browser-Editor erreicht die Dateien über einen Hetzner-
+        // Subaccount — auf allgemeinen SFTP-Servern gibt es den nicht.
+        guard config.isHetznerBox else {
+            notify(
+                "Spind – Bearbeiten nicht verfügbar",
+                "Gemeinsames Bearbeiten gibt es nur mit einer Hetzner Storage "
+                + "Box. Öffne die Datei stattdessen aus dem Spind-Laufwerk."
+            )
+            return
+        }
+
         for path in paths {
             let name = (path as NSString).lastPathComponent
             guard WopiToken.isEditable(name) else {

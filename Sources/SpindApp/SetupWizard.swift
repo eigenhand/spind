@@ -62,6 +62,8 @@ struct SetupWizardView: View {
 
     @State private var host = ""
     @State private var user = ""
+    @State private var port = 22
+    @State private var portEdited = false
     @State private var testing = false
     @State private var testResult: (ok: Bool, text: String)?
 
@@ -143,14 +145,16 @@ struct SetupWizardView: View {
 
     private var welcomeStep: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Spind verbindet deinen Mac mit einer Hetzner Storage Box – "
-                 + "wie ein Cloud-Laufwerk, nur auf deinem eigenen Speicher.")
+            Text("Spind verbindet deinen Mac mit deinem eigenen Speicher – "
+                 + "wie ein Cloud-Laufwerk, nur ohne fremde Cloud.")
             Text("Was du brauchst:").font(.callout.weight(.semibold))
-            Label("Eine Hetzner Storage Box", systemImage: "externaldrive")
-            Label("Dort aktiviert: SSH-Zugang und externe Erreichbarkeit",
-                  systemImage: "network")
-            Text("Beides stellst du in der Hetzner Console ein, unter den "
-                 + "Einstellungen deiner Storage Box. Den Rest übernehme ich.")
+            Label("Eine Hetzner Storage Box – oder einen beliebigen Server, "
+                  + "der SFTP spricht", systemImage: "externaldrive")
+            Label("Bei der Storage Box aktiviert: SSH-Zugang und externe "
+                  + "Erreichbarkeit (Hetzner Console)", systemImage: "network")
+            Text("Ordner-Freigaben und gemeinsames Bearbeiten gibt es nur mit "
+                 + "einer Storage Box – Sync, Versionen und Finder-Laufwerk "
+                 + "funktionieren mit jedem Server. Den Rest übernehme ich.")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             Link("Hetzner Console öffnen",
@@ -219,12 +223,29 @@ struct SetupWizardView: View {
 
     private var connectionStep: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Die Angaben findest du in der Hetzner Console bei deiner Storage Box.")
+            Text("Für die Storage Box stehen die Angaben in der Hetzner Console; "
+                 + "bei einem eigenen Server kennst du sie selbst.")
                 .font(.callout).foregroundStyle(.secondary)
             Form {
                 TextField("Adresse", text: $host,
-                          prompt: Text("u123456.your-storagebox.de"))
+                          prompt: Text("u123456.your-storagebox.de oder sftp.example.org"))
+                    .onChange(of: host) { _, newValue in
+                        // Port-Automatik, solange niemand von Hand eingreift:
+                        // Storage Box 23, alle anderen 22.
+                        if !portEdited {
+                            port = SpindConfig.defaultPort(forHost:
+                                newValue.trimmingCharacters(in: .whitespaces))
+                        }
+                    }
                 TextField("Benutzername", text: $user, prompt: Text("u123456"))
+                TextField("Port", value: $port, format: .number.grouping(.never))
+                    .onChange(of: port) { _, newValue in
+                        if newValue != SpindConfig.defaultPort(forHost:
+                            host.trimmingCharacters(in: .whitespaces)) {
+                            portEdited = true
+                        }
+                    }
+                    .frame(maxWidth: 180)
             }
             .formStyle(.columns)
             HStack(spacing: 10) {
@@ -357,6 +378,7 @@ struct SetupWizardView: View {
         testResult = nil
         let config = SpindConfig(
             host: host.trimmingCharacters(in: .whitespaces),
+            port: port,
             username: user.trimmingCharacters(in: .whitespaces),
             privateKeyPath: keyPath, remoteRoot: ".", localRoot: localRoot
         )
@@ -396,6 +418,7 @@ struct SetupWizardView: View {
         saving = true
         var config = SpindConfig(
             host: host.trimmingCharacters(in: .whitespaces),
+            port: port,
             username: user.trimmingCharacters(in: .whitespaces),
             privateKeyPath: keyPath, remoteRoot: ".", localRoot: localRoot
         )

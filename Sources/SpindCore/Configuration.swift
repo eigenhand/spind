@@ -57,6 +57,17 @@ public struct SpindConfig: Codable, Sendable {
         case hostPublicKey
     }
 
+    /// Sync, Versionen und Finder-Laufwerk sprechen reines SFTP/SSH und
+    /// funktionieren mit jedem Server. Nur die Freigaben (Subaccounts) und
+    /// das gemeinsame Bearbeiten hängen an der Hetzner-API — die gibt es
+    /// ausschließlich für Storage Boxen.
+    public var isHetznerBox: Bool { host.hasSuffix(".your-storagebox.de") }
+
+    /// Hetzner lauscht auf 23, der Rest der Welt auf 22.
+    public static func defaultPort(forHost host: String) -> Int {
+        host.hasSuffix(".your-storagebox.de") ? 23 : 22
+    }
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         host = try container.decode(String.self, forKey: .host)

@@ -39,8 +39,8 @@ struct Setup: AsyncParsableCommand {
     @Option(help: "Storage box username, e.g. u123456 or u123456-sub1")
     var user: String
 
-    @Option(help: "SSH port")
-    var port: Int = 23
+    @Option(help: "SSH-Port (Standard: 23 für Storage Boxen, sonst 22)")
+    var port: Int?
 
     @Option(help: "Path to the ed25519 private key")
     var key: String = "~/.ssh/spind_storagebox"
@@ -53,12 +53,12 @@ struct Setup: AsyncParsableCommand {
 
     func run() async throws {
         var config = SpindConfig(
-            host: host, port: port, username: user,
+            host: host, port: port ?? SpindConfig.defaultPort(forHost: host), username: user,
             privateKeyPath: key, remoteRoot: remoteRoot, localRoot: localRoot
         )
         // Server-Schlüssel anpinnen (TOFU): ab jetzt wird jeder andere
         // Schlüssel abgewiesen.
-        config.hostPublicKey = try? await HostKey.scan(host: host, port: port)
+        config.hostPublicKey = try? await HostKey.scan(host: host, port: config.port)
         if config.hostPublicKey == nil {
             print("⚠ Server-Schlüssel nicht abrufbar – wird beim ersten Kontakt angepinnt.")
         }

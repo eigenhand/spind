@@ -316,6 +316,17 @@ struct ShareView: View {
     // MARK: - Actions
 
     private func checkExisting() async {
+        // Freigaben entstehen über die Subaccount-API der Storage Box —
+        // auf einem allgemeinen SFTP-Server gibt es diesen Mechanismus nicht.
+        guard controller.config?.isHetznerBox != false else {
+            phase = .failed(
+                "Ordner-Freigaben gibt es nur mit einer Hetzner Storage Box. "
+                + "Dein Ziel »\(controller.config?.host ?? "")« ist ein "
+                + "allgemeiner SFTP-Server – Sync, Versionen und "
+                + "Finder-Laufwerk funktionieren dort uneingeschränkt."
+            )
+            return
+        }
         let user = controller.config?.username ?? ""
         do {
             if let existing = try await ShareManager.findShare(folder: folder, syncUser: user) {

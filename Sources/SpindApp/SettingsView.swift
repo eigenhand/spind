@@ -339,6 +339,21 @@ struct SharingSettings: View {
 
     var body: some View {
         Form {
+            if controller.config?.isHetznerBox == false {
+                Section {
+                    Label {
+                        Text("Ordner-Freigaben und gemeinsames Bearbeiten nutzen "
+                             + "die Subaccount-API der Hetzner Storage Box. Mit "
+                             + "»\(controller.config?.host ?? "")« als Ziel stehen "
+                             + "sie nicht zur Verfügung – Sync, Versionsverlauf "
+                             + "und Finder-Laufwerk funktionieren uneingeschränkt.")
+                            .fixedSize(horizontal: false, vertical: true)
+                    } icon: {
+                        Image(systemName: "info.circle")
+                    }
+                    .font(.callout)
+                }
+            } else {
             Section {
                 SecureField("Hetzner-API-Token", text: $token)
                 HStack {
@@ -427,10 +442,11 @@ struct SharingSettings: View {
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             }
+            }
         }
         .formStyle(.grouped)
         .frame(height: 480)
-        .onAppear { loadShares() }
+        .onAppear { if controller.config?.isHetznerBox != false { loadShares() } }
         .confirmationDialog(
             "Freigabe widerrufen?",
             isPresented: Binding(

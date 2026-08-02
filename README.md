@@ -33,7 +33,7 @@ mit einer Box, und Sync-Fehler können Daten kosten.
 - [ ] Englische Übersetzung
 - [ ] Automatische Updates
 - [ ] Homebrew Cask
-- [ ] Beliebige SFTP-Server als Ziel (heute: Hetzner Storage Box)
+- [x] Beliebige SFTP-Server als Ziel (Freigaben/Collabora bleiben Storage-Box-exklusiv)
 - [ ] iPhone-App (Dateien-Integration)
 
 ## Installation
