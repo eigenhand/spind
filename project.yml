@@ -9,6 +9,9 @@ options:
 packages:
   SpindPackage:
     path: .
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: 2.6.0
 settings:
   base:
     DEVELOPMENT_TEAM: $(SPIND_TEAM_ID)
@@ -24,6 +27,8 @@ targets:
     dependencies:
       - package: SpindPackage
         product: SpindCore
+      - package: Sparkle
+        product: Sparkle
       - target: SpindFileProvider
         embed: true
     info:
@@ -33,6 +38,11 @@ targets:
         SpindAppGroup: $(SPIND_APP_GROUP)
         LSUIElement: true
         LSMinimumSystemVersion: "14.0"
+        # Automatische Updates (Sparkle): Appcast liegt beim jeweils
+        # neuesten GitHub-Release, signiert mit dem EdDSA-Schlüssel.
+        SUFeedURL: https://github.com/eigenhand/spind/releases/latest/download/appcast.xml
+        SUPublicEDKey: $(SPIND_SPARKLE_PUBLIC_KEY)
+        SUEnableAutomaticChecks: true
     entitlements:
       path: xcode/Spind.entitlements
       properties:

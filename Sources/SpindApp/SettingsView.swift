@@ -627,6 +627,12 @@ struct GeneralSettings: View {
                     Button("Neu aufbauen …") { confirmRebuild = true }
                         .controlSize(.small)
                 }
+                LabeledContent("Updates") {
+                    Button("Jetzt nach Updates suchen") {
+                        UpdaterManager.shared.checkForUpdates()
+                    }
+                    .controlSize(.small)
+                }
             }
         }
         .formStyle(.grouped)

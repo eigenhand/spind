@@ -14,3 +14,8 @@
 SPIND_TEAM_ID = ABCDE12345
 SPIND_APP_GROUP = $(SPIND_TEAM_ID).dev.eigenhand.spind
 SPIND_BUNDLE_ID = dev.eigenhand.spind.app
+
+// Öffentlicher Sparkle-Schlüssel (nur fürs Bauen eigener Update-Feeds nötig;
+// leer lassen deaktiviert die Signaturprüfung nicht, Updates kommen dann
+// schlicht vom offiziellen Feed).
+SPIND_SPARKLE_PUBLIC_KEY = 4rSfaLQ48ke0661BWsNyho5Qp67cCvNLl7C63CdafRw=

@@ -8,3 +8,4 @@ server/collabora/wopi.env
 Config.xcconfig
 .dmg-build/
 dist/
+.sparkle-tools/

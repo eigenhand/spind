@@ -92,6 +92,13 @@ EOF
     # Von innen nach außen signieren — auch die von Xcode eingebetteten
     # Swift-Laufzeitbibliotheken, sonst lehnt die Notarisierung ab
     # ("binary is not signed with a valid Developer ID certificate").
+    # Sparkle bringt eigene XPC-Dienste und einen Updater mit; die müssen
+    # VOR ihrem Framework signiert werden.
+    find "$APP" \( -name "*.xpc" -o -name "Autoupdate" -o -name "Updater.app" \) -print0 \
+        | while IFS= read -r -d '' nested; do
+            codesign --force --options runtime --timestamp \
+                --sign "$DEV_ID" "$nested"
+        done
     find "$APP" \( -name "*.dylib" -o -name "*.framework" \) -print0 \
         | while IFS= read -r -d '' nested; do
             codesign --force --options runtime --timestamp \
@@ -143,3 +150,8 @@ if [ -n "$DEV_ID" ]; then
 fi
 
 echo "✓ Fertig: $DMG ($(du -h "$DMG" | cut -f1))"
+
+# ── Appcast für automatische Updates ─────────────────────────────────────
+if [ -n "$DEV_ID" ]; then
+    scripts/make-appcast.sh || echo "⚠ Appcast nicht erzeugt — später scripts/make-appcast.sh nachholen."
+fi
