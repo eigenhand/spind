@@ -14,15 +14,21 @@
 // License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import Foundation
+#if canImport(Sparkle)
 import Sparkle
+#endif
 
 /// Automatische Updates über Sparkle. Der Appcast liegt als Datei beim
 /// jeweils neuesten GitHub-Release (SUFeedURL in der Info.plist), jede
 /// DMG ist mit dem EdDSA-Schlüssel signiert (SUPublicEDKey).
+///
+/// Sparkle hängt nur am Xcode-Projekt (project.yml); beim reinen
+/// SPM-Build (swift build/test) läuft ein No-op-Ersatz.
 @MainActor
 final class UpdaterManager {
     static let shared = UpdaterManager()
 
+    #if canImport(Sparkle)
     private let controller: SPUStandardUpdaterController
 
     private init() {
@@ -31,10 +37,15 @@ final class UpdaterManager {
         )
     }
 
-    /// Startet die Hintergrund-Prüfung — einmal beim App-Start aufrufen.
-    func start() {}
-
     func checkForUpdates() {
         controller.checkForUpdates(nil)
     }
+    #else
+    private init() {}
+
+    func checkForUpdates() {}
+    #endif
+
+    /// Startet die Hintergrund-Prüfung — einmal beim App-Start aufrufen.
+    func start() {}
 }
