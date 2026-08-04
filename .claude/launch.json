@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "eigenhand-preview",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "8901",
+        "-d",
+        "/private/tmp/claude-501/-Users-christophguk-HDrive/650f5e7c-d6d5-4e9d-baba-831a96df0a9b/scratchpad/site"
+      ],
+      "port": 8901
+    }
+  ]
+}

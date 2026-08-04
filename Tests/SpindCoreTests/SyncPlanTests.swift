@@ -14,6 +14,8 @@
 // License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import XCTest
+import Crypto
+import Citadel
 @testable import SpindCore
 
 /// Tests für die Konfliktlogik des Abgleichs.
@@ -260,6 +262,48 @@ final class SyncPlanTests: XCTestCase {
 }
 
 /// Tests für die Schutzmechanismen gegen Massenlöschung.
+final class SSHKeyGenTests: XCTestCase {
+    /// Das erzeugte Format muss von Citadel gelesen werden können und
+    /// denselben öffentlichen Schlüssel ergeben wie die public-Zeile.
+    func testErzeugterSchluesselIstGueltigesOpenSSHFormat() throws {
+        let pair = SSHKeyGen.generate(comment: "test")
+        let parsed = try Curve25519.Signing.PrivateKey(sshEd25519: pair.privateOpenSSH)
+        let publicBase64 = pair.publicLine.split(separator: " ")[1]
+        let blob = Data(base64Encoded: String(publicBase64))!
+        // Blob: len+"ssh-ed25519"+len+key → die letzten 32 Bytes sind der Schlüssel.
+        XCTAssertEqual(parsed.publicKey.rawRepresentation, blob.suffix(32))
+
+        #if os(macOS)
+        // Gegenprobe mit dem echten OpenSSH: ssh-keygen -y muss dieselbe
+        // public-Zeile ableiten.
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("spind-keygen-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: dir) }
+        let keyURL = dir.appendingPathComponent("key")
+        try pair.privateOpenSSH.write(to: keyURL, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes(
+            [.posixPermissions: 0o600], ofItemAtPath: keyURL.path
+        )
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/ssh-keygen")
+        process.arguments = ["-y", "-f", keyURL.path]
+        let out = Pipe()
+        process.standardOutput = out
+        try process.run()
+        process.waitUntilExit()
+        XCTAssertEqual(process.terminationStatus, 0, "ssh-keygen lehnt das Format ab")
+        let derived = String(
+            decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self
+        ).trimmingCharacters(in: .whitespacesAndNewlines)
+        let expected = pair.publicLine.split(separator: " ").prefix(2).joined(separator: " ")
+        XCTAssertEqual(
+            derived.split(separator: " ").prefix(2).joined(separator: " "), expected
+        )
+        #endif
+    }
+}
+
 final class SafetyGuardTests: XCTestCase {
     func testWechselDesOrdnersVerwirftDenBasiszustand() throws {
         let dir = FileManager.default.temporaryDirectory

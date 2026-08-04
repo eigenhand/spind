@@ -76,11 +76,14 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
                 .allowsDeleting, .allowsReparenting, .allowsEvicting]
     }
 
+    #if os(macOS)
     /// Files on demand: content may be dropped locally and re-fetched —
     /// unless the user chose "Auf dem Computer behalten".
+    /// iOS verwaltet Downloads selbst — dort gibt es keine contentPolicy.
     var contentPolicy: NSFileProviderContentPolicy {
         keepDownloaded ? .downloadEagerlyAndKeepDownloaded : .downloadLazily
     }
+    #endif
 
     /// Internal pseudo-attributes (Finder tags etc.) use a "#" prefix and
     /// are not real extended attributes.
@@ -124,8 +127,10 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
     var contentModificationDate: Date? { modificationDate }
 }
 
+#if os(macOS)
 extension FileProviderItem: NSFileProviderItemDecorating {
     var decorations: [NSFileProviderItemDecorationIdentifier]? {
         isShared ? [NSFileProviderItemDecorationIdentifier("dev.eigenhand.spind.shared")] : nil
     }
 }
+#endif

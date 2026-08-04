@@ -785,6 +785,11 @@ final class SyncController: ObservableObject {
             identifier: NSFileProviderDomainIdentifier("spind"),
             displayName: "Spind"
         )
+        // Kein Papierkorb-Sync — sonst fragt das System den Trash-Container
+        // an, kassiert unseren Fehler und meldet Sync-Probleme.
+        if #available(macOS 15.0, *) {
+            domain.supportsSyncingTrash = false
+        }
         fpManager = NSFileProviderManager(for: domain)
 
         // The extension touches a marker after every write through the

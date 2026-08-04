@@ -59,6 +59,80 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: $(SPIND_BUNDLE_ID)
         PRODUCT_NAME: Spind
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+  SpindMobile:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources/SpindMobile
+      - Resources/AssetsMobile.xcassets
+    dependencies:
+      - package: SpindPackage
+        product: SpindCore
+      - target: SpindMobileFileProvider
+        embed: true
+    info:
+      path: xcode/SpindMobile-Info.plist
+      properties:
+        CFBundleDisplayName: Spind
+        SpindAppGroup: $(SPIND_IOS_APP_GROUP)
+        UILaunchScreen: {}
+        ITSAppUsesNonExemptEncryption: false
+    entitlements:
+      path: xcode/SpindMobile.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(SPIND_IOS_APP_GROUP)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(SPIND_IOS_BUNDLE_ID)
+        PRODUCT_NAME: Spind
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_DEBUG_DYLIB: NO
+  SpindMobileFileProvider:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources/SpindFileProvider
+    dependencies:
+      - package: SpindPackage
+        product: SpindCore
+    info:
+      path: xcode/SpindMobileFileProvider-Info.plist
+      properties:
+        CFBundleDisplayName: Spind File Provider
+        SpindAppGroup: $(SPIND_IOS_APP_GROUP)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.fileprovider-nonui
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).FileProviderExtension
+          NSExtensionFileProviderDocumentGroup: $(SPIND_IOS_APP_GROUP)
+          NSExtensionFileProviderSupportsEnumeration: true
+    entitlements:
+      path: xcode/SpindMobileFileProvider.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - $(SPIND_IOS_APP_GROUP)
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(SPIND_IOS_BUNDLE_ID).fileprovider
+        # Xcode 27 lagert Debug-Code in eine Neben-Dylib aus; ExtensionKit
+        # findet die Principal-Klasse dann nicht mehr (leerer 37-KB-Stub,
+        # Extension startet nie). Für Extensions deshalb abschalten.
+        ENABLE_DEBUG_DYLIB: NO
+  SpindMobileUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Tests/SpindMobileUITests
+    dependencies:
+      - target: SpindMobile
+    settings:
+      base:
+        TEST_TARGET_NAME: SpindMobile
+        GENERATE_INFOPLIST_FILE: YES
   SpindFileProvider:
     type: app-extension
     platform: macOS

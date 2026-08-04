@@ -27,6 +27,20 @@ private let osLogger = Logger(subsystem: "dev.eigenhand.spind.ext", category: "p
 
 func extLog(_ message: String) {
     osLogger.error("\(message, privacy: .public)")
+    // Simulator-Logging verliert os_log-Zeilen — zusätzlich in eine Datei
+    // schreiben. /tmp des Simulators ist das /tmp des Macs: verlässlich
+    // lesbar, ganz ohne Gruppencontainer-Abhängigkeit.
+    #if targetEnvironment(simulator)
+    let url = URL(fileURLWithPath: "/tmp/spind-ext.log")
+    let line = "\(Date())  \(message)\n"
+    if let handle = try? FileHandle(forWritingTo: url) {
+        handle.seekToEndOfFile()
+        handle.write(Data(line.utf8))
+        try? handle.close()
+    } else {
+        try? Data(line.utf8).write(to: url)
+    }
+    #endif
 }
 
 /// Replicated file provider extension: the system keeps the local replica,
@@ -49,7 +63,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
         }
         self.pool = config.map { StorageBoxConnectionPool(config: $0) }
         super.init()
-        extLog("init: config \(config == nil ? "FEHLT" : "geladen")")
+        extLog("init: config \(config == nil ? "FEHLT" : "geladen"), gruppe=\(appGroupID), container=\(FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?.path ?? "NIL")")
     }
 
     func invalidate() {

@@ -19,3 +19,7 @@ SPIND_BUNDLE_ID = dev.eigenhand.spind.app
 // leer lassen deaktiviert die Signaturprüfung nicht, Updates kommen dann
 // schlicht vom offiziellen Feed).
 SPIND_SPARKLE_PUBLIC_KEY = 4rSfaLQ48ke0661BWsNyho5Qp67cCvNLl7C63CdafRw=
+
+// iOS (optional, nur fürs Bauen der iPhone-App)
+SPIND_IOS_BUNDLE_ID = dev.eigenhand.spind.ios
+SPIND_IOS_APP_GROUP = group.dev.eigenhand.spind
