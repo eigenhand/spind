@@ -88,16 +88,16 @@ struct ActivityEntry: Identifiable {
 
         var label: String {
             switch self {
-            case .upload: return "Hochgeladen"
-            case .download: return "Heruntergeladen"
-            case .deleteLocal: return "Lokal gelöscht"
-            case .deleteRemote: return "Auf der Box gelöscht"
-            case .folder: return "Ordner angelegt"
-            case .move: return "Verschoben – ohne Neuübertragung"
-            case .share: return "Freigabe erstellt – Zugang im Clipboard"
-            case .edit: return "Im Browser geöffnet – Link im Clipboard"
-            case .conflict: return "Konflikt – beide Versionen behalten"
-            case .storage: return "Speicher optimiert"
+            case .upload: return String(localized: "Hochgeladen")
+            case .download: return String(localized: "Heruntergeladen")
+            case .deleteLocal: return String(localized: "Lokal gelöscht")
+            case .deleteRemote: return String(localized: "Auf der Box gelöscht")
+            case .folder: return String(localized: "Ordner angelegt")
+            case .move: return String(localized: "Verschoben – ohne Neuübertragung")
+            case .share: return String(localized: "Freigabe erstellt – Zugang im Clipboard")
+            case .edit: return String(localized: "Im Browser geöffnet – Link im Clipboard")
+            case .conflict: return String(localized: "Konflikt – beide Versionen behalten")
+            case .storage: return String(localized: "Speicher optimiert")
             case .info: return ""
             }
         }
@@ -179,22 +179,22 @@ final class SyncController: ObservableObject {
     var statusText: String {
         switch status {
         case .notConfigured:
-            return "Nicht konfiguriert"
+            return String(localized: "Nicht konfiguriert")
         case .idle(let last):
             if let last {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "HH:mm"
-                return "Synchron – Stand \(formatter.string(from: last))"
+                return String(localized: "Synchron – Stand \(formatter.string(from: last))")
             }
-            return "Bereit"
+            return String(localized: "Bereit")
         case .syncing:
-            return "Synchronisiere …"
+            return String(localized: "Synchronisiere …")
         case .paused:
-            return "Pausiert"
+            return String(localized: "Pausiert")
         case .offline:
-            return "Offline – wartet auf Netzwerk"
+            return String(localized: "Offline – wartet auf Netzwerk")
         case .error(let message):
-            return "Fehler: \(message)"
+            return String(localized: "Fehler: \(message)")
         }
     }
 

@@ -135,7 +135,7 @@ struct PanelView: View {
             VStack(spacing: 12) {
                 emptyState(
                     symbol: "exclamationmark.triangle.fill", tint: .red,
-                    title: "Sync angehalten", subtitle: message
+                    title: String(localized: "Sync angehalten"), subtitle: message
                 )
                 if let count = controller.pendingBulkDeletions {
                     Button("\(count) Löschungen bestätigen", role: .destructive) {
@@ -147,32 +147,32 @@ struct PanelView: View {
         } else if case .offline = controller.status {
             emptyState(
                 symbol: "wifi.slash", tint: .gray,
-                title: "Keine Verbindung",
-                subtitle: "Spind macht weiter, sobald das Netzwerk zurück ist."
+                title: String(localized: "Keine Verbindung"),
+                subtitle: String(localized: "Spind macht weiter, sobald das Netzwerk zurück ist.")
             )
         } else if controller.isPaused {
             emptyState(
                 symbol: "pause.circle.fill", tint: .orange,
-                title: "Pausiert",
-                subtitle: "Änderungen werden gesammelt, aber nicht übertragen."
+                title: String(localized: "Pausiert"),
+                subtitle: String(localized: "Änderungen werden gesammelt, aber nicht übertragen.")
             )
         } else if !controller.folderSyncEnabled && controller.transfers.isEmpty {
             emptyState(
                 symbol: "folder.badge.questionmark", tint: .orange,
-                title: "Ordner-Sync ist aus",
-                subtitle: "Nur das Finder-Laufwerk ist aktiv. Dein Ordner \(controller.localRootURL?.lastPathComponent ?? "") wird nicht abgeglichen."
+                title: String(localized: "Ordner-Sync ist aus"),
+                subtitle: String(localized: "Nur das Finder-Laufwerk ist aktiv. Dein Ordner \(controller.localRootURL?.lastPathComponent ?? "") wird nicht abgeglichen.")
             )
         } else if controller.transfers.isEmpty && controller.entries.isEmpty {
             emptyState(
                 symbol: "checkmark.circle.fill", tint: .green,
-                title: "Alles synchron",
-                subtitle: "Änderungen werden automatisch übertragen."
+                title: String(localized: "Alles synchron"),
+                subtitle: String(localized: "Änderungen werden automatisch übertragen.")
             )
         } else {
             ScrollView {
                 VStack(alignment: .leading, spacing: 14) {
                     if !controller.transfers.isEmpty {
-                        sectionHeader("Übertragungen")
+                        sectionHeader(String(localized: "Übertragungen"))
                         VStack(spacing: 8) {
                             ForEach(controller.transfers) { transfer in
                                 TransferRow(transfer: transfer)
@@ -180,7 +180,7 @@ struct PanelView: View {
                         }
                     }
                     if !controller.entries.isEmpty {
-                        sectionHeader("Aktivität")
+                        sectionHeader(String(localized: "Aktivität"))
                         VStack(spacing: 0) {
                             ForEach(controller.entries.prefix(12)) { entry in
                                 ActivityRow(entry: entry)
@@ -397,7 +397,7 @@ struct ActivityRow: View {
     private func relative(_ date: Date) -> String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .short
-        formatter.locale = Locale(identifier: "de_DE")
+        formatter.locale = Locale.current
         return formatter.localizedString(for: date, relativeTo: Date())
     }
 }

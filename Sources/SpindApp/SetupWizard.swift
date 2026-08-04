@@ -70,7 +70,11 @@ struct SetupWizardView: View {
     @State private var localRoot = NSHomeDirectory() + "/Spind"
     @State private var showingFolderPicker = false
 
-    private let titles = ["Willkommen", "Schlüssel", "Verbindung", "Ordner", "Fertig"]
+    private let titles = [
+        String(localized: "Willkommen"), String(localized: "Schlüssel"),
+        String(localized: "Verbindung"), String(localized: "Ordner"),
+        String(localized: "Fertig"),
+    ]
     @State private var saving = false
 
     var body: some View {

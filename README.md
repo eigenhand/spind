@@ -30,7 +30,7 @@ mit einer Box, und Sync-Fehler können Daten kosten.
 ## Roadmap
 
 - [ ] Signierte und notarisierte DMG als erstes Release
-- [ ] Englische Übersetzung
+- [x] Englische Übersetzung
 - [x] Automatische Updates (Sparkle, Appcast am GitHub-Release)
 - [ ] Homebrew Cask
 - [x] Beliebige SFTP-Server als Ziel (Freigaben/Collabora bleiben Storage-Box-exklusiv)

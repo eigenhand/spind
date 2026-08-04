@@ -4,6 +4,7 @@ configFiles:
   Release: Config.xcconfig
 options:
   bundleIdPrefix: dev.eigenhand
+  developmentLanguage: de
   deploymentTarget:
     macOS: "14.0"
 packages:
@@ -17,6 +18,7 @@ settings:
     DEVELOPMENT_TEAM: $(SPIND_TEAM_ID)
     CODE_SIGN_STYLE: Automatic
     SWIFT_VERSION: "5.10"
+    SWIFT_EMIT_LOC_STRINGS: YES
 targets:
   Spind:
     type: application
@@ -24,6 +26,8 @@ targets:
     sources:
       - Sources/SpindApp
       - Resources/Assets.xcassets
+      - Resources/Localizable.xcstrings
+      - Resources/AppShortcuts.xcstrings
     dependencies:
       - package: SpindPackage
         product: SpindCore
