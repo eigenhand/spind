@@ -120,9 +120,11 @@ struct HetznerAPI {
         }
     }
 
+    /// - Parameter sshEnabled: true für echte Spind-Zugänge (SFTP per
+    ///   Schlüssel), false für reine Web-Freigaben.
     func createSubaccount(
         boxID: Int, homeDirectory: String, password: String,
-        description: String, readonly: Bool
+        description: String, readonly: Bool, sshEnabled: Bool = false
     ) async throws {
         _ = try await request("POST", "storage_boxes/\(boxID)/subaccounts", body: [
             "home_directory": homeDirectory,
@@ -131,7 +133,7 @@ struct HetznerAPI {
             "access_settings": [
                 "webdav_enabled": true,
                 "samba_enabled": false,
-                "ssh_enabled": false,
+                "ssh_enabled": sshEnabled,
                 "reachable_externally": true,
                 "readonly": readonly,
             ],

@@ -22,6 +22,8 @@
 	<string>1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+	<string>Zum Scannen des Kopplungscodes aus der Mac-App.</string>
 	<key>SpindAppGroup</key>
 	<string>$(SPIND_IOS_APP_GROUP)</string>
 	<key>UILaunchScreen</key>

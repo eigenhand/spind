@@ -15,6 +15,7 @@
 
 import SwiftUI
 import AppKit
+import CoreImage.CIFilterBuiltins
 import ServiceManagement
 import SpindCore
 
@@ -55,6 +56,16 @@ struct ConnectionSettings: View {
     // unverändert sind; bei neuem Ziel wird er verworfen und frisch geholt.
     @State private var loadedHostKey: String?
     @State private var loadedEndpoint = ""
+    @State private var showingEnroll = ProcessInfo.processInfo.environment["SPIND_PREVIEW_ENROLL"] != nil
+    @State private var enrollKey = ""
+    @State private var enrollBusy = false
+    @State private var enrollResult: String?
+    @State private var pairingImage: NSImage?
+    @State private var forOtherPerson = false
+    @State private var personLabel = ""
+    @State private var personFolder = ""
+    @State private var personReadonly = false
+    @State private var enrollStage: EnrollStage = .choose
 
     enum TestState: Equatable {
         case idle, running
@@ -72,6 +83,7 @@ struct ConnectionSettings: View {
             actionBar
         }
         .frame(height: 580)
+        .sheet(isPresented: $showingEnroll) { enrollSheet }
         .onAppear(perform: loadCurrent)
         .fileImporter(
             isPresented: $showingKeyPicker,
@@ -120,6 +132,281 @@ struct ConnectionSettings: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(.bar)
+    }
+
+    /// QR-Kopplung. Eigenes Gerät: Schlüssel ans eigene Konto hängen, voller
+    /// Zugriff. Andere Person: eigener Subaccount mit eigenem Ordner — sie
+    /// sieht nur diesen, und der Zugang ist einzeln widerrufbar.
+    private func makePairingCode() {
+        enrollBusy = true
+        enrollResult = nil
+        Task {
+            do {
+                let config = currentConfig()
+                let pair = SSHKeyGen.generate(
+                    comment: forOtherPerson ? "spind-\(personLabel)" : "spind-geraet"
+                )
+                let code: PairingCode
+                if forOtherPerson {
+                    code = try await PersonEnrollment.createAccess(
+                        folder: personFolder, label: personLabel,
+                        readonly: personReadonly, pair: pair, config: config
+                    )
+                } else {
+                    let client = StorageBoxClient(config: config)
+                    try await client.connect()
+                    try await DeviceEnrollment.addAuthorizedKey(pair.publicLine, client: client)
+                    await client.disconnect()
+                    code = PairingCode(config: config, pair: pair)
+                }
+                pairingImage = Self.qrImage(for: try code.encoded())
+                enrollStage = .code
+            } catch {
+                enrollResult = "✗ \(error.localizedDescription)"
+            }
+            enrollBusy = false
+        }
+    }
+
+    private static func qrImage(for text: String) -> NSImage? {
+        let filter = CIFilter.qrCodeGenerator()
+        filter.message = Data(text.utf8)
+        filter.correctionLevel = "M"
+        guard let output = filter.outputImage else { return nil }
+        let scaled = output.transformed(by: CGAffineTransform(scaleX: 8, y: 8))
+        let rep = NSCIImageRep(ciImage: scaled)
+        let image = NSImage(size: rep.size)
+        image.addRepresentation(rep)
+        return image
+    }
+
+    enum EnrollStage { case choose, personDetails, code, paste }
+
+    /// Eine Frage pro Bild: erst WER, dann Details, dann NUR der Code.
+    private var enrollSheet: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                if enrollStage != .choose {
+                    Button {
+                        enrollStage = enrollStage == .code && forOtherPerson
+                            ? .personDetails : .choose
+                        pairingImage = nil
+                        enrollResult = nil
+                    } label: {
+                        Label("Zurück", systemImage: "chevron.left")
+                    }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+                }
+                Spacer()
+                Button("Schließen") { closeEnroll() }
+                    .buttonStyle(.plain)
+                    .foregroundStyle(.secondary)
+            }
+            switch enrollStage {
+            case .choose: enrollChoose
+            case .personDetails: enrollPersonDetails
+            case .code: enrollCode
+            case .paste: enrollPaste
+            }
+        }
+        .padding(20)
+        .frame(width: 460)
+    }
+
+    private func closeEnroll() {
+        showingEnroll = false
+        enrollStage = .choose
+        pairingImage = nil
+        enrollResult = nil
+        enrollKey = ""
+    }
+
+    private func choiceCard(
+        symbol: String, tint: Color, title: String, subtitle: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: symbol)
+                    .font(.system(size: 22))
+                    .foregroundStyle(tint)
+                    .frame(width: 36)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title).font(.callout.weight(.semibold))
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer()
+                if enrollBusy { ProgressView().controlSize(.small) }
+                else { Image(systemName: "chevron.right").foregroundStyle(.tertiary) }
+            }
+            .padding(12)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(.quaternary.opacity(0.5))
+            )
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(enrollBusy)
+    }
+
+    private var enrollChoose: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Wen möchtest du verbinden?")
+                .font(.headline)
+            choiceCard(
+                symbol: "iphone", tint: .blue,
+                title: "Mein eigenes Gerät",
+                subtitle: "iPhone oder zweiter Mac – voller Zugriff auf alle deine Dateien."
+            ) {
+                forOtherPerson = false
+                makePairingCode()
+            }
+            choiceCard(
+                symbol: "person.badge.key", tint: .purple,
+                title: "Eine andere Person",
+                subtitle: "Bekommt einen eigenen Ordner und sieht nur diesen. Jederzeit widerrufbar."
+            ) {
+                forOtherPerson = true
+                enrollStage = .personDetails
+            }
+            if let enrollResult {
+                Text(enrollResult).font(.caption).foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Button("Ich habe schon einen Schlüssel zum Eintragen …") {
+                enrollResult = nil
+                enrollStage = .paste
+            }
+            .buttonStyle(.link)
+            .font(.caption)
+        }
+    }
+
+    private var enrollPersonDetails: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Zugang für eine andere Person")
+                .font(.headline)
+            Text("Spind legt dafür einen eigenen Ordner und einen eigenen "
+                 + "Zugang auf der Storage Box an.")
+                .font(.callout).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Form {
+                TextField("Name", text: $personLabel, prompt: Text("Anna"))
+                TextField("Ordner", text: $personFolder, prompt: Text("Projekte/Anna"))
+                Toggle("Darf nur lesen, nicht ändern", isOn: $personReadonly)
+            }
+            .formStyle(.columns)
+            if let enrollResult {
+                Text(enrollResult).font(.caption).foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack {
+                Spacer()
+                Button {
+                    makePairingCode()
+                } label: {
+                    HStack(spacing: 6) {
+                        if enrollBusy { ProgressView().controlSize(.small) }
+                        Text("Zugang anlegen")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(enrollBusy
+                    || personLabel.trimmingCharacters(in: .whitespaces).isEmpty
+                    || personFolder.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
+        }
+    }
+
+    private var enrollCode: some View {
+        VStack(spacing: 14) {
+            Text(forOtherPerson
+                 ? "Zugang für »\(personLabel)« ist bereit"
+                 : "Bereit zum Scannen")
+                .font(.headline)
+            if let pairingImage {
+                Image(nsImage: pairingImage)
+                    .interpolation(.none)
+                    .resizable()
+                    .frame(width: 200, height: 200)
+            }
+            VStack(alignment: .leading, spacing: 6) {
+                Label("Auf dem neuen Gerät Spind öffnen", systemImage: "1.circle")
+                Label("»Per QR-Code verbinden« antippen", systemImage: "2.circle")
+                Label("Diesen Code scannen – fertig", systemImage: "3.circle")
+            }
+            .font(.callout)
+            Label("Der Code ist ein Schlüssel: nur direkt vom Bildschirm "
+                  + "scannen lassen, nicht verschicken oder speichern.",
+                  systemImage: "exclamationmark.shield")
+                .font(.caption)
+                .foregroundStyle(.orange)
+                .fixedSize(horizontal: false, vertical: true)
+            Button("Fertig") { closeEnroll() }
+                .buttonStyle(.borderedProminent)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var enrollPaste: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Schlüssel eintragen")
+                .font(.headline)
+            Text("Für Geräte, die ihren Schlüssel selbst erzeugt haben: "
+                 + "öffentlichen Schlüssel hier einfügen, Spind trägt ihn auf "
+                 + "dem Server ein.")
+                .font(.callout).foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            TextEditor(text: $enrollKey)
+                .font(.system(size: 11, design: .monospaced))
+                .frame(height: 64)
+                .overlay(RoundedRectangle(cornerRadius: 6).stroke(.quaternary))
+            if let enrollResult {
+                Text(enrollResult).font(.caption)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            HStack {
+                Spacer()
+                Button {
+                    enroll()
+                } label: {
+                    HStack(spacing: 6) {
+                        if enrollBusy { ProgressView().controlSize(.small) }
+                        Text("Eintragen")
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(enrollBusy || enrollKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+    }
+
+    private func enroll() {
+        enrollBusy = true
+        enrollResult = nil
+        let line = enrollKey
+        Task {
+            do {
+                let config = currentConfig()
+                let client = StorageBoxClient(config: config)
+                try await client.connect()
+                let added = try await DeviceEnrollment.addAuthorizedKey(line, client: client)
+                await client.disconnect()
+                enrollResult = added
+                    ? "✓ Eingetragen. Das neue Gerät verbindet sich jetzt mit: "
+                      + "Adresse \(config.host), Benutzer \(config.username), Port \(config.port)."
+                    : "Dieser Schlüssel ist bereits eingetragen – alles gut."
+            } catch {
+                enrollResult = "✗ \(error.localizedDescription)"
+            }
+            enrollBusy = false
+        }
     }
 
     private var settingsForm: some View {
@@ -173,6 +460,17 @@ struct ConnectionSettings: View {
                 Text("Authentifizierung")
             } footer: {
                 Text("Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Hinterlege den öffentlichen Schlüssel in der Hetzner Console bei deiner Storage Box (SSH-Support aktivieren).")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section {
+                LabeledContent("Weitere Geräte") {
+                    Button("Gerät verbinden …") { showingEnroll = true }
+                        .controlSize(.small)
+                }
+            } footer: {
+                Text("Verbindet z. B. dein iPhone: Dort in Spind den öffentlichen Schlüssel kopieren (wandert per Zwischenablage automatisch hierher), hier einfügen – fertig. Kein Console-Umweg, keine zweite Box.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

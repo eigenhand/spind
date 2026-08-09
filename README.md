@@ -34,7 +34,8 @@ mit einer Box, und Sync-Fehler können Daten kosten.
 - [x] Automatische Updates (Sparkle, Appcast am GitHub-Release)
 - [ ] Homebrew Cask
 - [x] Beliebige SFTP-Server als Ziel (Freigaben/Collabora bleiben Storage-Box-exklusiv)
-- [ ] iPhone-App (Dateien-Integration)
+- [x] iPhone-App (Dateien-Integration, TestFlight)
+- [x] Geräte und Personen per QR-Code verbinden
 
 ## Installation
 

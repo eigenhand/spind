@@ -24,7 +24,7 @@ struct SpindCLI: AsyncParsableCommand {
         abstract: "Sync a local folder with a Hetzner Storage Box",
         subcommands: [
             Setup.self, Check.self, List.self, Sync.self, Watch.self,
-            Versions.self, Restore.self, Deleted.self,
+            Versions.self, Restore.self, Deleted.self, Enroll.self,
             InstallAgent.self, UninstallAgent.self,
         ]
     )
@@ -374,5 +374,30 @@ struct Sync: AsyncParsableCommand {
             print("✓ Sync abgeschlossen (\(actions.count) Aktionen).")
         }
         await client.disconnect()
+    }
+}
+
+struct Enroll: AsyncParsableCommand {
+    static let configuration = CommandConfiguration(
+        abstract: "Add another device's public key to the server's authorized_keys"
+    )
+
+    @Argument(help: "Öffentliche Schlüsselzeile, z. B. \"ssh-ed25519 AAAA… iphone\"")
+    var publicKey: [String]
+
+    func run() async throws {
+        let config = try SpindConfig.load()
+        let client = StorageBoxClient(config: config)
+        try await client.connect()
+        defer { Task { await client.disconnect() } }
+        let added = try await DeviceEnrollment.addAuthorizedKey(
+            publicKey.joined(separator: " "), client: client
+        )
+        if added {
+            print("✓ Eingetragen. Das Gerät verbindet sich mit: "
+                  + "\(config.username)@\(config.host), Port \(config.port).")
+        } else {
+            print("Schlüssel war bereits eingetragen – nichts zu tun.")
+        }
     }
 }

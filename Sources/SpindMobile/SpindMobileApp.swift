@@ -60,6 +60,27 @@ enum MobileStore {
         try pair.publicLine.write(to: pubURL, atomically: true, encoding: .utf8)
         return pair.publicLine
     }
+
+    /// Übernimmt einen gescannten Kopplungscode: Schlüssel und Zugang
+    /// landen in der App-Gruppe, die Dateien-App bekommt ihren Eintrag.
+    static func applyPairing(_ code: PairingCode) throws {
+        guard let dir = directory, let keyURL = keyURL,
+              let pubURL = publicKeyURL, let configURL = configURL else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try code.privateKey.write(to: keyURL, atomically: true, encoding: .utf8)
+        try FileManager.default.setAttributes(
+            [.posixPermissions: 0o600], ofItemAtPath: keyURL.path
+        )
+        try code.publicLine.write(to: pubURL, atomically: true, encoding: .utf8)
+        var config = SpindConfig(
+            host: code.host, port: code.port, username: code.username,
+            privateKeyPath: keyURL.path, remoteRoot: ".", localRoot: "~"
+        )
+        config.hostPublicKey = code.hostPublicKey
+        try config.save(to: configURL)
+    }
 }
 
 /// Übersetzt Verbindungs-Fehler in Handlungsanweisungen statt Fehlercodes.
@@ -115,6 +136,7 @@ struct OnboardingView: View {
     @State private var testing = false
     @State private var testResult: (ok: Bool, text: String)?
     @State private var copied = false
+    @State private var showingPairing = false
 
     var body: some View {
         NavigationStack {
@@ -127,6 +149,18 @@ struct OnboardingView: View {
                         Image(systemName: "externaldrive.badge.icloud")
                             .foregroundStyle(.blue)
                     }
+                }
+
+                Section {
+                    Button {
+                        showingPairing = true
+                    } label: {
+                        Label("Per QR-Code vom Mac verbinden", systemImage: "qrcode.viewfinder")
+                    }
+                } footer: {
+                    Text("Schnellster Weg: In der Mac-App unter Einstellungen → "
+                         + "Verbindung → »Gerät verbinden« einen Code erzeugen und "
+                         + "hier scannen. Alles andere entfällt dann.")
                 }
 
                 Section("1 · Schlüssel") {
@@ -218,6 +252,12 @@ struct OnboardingView: View {
                 }
             }
             .navigationTitle("Spind einrichten")
+            .sheet(isPresented: $showingPairing) {
+                PairingView(onPaired: {
+                    showingPairing = false
+                    onFinished()
+                }, dismiss: { showingPairing = false })
+            }
         }
     }
 

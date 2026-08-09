@@ -540,3 +540,42 @@ final class SafetyGuardTests: XCTestCase {
                        + "an der richtigen Stelle landet")
     }
 }
+
+final class PairingCodeTests: XCTestCase {
+    /// Der Kopplungscode muss verlustfrei durch QR und zurück — sonst
+    /// scheitert die Einrichtung am neuen Gerät.
+    func testKopplungscodeUeberlebtHinUndRueckweg() throws {
+        var config = SpindConfig(
+            host: "u1.your-storagebox.de", port: 23, username: "u1-sub2",
+            privateKeyPath: "/dev/null", remoteRoot: ".", localRoot: "~/Spind"
+        )
+        config.hostPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRen server"
+        let pair = SSHKeyGen.generate(comment: "test")
+        let text = try PairingCode(config: config, pair: pair).encoded()
+
+        let decoded = try XCTUnwrap(PairingCode.decode(text))
+        XCTAssertEqual(decoded.host, config.host)
+        XCTAssertEqual(decoded.port, config.port)
+        XCTAssertEqual(decoded.username, config.username)
+        XCTAssertEqual(decoded.hostPublicKey, config.hostPublicKey)
+        XCTAssertEqual(decoded.privateKey, pair.privateOpenSSH)
+        // Der mitgereiste Schlüssel muss weiterhin einlesbar sein.
+        XCTAssertNoThrow(try Curve25519.Signing.PrivateKey(sshEd25519: decoded.privateKey))
+
+        XCTAssertNil(PairingCode.decode("völlig anderer QR-Inhalt"))
+        XCTAssertNil(PairingCode.decode("spind1:nicht-base64!"))
+    }
+
+    /// Fremde oder kaputte Schlüsselzeilen dürfen nie in authorized_keys.
+    func testNurEchteSchluesselzeilenWerdenAkzeptiert() throws {
+        let ok = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs gerät"
+        XCTAssertEqual(try DeviceEnrollment.validated("  \(ok)\n"), ok)
+        for bad in [
+            "kein-schlüssel", "ssh-ed25519", "ssh-unknown AAAA test",
+            "ssh-ed25519 ###keinbase64### test",
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC a\nssh-ed25519 AAAA b",
+        ] {
+            XCTAssertThrowsError(try DeviceEnrollment.validated(bad), "akzeptiert: \(bad)")
+        }
+    }
+}
