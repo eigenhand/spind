@@ -59,6 +59,30 @@ struct StorageOptimizer {
         else { return result }
 
         let cutoff = Date().addingTimeInterval(-Double(days) * 86_400)
+        for candidate in candidates(root: root, cutoff: cutoff) {
+            do {
+                try await evict(
+                    NSFileProviderItemIdentifier(candidate.relative), with: manager
+                )
+                result.evictedCount += 1
+                result.evictedBytes += candidate.size
+            } catch {
+                // Pinned, unsynced edits, or in use — leave it alone.
+                result.skippedCount += 1
+                result.lastError = "\(candidate.relative): \(error)"
+            }
+        }
+        return result
+    }
+
+    /// Sammelt die Freigabe-Kandidaten ein.
+    ///
+    /// Bewusst synchron: Ein Verzeichnis-Enumerator darf aus einem
+    /// asynchronen Zusammenhang nicht gelesen werden — in Swift 6 ist das
+    /// ein Fehler, nicht bloß eine Warnung.
+    private static func candidates(
+        root: URL, cutoff: Date
+    ) -> [(relative: String, size: UInt64)] {
         let keepList = loadKeepList()
         let keys: [URLResourceKey] = [
             .isRegularFileKey, .fileSizeKey,
@@ -67,8 +91,9 @@ struct StorageOptimizer {
         guard let enumerator = FileManager.default.enumerator(
             at: root, includingPropertiesForKeys: keys,
             options: [.skipsHiddenFiles]
-        ) else { return result }
+        ) else { return [] }
 
+        var found: [(relative: String, size: UInt64)] = []
         for case let url as URL in enumerator {
             guard let values = try? url.resourceValues(forKeys: Set(keys)),
                   values.isRegularFile == true
@@ -90,18 +115,9 @@ struct StorageOptimizer {
                 || keepList.contains(where: { relative.hasPrefix($0 + "/") }) {
                 continue
             }
-            let identifier = NSFileProviderItemIdentifier(relative)
-            do {
-                try await evict(identifier, with: manager)
-                result.evictedCount += 1
-                result.evictedBytes += UInt64(values.fileSize ?? 0)
-            } catch {
-                // Pinned, unsynced edits, or in use — leave it alone.
-                result.skippedCount += 1
-                result.lastError = "\(relative): \(error)"
-            }
+            found.append((relative, UInt64(values.fileSize ?? 0)))
         }
-        return result
+        return found
     }
 
     private static func evict(

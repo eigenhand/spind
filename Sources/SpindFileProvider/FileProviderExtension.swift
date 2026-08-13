@@ -535,7 +535,7 @@ extension FileProviderExtension: NSFileProviderCustomAction {
                     extLog("Eintrag existiert remote nicht mehr – räume auf: \(path)")
                     await KeepStore.shared.removeSubtree(path)
                     await PendingUpdates.shared.enqueueDeleted([path])
-                    try? await manager?.signalEnumerator(for: .workingSet)
+                    _ = try? await manager?.signalEnumerator(for: .workingSet)
                     await self.refreshMetadata(around: path, manager: manager)
                     progress.completedUnitCount += 1
                     continue
@@ -546,7 +546,7 @@ extension FileProviderExtension: NSFileProviderCustomAction {
                     extLog("behalten: \(path)")
                     let files = subtree
                     await PendingUpdates.shared.enqueue([path] + files)
-                    try? await manager?.signalEnumerator(for: .workingSet)
+                    _ = try? await manager?.signalEnumerator(for: .workingSet)
                     await self.refreshMetadata(around: path, manager: manager)
                     // requestDownloadForItem only schedules "at a system
                     // convenient time" — the app materializes immediately
@@ -565,7 +565,7 @@ extension FileProviderExtension: NSFileProviderCustomAction {
                     // Tell the system the keep policy is gone BEFORE trying
                     // to evict, or it keeps refusing with -2008.
                     await PendingUpdates.shared.enqueue([path] + files)
-                    try? await manager?.signalEnumerator(for: .workingSet)
+                    _ = try? await manager?.signalEnumerator(for: .workingSet)
                     await self.refreshMetadata(around: path, manager: manager)
                     for filePath in files {
                         await self.evictWithRetry(
@@ -587,7 +587,7 @@ extension FileProviderExtension: NSFileProviderCustomAction {
                 }
                 progress.completedUnitCount += 1
             }
-            try? await manager?.signalEnumerator(for: .workingSet)
+            _ = try? await manager?.signalEnumerator(for: .workingSet)
             completionHandler(nil)
         }
         return progress
@@ -621,8 +621,8 @@ extension FileProviderExtension: NSFileProviderCustomAction {
         let parent = FileProviderItem.identifier(
             for: (path as NSString).deletingLastPathComponent
         )
-        try? await manager?.signalEnumerator(for: parent)
-        try? await manager?.signalEnumerator(for: FileProviderItem.identifier(for: path))
+        _ = try? await manager?.signalEnumerator(for: parent)
+        _ = try? await manager?.signalEnumerator(for: FileProviderItem.identifier(for: path))
     }
 
     /// All files at or below the given path (remote view). A plain file
@@ -694,12 +694,12 @@ extension FileProviderExtension: NSFileProviderCustomAction {
                     extLog("Platz freigeben fehlgeschlagen: \(error)")
                     return
                 }
-                try? await manager.signalEnumerator(for: .workingSet)
+                _ = try? await manager.signalEnumerator(for: .workingSet)
                 let parent = FileProviderItem.identifier(
                     for: (FileProviderItem.relativePath(for: identifier) as NSString)
                         .deletingLastPathComponent
                 )
-                try? await manager.signalEnumerator(for: parent)
+                _ = try? await manager.signalEnumerator(for: parent)
                 try? await Task.sleep(for: .seconds(2))
             }
         }

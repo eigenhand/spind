@@ -217,6 +217,13 @@ public final class SyncEngine {
                 modTime: values.contentModificationDate?.timeIntervalSince1970 ?? 0
             )
         }
+        // Der Fehlerbehandler des Enumerators bricht den Durchlauf ab. Ohne
+        // diese Prüfung käme eine halbe Liste zurück und alles, was nicht
+        // mehr gelesen wurde, sähe aus wie gelöscht — der Abgleich würde es
+        // auf dem Server hinterherlöschen.
+        if let scanFailure {
+            throw SyncError.localScanFailed(scanFailure.localizedDescription)
+        }
         return items
     }
 
@@ -236,7 +243,7 @@ public final class SyncEngine {
             if entry.name.hasSuffix(".spind-upload-tmp") {
                 let age = entry.modificationDate.map { Date().timeIntervalSince($0) } ?? 0
                 if age > 86_400 {
-                    try? await client.run("rm -- \(StorageBoxClient.quote(entry.path))")
+                    _ = try? await client.run("rm -- \(StorageBoxClient.quote(entry.path))")
                     emit("Aufgeräumt: verwaister Upload-Rest \(entry.name)")
                 }
                 continue

@@ -205,7 +205,7 @@ public enum VersionStore {
     ) async {
         let versions = await list(relativePath: relativePath, client: client, config: config)
         for version in VersionRetention.expendable(versions, now: Date()) {
-            try? await client.run("rm -- \(StorageBoxClient.quote(version.remotePath))")
+            _ = try? await client.run("rm -- \(StorageBoxClient.quote(version.remotePath))")
         }
     }
 }

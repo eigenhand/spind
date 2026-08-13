@@ -15,7 +15,10 @@
 
 import Foundation
 import SwiftUI
-import FileProvider
+// NSFileProviderDomain ist nicht als Sendable ausgezeichnet, wandert hier
+// aber durch Closures. @preconcurrency sagt: Das Modul stammt aus der Zeit
+// vor der strengen Nebenläufigkeit — nicht jede Übergabe ist ein Fehler.
+@preconcurrency import FileProvider
 import Network
 import UserNotifications
 import ServiceManagement

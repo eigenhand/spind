@@ -14,6 +14,7 @@
 // License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import BackgroundTasks
+import Combine
 import SwiftUI
 import FileProvider
 import SpindCore
