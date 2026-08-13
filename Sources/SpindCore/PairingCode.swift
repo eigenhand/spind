@@ -15,21 +15,21 @@
 
 import Foundation
 
-/// Kopplungscode für „Gerät verbinden per QR": Das verbundene Gerät
-/// erzeugt ein Schlüsselpaar für das neue Gerät, trägt den öffentlichen
-/// Teil auf dem Server ein und verpackt privaten Schlüssel, Zugang und
-/// Server-Pin in einen Code. Das neue Gerät scannt — und ist verbunden.
+/// Pairing code for "connect a device by QR": the connected device
+/// generates a key pair for the new one, registers the public half on
+/// the server and packs the private key, the account and the server pin
+/// into a code. The new device scans it — and is connected.
 ///
-/// Der Code gewährt vollen Zugriff: nur direkt vom eigenen Bildschirm
-/// scannen und nirgends speichern. Eintrag jederzeit widerrufbar
-/// (Zeile in .ssh/authorized_keys entfernen).
+/// The code grants full access: only ever scan it straight off your own
+/// screen, and store it nowhere. The grant can be revoked at any time
+/// by removing the line from .ssh/authorized_keys.
 public struct PairingCode: Codable, Sendable {
     public var version: Int
     public var host: String
     public var port: Int
     public var username: String
-    /// Privater OpenSSH-Schlüssel des NEUEN Geräts (frisch erzeugt,
-    /// öffentlicher Teil ist bereits auf dem Server eingetragen).
+    /// Private OpenSSH key of the NEW device (freshly generated, its
+    /// public half is already registered on the server).
     public var privateKey: String
     public var publicLine: String
     public var hostPublicKey: String?

@@ -120,8 +120,8 @@ struct HetznerAPI {
         }
     }
 
-    /// - Parameter sshEnabled: true für echte Spind-Zugänge (SFTP per
-    ///   Schlüssel), false für reine Web-Freigaben.
+    /// - Parameter sshEnabled: true for real Spind access (SFTP by key),
+    ///   false for plain web shares.
     func createSubaccount(
         boxID: Int, homeDirectory: String, password: String,
         description: String, readonly: Bool, sshEnabled: Bool = false

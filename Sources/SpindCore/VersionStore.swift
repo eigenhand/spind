@@ -18,7 +18,7 @@ import Foundation
 /// File history on the storage box.
 ///
 /// Before anything overwrites or deletes a remote file, the current
-/// version is copied aside into `.spind-versions/<pfad>/<zeitstempel>`.
+/// version is copied aside into `.spind-versions/<path>/<timestamp>`.
 /// The copy happens server-side (`cp` in the box shell), so a version
 /// costs no transfer at all. The folder starts with a dot and is
 /// therefore invisible to sync and Finder.
@@ -31,9 +31,8 @@ public struct FileVersion: Sendable, Identifiable {
 
 public enum VersionStore {
     public static let folderName = ".spind-versions"
-    /// Wie viele Fassungen höchstens je Datei liegen bleiben. Die
-    /// tatsächliche Auswahl trifft `VersionRetention` — je älter, desto
-    /// grober das Raster.
+    /// How many versions are kept per file at most. Which ones survive is
+    /// decided by `VersionRetention` — the older, the coarser the grid.
     public static let keepPerFile = VersionRetention.maxPerFile
 
     private static let stamp: DateFormatter = {
@@ -56,19 +55,19 @@ public enum VersionStore {
 
     /// Copies the current remote file into the history.
     ///
-    /// Wirft, wenn die Sicherung fehlschlägt (volle Box, Kontingent
-    /// erschöpft) — der Aufrufer darf dann **nicht** überschreiben oder
-    /// löschen. Gibt false zurück, wenn es schlicht nichts zu sichern gab.
+    /// Throws when the snapshot fails (box full, quota spent) — the
+    /// caller must then **not** overwrite or delete. Returns false when
+    /// there simply was nothing to preserve.
     @discardableResult
     public static func snapshot(
         relativePath: String, remotePath: String,
         client: StorageBoxClient, config: SpindConfig
     ) async throws -> Bool {
         guard let current = try? await client.stat(remotePath) else { return false }
-        // Unverändert? Dann wäre die Kopie ein Zwilling der jüngsten
-        // Fassung. Erst die Größe vergleichen (kostet nichts, weil schon
-        // bekannt), nur bei Gleichstand den Hash — beides serverseitig,
-        // es geht dabei kein Byte über die Leitung.
+        // Unchanged? Then the copy would be a twin of the newest version.
+        // Compare the size first (free, it is already known) and only on
+        // a tie the hash — both computed on the server, so no byte crosses
+        // the wire to find out that nothing changed.
         if let newest = await list(
             relativePath: relativePath.canonicalPathKey, client: client, config: config
         ).first, newest.size == Int64(current.size),
@@ -78,8 +77,8 @@ public enum VersionStore {
             return false
         }
         let directory = versionsDirectory(for: relativePath.canonicalPathKey, config: config)
-        // Sekundenauflösung reicht nicht: zwei Sicherungen derselben Datei
-        // in derselben Sekunde würden einander überschreiben.
+        // A resolution of seconds is not enough: two snapshots of the same
+        // file within one second would overwrite each other.
         var target = directory + "/" + stamp.string(from: Date())
         if (try? await client.stat(target)) != nil {
             target += "-\(UUID().uuidString.prefix(4))"
@@ -89,8 +88,8 @@ public enum VersionStore {
         try await client.run(
             "cp -- \(StorageBoxClient.quote(remotePath)) \(StorageBoxClient.quote(temporary))"
         )
-        // Erst nach vollständiger Kopie sichtbar machen, damit ein Abbruch
-        // keine angerissene Fassung im Verlauf hinterlässt.
+        // Only make it visible once the copy is complete, so that an
+        // interruption leaves no torn version in the history.
         try await client.run(
             "mv -- \(StorageBoxClient.quote(temporary)) \(StorageBoxClient.quote(target))"
         )
@@ -117,8 +116,8 @@ public enum VersionStore {
 
     /// Restores a version as the current file — the state being replaced
     /// is preserved as a new version first, so restoring is never lossy.
-    /// Funktioniert auch für gelöschte Dateien: dann gibt es nichts zu
-    /// sichern, und ein mitgelöschter Elternordner wird neu angelegt.
+    /// Works for deleted files too: there is nothing to preserve then,
+    /// and a parent folder that went with it is recreated.
     public static func restore(
         version: FileVersion, relativePath: String, remotePath: String,
         client: StorageBoxClient, config: SpindConfig
@@ -137,7 +136,7 @@ public enum VersionStore {
         )
     }
 
-    /// Eine gelöschte Datei, von der noch Fassungen im Verlauf liegen.
+    /// A deleted file that still has versions in the history.
     public struct DeletedFile: Sendable, Identifiable {
         public var id: String { relativePath }
         public let relativePath: String
@@ -145,8 +144,8 @@ public enum VersionStore {
         public let versionCount: Int
     }
 
-    /// Durchsucht den Verlauf nach Dateien, die es live nicht mehr gibt —
-    /// die Grundlage für »Gelöschte Dateien wiederherstellen«.
+    /// Searches the history for files that no longer exist live — the
+    /// basis for "restore deleted files".
     public static func listDeleted(
         client: StorageBoxClient, config: SpindConfig
     ) async -> [DeletedFile] {
@@ -171,7 +170,7 @@ public enum VersionStore {
                 }
             }
             guard !versions.isEmpty, !relative.isEmpty else { continue }
-            // Fassungen vorhanden — lebt die Datei noch?
+            // Versions exist — is the file still alive?
             let livePath = liveRoot.isEmpty ? relative : liveRoot + "/" + relative
             let live = try? await client.stat(livePath)
             if live == nil || live?.isDirectory == true {
@@ -186,20 +185,20 @@ public enum VersionStore {
         return result.sorted { $0.latest.date > $1.latest.date }
     }
 
-    /// Prüfsumme einer Datei, gebildet auf dem Server.
+    /// Checksum of a file, computed on the server.
     static func checksum(
         _ remotePath: String, client: StorageBoxClient
     ) async throws -> String? {
         let output = try await client.run(
             "sha256sum -- " + StorageBoxClient.quote(remotePath)
         )
-        // Ausgabeformat: »<hash>  <dateiname>«
+        // Output format: "<hash>  <filename>"
         return output.split(whereSeparator: \.isWhitespace).first.map(String.init)
     }
 
-    /// Dünnt den Verlauf aus, statt ihn hinten abzuschneiden: heute jede
-    /// Fassung, diesen Monat eine pro Tag, dieses Jahr eine pro Woche,
-    /// davor eine pro Monat.
+    /// Thins the history out instead of cutting it off at the back: every
+    /// version from today, one per day this month, one per week this year,
+    /// one per month before that.
     private static func prune(
         relativePath: String, client: StorageBoxClient, config: SpindConfig
     ) async {

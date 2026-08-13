@@ -22,8 +22,8 @@ import SpindCore
 let appGroupID = (Bundle.main.object(forInfoDictionaryKey: "SpindAppGroup") as? String)
     ?? "group.dev.eigenhand.spind"
 
-/// Konfiguration und Schlüssel wohnen in der App-Gruppe — nur dort kommt
-/// auch die File-Provider-Extension heran.
+/// Configuration and key live in the app group — that is the only place
+/// the file provider extension can reach as well.
 enum MobileStore {
     static var directory: URL? {
         FileManager.default.containerURL(
@@ -39,16 +39,16 @@ enum MobileStore {
         return try? SpindConfig.load(from: url)
     }
 
-    /// Der einmal erzeugte Schlüssel überlebt jeden App-Neustart — sonst
-    /// wäre jeder bei Hetzner hinterlegte öffentliche Teil sofort wertlos.
+    /// The key, once generated, survives every app restart — otherwise
+    /// the public half registered at Hetzner would be worthless at once.
     static func existingPublicLine() -> String? {
         guard let url = publicKeyURL,
               let line = try? String(contentsOf: url, encoding: .utf8) else { return nil }
         return line.trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
-    /// Erzeugt ein Schlüsselpaar und speichert es SOFORT — nicht erst beim
-    /// Verbindungstest, damit Kopieren → App weg → Hinterlegen sicher ist.
+    /// Generates a key pair and stores it AT ONCE — not only at the
+    /// connection test, so that copy → leave app → register is safe.
     static func generateAndStoreKey() throws -> String {
         guard let dir = directory, let keyURL = keyURL, let pubURL = publicKeyURL else {
             throw CocoaError(.fileNoSuchFile)
@@ -63,8 +63,8 @@ enum MobileStore {
         return pair.publicLine
     }
 
-    /// Übernimmt einen gescannten Kopplungscode: Schlüssel und Zugang
-    /// landen in der App-Gruppe, die Dateien-App bekommt ihren Eintrag.
+    /// Takes over a scanned pairing code: key and access land in the app
+    /// group, and the Files app gets its entry.
     static func applyPairing(_ code: PairingCode) throws {
         guard let dir = directory, let keyURL = keyURL,
               let pubURL = publicKeyURL, let configURL = configURL else {
@@ -85,7 +85,7 @@ enum MobileStore {
     }
 }
 
-/// Übersetzt Verbindungs-Fehler in Handlungsanweisungen statt Fehlercodes.
+/// Turns connection errors into instructions instead of error codes.
 func connectionHint(for error: Error) -> String {
     let text = String(describing: error).lowercased()
     if text.contains("authent") || text.contains("sshclienterror") {
@@ -115,8 +115,8 @@ struct SpindMobileApp: App {
                         self.config = MobileStore.loadConfig()
                     }
                     .onAppear {
-                        // Bei jedem Start neu anmelden — schadet nie und heilt
-                        // verlorene Registrierungen (App-Update, Neuinstallation).
+                        // Register again on every launch — never harmful,
+                        // and it heals lost registrations after an update.
                         SpindDomain.register()
                     }
                 } else {
@@ -124,8 +124,8 @@ struct SpindMobileApp: App {
                         config = MobileStore.loadConfig()
                     }
                 }
-                // Deckt alles zu, solange nicht entsperrt ist — bewusst kein
-                // Blatt, das sich wegschieben ließe.
+                // Covers everything until unlocked — deliberately not a
+                // sheet that could be swiped away.
                 if lock.locked { LockView() }
             }
         }
@@ -154,7 +154,7 @@ struct SpindMobileApp: App {
     }
 }
 
-// MARK: - Einrichtung
+// MARK: - Setup
 
 struct OnboardingView: View {
     var onFinished: () -> Void
@@ -220,9 +220,9 @@ struct OnboardingView: View {
                     }
                 }
                 .onAppear {
-                    // Vorhandenen Schlüssel wiederverwenden — NIE stillschweigend
-                    // einen neuen erzeugen, sonst wird der bereits bei Hetzner
-                    // hinterlegte öffentliche Teil wertlos.
+                    // Reuse an existing key — NEVER quietly generate a new
+                    // one, or the public half already registered at Hetzner
+                    // becomes worthless.
                     if publicLine == nil {
                         publicLine = MobileStore.existingPublicLine()
                     }
@@ -365,9 +365,9 @@ struct StatusView: View {
                 resetSection
             }
             .navigationTitle("Spind")
-            // Solange die App offen ist, wird im kurzen Takt nachgesehen.
-            // Der Timer der Hauptschleife ruht im Hintergrund von selbst —
-            // dort übernimmt das Aufwecken durch iOS.
+            // While the app is in front, it looks at short intervals.
+            // The main loop's timer rests in the background by itself —
+            // there the wake-ups from iOS take over.
             .onReceive(beat) { _ in
                 Task { await SpindDomain.refresh() }
             }
@@ -382,8 +382,8 @@ struct StatusView: View {
         }
     }
 
-    // Einzelne Abschnitte: als ein Ausdruck ist der Aufbau zu groß, der
-    // Übersetzer gibt beim Typprüfen auf.
+    // Sections one by one: as a single expression the layout is too big
+    // and the compiler gives up type-checking it.
 
     private var connectionSection: some View {
         Section("Verbindung") {
@@ -412,7 +412,7 @@ struct StatusView: View {
     private var filesSection: some View {
         Section {
             Label {
-                // Ein einzelnes Literal, damit SwiftUI das Markdown rendert.
+                // A single literal, so that SwiftUI renders the markdown.
                 Text("Deine Dateien findest du in der **Dateien-App** unter »Durchsuchen« → **Spind**. Sie laden erst beim Öffnen und belegen sonst keinen Platz.")
             } icon: {
                 Image(systemName: "folder.badge.gearshape")
@@ -464,8 +464,8 @@ struct StatusView: View {
         }
     }
 
-    /// Der laufende Upload soll auch von hier aus zu sehen sein, ohne dass
-    /// man erst hineingehen muss.
+    /// A running upload should be visible from here too, without having
+    /// to go in first.
     private var photoSubtitle: String {
         if let run = backup.run {
             return "Sichert \(run.done) von \(run.total) …"
@@ -575,7 +575,7 @@ struct StatusView: View {
     }
 }
 
-// MARK: - File-Provider-Domain
+// MARK: - File provider domain
 
 enum SpindDomain {
     static let domain: NSFileProviderDomain = {
@@ -583,10 +583,10 @@ enum SpindDomain {
             identifier: NSFileProviderDomainIdentifier("spind"),
             displayName: "Spind"
         )
-        // Spind synct keinen Papierkorb (Löschungen sichert der
-        // Versionsverlauf serverseitig). Ohne diese Deklaration fragt
-        // iOS den Trash-Container trotzdem an, kassiert jedes Mal einen
-        // Fehler — und zeigt dauerhaft das Sync-Warnzeichen.
+        // Spind syncs no trash (deletions are kept by the version history
+        // on the server). Without this declaration iOS asks for the trash
+        // container anyway, collects an error every time — and shows the
+        // sync warning badge permanently.
         if #available(iOS 18.0, *) {
             domain.supportsSyncingTrash = false
         }
@@ -596,8 +596,8 @@ enum SpindDomain {
     static func register(attempt: Int = 1) {
         NSFileProviderManager.add(domain) { error in
             appLog("Domain add (Versuch \(attempt)): \(error.map { String(describing: $0) } ?? "ok")")
-            // Direkt nach (Neu-)Installation räumt iOS alte Domains noch
-            // asynchron ab — der Add prallt dann mit EPERM dagegen.
+            // Straight after a (re)install iOS is still clearing away old
+            // domains asynchronously — the add then bounces off with EPERM.
             if error != nil, attempt < 5 {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                     register(attempt: attempt + 1)
@@ -610,23 +610,23 @@ enum SpindDomain {
         NSFileProviderManager.remove(domain) { _ in }
     }
 
-    // MARK: - Nachsehen, was sich geändert hat
+    // MARK: - Looking for what changed
 
     static let refreshTaskID = (Bundle.main.object(
         forInfoDictionaryKey: "SpindRefreshTaskID"
     ) as? String) ?? "dev.eigenhand.spind.refresh"
 
-    /// Takt, in dem die geöffnete App nachsehen lässt.
+    /// The interval at which the open app has it look.
     static let foregroundInterval: TimeInterval = 10
 
-    /// Stupst die Extension an, beim Server nachzufragen. SFTP kennt keine
-    /// Push-Nachricht: Ohne dieses Anstupsen erfährt das iPhone von einer
-    /// Löschung am Mac erst, wenn jemand den Ordner in der Dateien-App von
-    /// Hand neu lädt.
+    /// Nudges the extension to ask the server. SFTP has no push message:
+    /// without this nudge the iPhone learns of a deletion on the Mac only
+    /// when somebody reloads the folder in the Files app by hand — the
+    /// system never tells it on its own.
     static func refresh() async {
         guard let manager = NSFileProviderManager(for: domain) else { return }
-        // Die Marke sagt der Extension: Das ist eine gewollte Nachschau,
-        // nicht das System, das den Arbeitssatz durchzählt.
+        // The marker tells the extension: this is a wanted look, not the
+        // system counting through the working set.
         if let url = MobileStore.directory?
             .appendingPathComponent(SpindGroupFile.sweepRequest) {
             try? FileManager.default.createDirectory(
@@ -638,9 +638,9 @@ enum SpindDomain {
         try? await manager.signalEnumerator(for: .rootContainer)
     }
 
-    /// Fünf Minuten sind der Wunsch, keine Zusage: iOS entscheidet selbst,
-    /// wann es die App kurz aufweckt — nach Akku, Netz und danach, wie oft
-    /// die App sonst benutzt wird. Es können auch Stunden werden.
+    /// Five minutes is the wish, not a promise: iOS decides itself when
+    /// it wakes the app briefly — going by battery, network and how often
+    /// the app is used otherwise. It can turn into hours.
     static func scheduleBackgroundRefresh() {
         let request = BGAppRefreshTaskRequest(identifier: refreshTaskID)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60)
@@ -648,7 +648,7 @@ enum SpindDomain {
     }
 }
 
-/// Diagnose im Simulator: /tmp des Simulators ist das /tmp des Macs.
+/// Diagnosis in the simulator: its /tmp is the Mac's /tmp.
 func appLog(_ message: String) {
     #if targetEnvironment(simulator)
     let url = URL(fileURLWithPath: "/tmp/spind-app.log")

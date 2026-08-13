@@ -16,15 +16,15 @@
 import Foundation
 import Crypto
 
-/// Erzeugt ed25519-Schlüsselpaare im OpenSSH-Format — ohne ssh-keygen,
-/// damit es auch auf iOS funktioniert (dort gibt es keine Prozesse).
-/// Das unverschlüsselte openssh-key-v1-Format ist genau das, was
-/// Citadel als privaten Schlüssel einliest.
+/// Generates ed25519 key pairs in OpenSSH format — without ssh-keygen,
+/// so that it also works on iOS, where no process can be spawned. The
+/// unencrypted openssh-key-v1 format is exactly what Citadel reads back
+/// as a private key.
 public enum SSHKeyGen {
     public struct KeyPair: Sendable {
-        /// Kompletter Inhalt der privaten Schlüsseldatei (PEM-artig).
+        /// Complete contents of the private key file (PEM-like).
         public let privateOpenSSH: String
-        /// Eine Zeile für authorized_keys / die Hetzner Console.
+        /// A single line for authorized_keys or the Hetzner console.
         public let publicLine: String
     }
 
@@ -42,13 +42,13 @@ public enum SSHKeyGen {
         }
         func string(_ text: String) -> Data { lengthPrefixed(Data(text.utf8)) }
 
-        // Öffentlicher Schlüssel-Blob: string "ssh-ed25519" + string key
+        // Public key blob: string "ssh-ed25519" + string key
         var publicBlob = Data()
         publicBlob.append(string("ssh-ed25519"))
         publicBlob.append(lengthPrefixed(publicRaw))
 
-        // Privater Abschnitt: checkint ×2, Typ, pub, priv(64 = seed+pub),
-        // Kommentar, Padding 1,2,3,…
+        // Private section: checkint ×2, type, pub, priv (64 = seed+pub),
+        // comment, padding 1,2,3,…
         var checkBytes = Data(count: 4)
         checkBytes.withUnsafeMutableBytes { _ = SecRandomCopyBytes(kSecRandomDefault, 4, $0.baseAddress!) }
         var privateSection = Data()
@@ -74,7 +74,7 @@ public enum SSHKeyGen {
         blob.append(lengthPrefixed(privateSection))
 
         let body = blob.base64EncodedString()
-        // OpenSSH bricht nach 70 Zeichen um.
+        // OpenSSH wraps after 70 characters.
         let wrapped = stride(from: 0, to: body.count, by: 70).map { start -> Substring in
             let from = body.index(body.startIndex, offsetBy: start)
             let to = body.index(from, offsetBy: 70, limitedBy: body.endIndex) ?? body.endIndex

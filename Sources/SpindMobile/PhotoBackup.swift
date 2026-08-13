@@ -19,18 +19,18 @@ import SwiftUI
 import UIKit
 import SpindCore
 
-/// Was gesichert wird und wohin. Liegt in der App-Gruppe, damit ein
-/// App-Neustart nichts vergisst und nichts doppelt hochlädt.
+/// What gets backed up and where to. Lives in the app group so that an
+/// app restart forgets nothing and uploads nothing twice.
 struct PhotoBackupSettings: Codable {
     var enabled = false
     var folder = "Bilder"
     var layout: PhotoLayout = .yearMonth
     var includeVideos = false
     var wifiOnly = true
-    /// Aufnahmezeitpunkt des jüngsten gesicherten Objekts.
+    /// When the newest saved item was taken.
     var lastUploaded: Date?
-    /// Kennungen der zuletzt gesicherten Objekte — nur für den Grenzfall
-    /// mehrerer Aufnahmen mit demselben Zeitstempel.
+    /// Identifiers of the most recently saved items — only for the edge
+    /// case of several shots carrying the same timestamp.
     var recent: [String] = []
 
     static var url: URL? {
@@ -55,19 +55,19 @@ struct PhotoBackupSettings: Codable {
     }
 }
 
-/// Fotos vom iPhone in den Spind — einsortiert nach Aufnahmedatum.
+/// Photos from the iPhone into the Spind — filed by the date taken.
 @MainActor
 final class PhotoBackup: ObservableObject {
     static let shared = PhotoBackup()
 
-    /// Wird die App nur kurz im Hintergrund geweckt, bleibt es bei einer
-    /// Handvoll — dort ist die Zeit knapp bemessen. Vorn läuft es durch,
-    /// sonst käme die erste Sicherung einer großen Mediathek nie ans Ende.
+    /// When iOS only wakes the app briefly in the background, it stays a
+    /// handful — time is short there. In front it runs through, or the
+    /// first backup of a large library would never reach the end.
     static let batchSize = 40
 
-    /// Der Abbruch muss aus den nebenläufigen Aufgaben heraus lesbar sein,
-    /// nicht nur vom Hauptfaden — deshalb ein kleiner geteilter Schalter
-    /// statt einer Eigenschaft des Objekts.
+    /// The cancellation has to be readable from the concurrent tasks, not
+    /// only from the main thread — hence a small shared switch instead of
+    /// a property of the object.
     final class Cancellation: @unchecked Sendable {
         private let lock = NSLock()
         private var value = false
@@ -82,13 +82,13 @@ final class PhotoBackup: ObservableObject {
 
     private let cancellation = Cancellation()
 
-    /// Wie viele Übertragungen gleichzeitig laufen. Vier lasten eine
-    /// Mobilfunk- oder WLAN-Strecke gut aus, ohne die Box mit Verbindungen
-    /// zuzustellen — Hetzner begrenzt die Anzahl.
+    /// How many transfers run at the same time. Four keep a mobile or
+    /// Wi-Fi link busy without crowding the box with connections —
+    /// Hetzner caps how many there may be.
     static let parallelUploads = 4
 
-    /// Eine Aufnahme, auf das Nötigste eingedampft: PhotoKit-Objekte reisen
-    /// nicht zwischen den Aufgaben.
+    /// One shot, boiled down to the essentials: PhotoKit objects do not
+    /// travel between tasks.
     struct Item: Sendable {
         let identifier: String
         let created: Date?
@@ -100,8 +100,8 @@ final class PhotoBackup: ObservableObject {
         let error: String?
     }
 
-    /// Was sich mehrere gleichzeitige Übertragungen teilen müssen: welche
-    /// Ordner schon angelegt und welche Zielnamen schon vergeben sind.
+    /// What several concurrent transfers have to share: which folders
+    /// were created and which target names are taken.
     actor UploadCoordinator {
         private var claimed: Set<String> = []
         private var directories: Set<String> = []
@@ -112,7 +112,7 @@ final class PhotoBackup: ObservableObject {
         }
     }
 
-    /// Ein laufender Durchgang, für die Fortschrittsanzeige.
+    /// A running pass, for the progress display.
     struct Run: Equatable {
         var done = 0
         var total = 0
@@ -129,8 +129,8 @@ final class PhotoBackup: ObservableObject {
     }
     @Published private(set) var run: Run?
     @Published private(set) var status: String?
-    /// Wie viele Aufnahmen noch warten — auch ohne laufenden Durchgang, damit
-    /// man vorher weiß, was ansteht.
+    /// How many shots are still waiting — also without a running pass, so
+    /// that one knows beforehand what is ahead.
     @Published private(set) var waiting: Int?
 
     var running: Bool { run != nil }
@@ -139,7 +139,7 @@ final class PhotoBackup: ObservableObject {
         settings = PhotoBackupSettings.load()
     }
 
-    /// Zählt, was anliegt. Billig: PHFetchResult lädt nur bei Bedarf.
+    /// Counts what is due. Cheap: PHFetchResult loads only on demand.
     func countWaiting() {
         guard PHPhotoLibrary.authorizationStatus(for: .readWrite) != .notDetermined else {
             waiting = nil
@@ -148,31 +148,31 @@ final class PhotoBackup: ObservableObject {
         waiting = fetchPending().count
     }
 
-    // MARK: - Lauf
+    // MARK: - The run
 
-    /// Hält einen laufenden Durchgang an — die App wandert in den
-    /// Hintergrund, dort wäre sie ohnehin gleich eingefroren.
+    /// Stops a running pass — the app moves to the background, where it
+    /// would be frozen in a moment anyway.
     func pause() {
         cancellation.cancel()
     }
 
-    /// „Nur neue ab jetzt": Alles Vorhandene gilt als erledigt, ohne es
-    /// anzufassen. Umgekehrt (`false`) beginnt der nächste Durchgang wieder
-    /// bei der ältesten Aufnahme.
+    /// "Only new from now on": everything present counts as done without
+    /// being touched. The other way round (`false`), the next pass starts
+    /// at the oldest shot again.
     func markExisting(asDone done: Bool) {
         settings.lastUploaded = done ? Date() : nil
         settings.recent = []
         countWaiting()
     }
 
-    /// - Parameter limited: nur eine Handvoll sichern (Hintergrund-Weckruf).
+    /// - Parameter limited: save only a handful (background wake-up).
     func run(config: SpindConfig, manual: Bool = false, limited: Bool = false) async {
         guard !running, settings.enabled || manual else { return }
         cancellation.reset()
         run = Run()
         defer {
             run = nil
-            // Bildschirm darf wieder von selbst zugehen.
+            // The screen may go dark by itself again.
             UIApplication.shared.isIdleTimerDisabled = false
             countWaiting()
         }
@@ -193,25 +193,25 @@ final class PhotoBackup: ObservableObject {
             status = "Alles gesichert."
             return
         }
-        // Während eines Durchgangs vorn soll der Bildschirm nicht zugehen —
-        // im Ruhezustand friert iOS die App ein und der Upload steht.
+        // During a pass in front the screen must not go dark — in sleep
+        // iOS freezes the app and the upload stalls.
         if !limited { UIApplication.shared.isIdleTimerDisabled = true }
 
-        // Mehrere Verbindungen statt einer: Ein einzelnes Foto lastet
-        // weder Leitung noch Server aus, die meiste Zeit wartet man auf
-        // Laufzeiten hin und zurück. Der Pool hält die Verbindungen
-        // offen — der SSH-Handschlag kostet rund eine Sekunde und soll
-        // nicht pro Bild anfallen.
-        // Jede laufende Übertragung hält ihr Original als Datei im
-        // Zwischenspeicher. Bei Fotos sind das ein paar Megabyte, bei
-        // Videos schnell ein halbes Gigabyte — dann lieber weniger
-        // gleichzeitig, sonst läuft der Platz auf dem iPhone voll.
+        // Several connections instead of one: a single photo saturates
+        // neither the line nor the server, most of the time is spent
+        // waiting for round trips. The pool keeps the connections open —
+        // the SSH handshake costs about a second and should not be paid
+        // per picture.
+        // Every transfer in flight holds its original as a file in
+        // temporary storage. For photos that is a few megabytes, for
+        // videos quickly half a gigabyte — then rather fewer at once, or
+        // the space on the iPhone runs out.
         let slots = settings.includeVideos ? 2 : Self.parallelUploads
         let pool = StorageBoxConnectionPool(config: config, maxConnections: slots)
         defer { Task { await pool.drain() } }
         let coordinator = UploadCoordinator()
 
-        // Die Zustandsdatei erst am Ende schreiben, nicht pro Bild.
+        // Write the state file at the end, not per picture.
         var progress = settings
         let known = Set(progress.recent)
         let limit = limited ? Self.batchSize : Int.max
@@ -239,8 +239,8 @@ final class PhotoBackup: ObservableObject {
 
             while let outcome = await group.next() {
                 if let failure = outcome.error {
-                    // Ein einzelnes Bild darf den Lauf nicht beenden —
-                    // das nächste Mal ist es wieder dran.
+                    // A single picture must not end the pass — next time
+                    // it is up again.
                     failed += 1
                     state.failed = failed
                     status = "Ein Bild ging nicht: \(failure)"
@@ -266,7 +266,7 @@ final class PhotoBackup: ObservableObject {
         if done > 0 { await SpindDomain.refresh() }
     }
 
-    // MARK: - Auswahl
+    // MARK: - Selection
 
     private func fetchPending() -> PHFetchResult<PHAsset> {
         let options = PHFetchOptions()
@@ -283,17 +283,17 @@ final class PhotoBackup: ObservableObject {
             ))
         }
         if let last = settings.lastUploaded {
-            // >= statt >, sonst fällt ein zweites Bild aus derselben Sekunde
-            // durchs Raster; gegen Doppelungen hilft `recent`.
+            // >= rather than >, or a second picture from the same second
+            // slips through; `recent` guards against duplicates.
             conditions.append(NSPredicate(format: "creationDate >= %@", last as NSDate))
         }
         options.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: conditions)
         return PHAsset.fetchAssets(with: options)
     }
 
-    /// Stellt die Arbeitsliste zusammen. `PHAsset` selbst reist nicht
-    /// zwischen den Aufgaben — nur Kennung und Aufnahmezeitpunkt, damit sich
-    /// niemand um die Fadensicherheit von PhotoKit-Objekten sorgen muss.
+    /// Assembles the work list. `PHAsset` itself does not travel between
+    /// tasks — only the identifier and the date taken, so that nobody has
+    /// to worry about the thread safety of PhotoKit objects.
     private func collect(
         _ pending: PHFetchResult<PHAsset>, skipping known: Set<String>, limit: Int
     ) -> [Item] {
@@ -302,7 +302,7 @@ final class PhotoBackup: ObservableObject {
         while batch.count < limit, index < pending.count {
             let asset = pending.object(at: index)
             index += 1
-            // Grenzfall: gleicher Aufnahmezeitpunkt wie beim letzten Lauf.
+            // Edge case: same date taken as in the last pass.
             if known.contains(asset.localIdentifier) { continue }
             batch.append(Item(identifier: asset.localIdentifier,
                               created: asset.creationDate))
@@ -321,18 +321,18 @@ final class PhotoBackup: ObservableObject {
         }
     }
 
-    // MARK: - Übertragen
+    // MARK: - Transferring
 
-    /// Läuft **neben** dem Hauptfaden: Weder die Oberfläche noch die
-    /// Fortschrittszahlen werden hier angefasst, das Ergebnis geht als
-    /// `Outcome` zurück.
+    /// Runs **beside** the main thread: neither the interface nor the
+    /// progress numbers are touched here, the result goes back as an
+    /// `Outcome`.
     nonisolated private static func transfer(
         _ item: Item, settings: PhotoBackupSettings, config: SpindConfig,
         pool: StorageBoxConnectionPool, coordinator: UploadCoordinator
     ) async -> Outcome {
         do {
-            // Das PHAsset wird hier frisch geholt statt zwischen den
-            // Aufgaben herumgereicht.
+            // The PHAsset is fetched fresh here instead of being handed
+            // around between tasks.
             guard let asset = PHAsset.fetchAssets(
                 withLocalIdentifiers: [item.identifier], options: nil
             ).firstObject else {
@@ -372,11 +372,11 @@ final class PhotoBackup: ObservableObject {
         }
     }
 
-    /// Nie etwas überschreiben: Gibt es den Namen schon, bekommt das Bild
-    /// eine Zahl. Zwei Aufnahmen können denselben Dateinamen tragen — und
-    /// bei gleichzeitigen Übertragungen reicht ein Blick auf den Server
-    /// nicht, weil die andere Aufgabe ihre Datei noch gar nicht abgelegt
-    /// hat. Deshalb wird der Name zusätzlich beim Koordinator belegt.
+    /// Never overwrite anything: if the name exists, the picture gets a
+    /// number. Two shots can carry the same filename — and with concurrent
+    /// transfers a look at the server is not enough, because the other
+    /// task has not put its file there yet. So the name is claimed with
+    /// the coordinator as well.
     nonisolated private static func freePath(
         _ path: String, client: StorageBoxClient, coordinator: UploadCoordinator
     ) async throws -> String {
@@ -392,7 +392,7 @@ final class PhotoBackup: ObservableObject {
         return path
     }
 
-    /// Holt das Original — bei iCloud-Fotos wird es dafür nachgeladen.
+    /// Fetches the original — for iCloud photos it is downloaded first.
     nonisolated private static func export(_ asset: PHAsset) async throws -> (URL, String)? {
         let resources = PHAssetResource.assetResources(for: asset)
         let preferred: [PHAssetResourceType] = [.photo, .video, .fullSizePhoto, .fullSizeVideo]
@@ -419,7 +419,7 @@ final class PhotoBackup: ObservableObject {
         return (url, resource.originalFilename)
     }
 
-    // MARK: - Voraussetzungen
+    // MARK: - Prerequisites
 
     private func requestAccess() async -> Bool {
         let current = PHPhotoLibrary.authorizationStatus(for: .readWrite)
@@ -429,7 +429,7 @@ final class PhotoBackup: ObservableObject {
         return granted == .authorized || granted == .limited
     }
 
-    /// Mobilfunk kostet Geld und Akku — wer das nicht will, wartet auf WLAN.
+    /// Mobile data costs money and battery — whoever minds waits for Wi-Fi.
     static func onWiFi() async -> Bool {
         await withCheckedContinuation { continuation in
             let monitor = NWPathMonitor()
@@ -445,7 +445,7 @@ final class PhotoBackup: ObservableObject {
         }
     }
 
-    /// Der Pfad-Beobachter meldet mehrfach; fortgesetzt wird genau einmal.
+    /// The path monitor reports repeatedly; exactly one resume is allowed.
     private final class OneShot: @unchecked Sendable {
         private let lock = NSLock()
         private var used = false

@@ -15,22 +15,22 @@
 
 import Foundation
 
-/// Welche Fassungen bleiben und welche dürfen weg.
+/// Which versions stay and which may go.
 ///
-/// Eine Fassung ist eine vollständige Kopie — Platz sparen heißt hier also
-/// nicht komprimieren, sondern ausdünnen. Je älter, desto grober das Raster:
-/// heute jede, diesen Monat eine pro Tag, dieses Jahr eine pro Woche, davor
-/// eine pro Monat. Damit reicht der Verlauf viel weiter zurück als die
-/// bisherigen »die letzten 25« und belegt dabei weniger.
+/// A version is a complete copy, so saving space here does not mean
+/// compressing but thinning out. The older, the coarser the grid: every
+/// version from today, one per day this month, one per week this year,
+/// one per month before that. The history reaches much further back
+/// than the previous "newest twenty-five" and takes less room doing it.
 ///
-/// Jede behaltene Fassung bleibt eine gewöhnliche Datei auf dem Server.
+/// Every kept version stays an ordinary file on the server.
 public enum VersionRetention {
-    /// Innerhalb des ersten Tages bleibt alles — das ist das Zeitfenster,
-    /// in dem jemand „ich war das gerade, mach das rückgängig" denkt.
-    /// Nur ein Programm, das im Minutentakt speichert, wird gedeckelt.
+    /// Within the first day everything stays — that is the window in
+    /// which someone thinks "that was me just now, undo it". Only a
+    /// program that saves every minute runs into the cap.
     public static let burstCap = 25
-    /// Letzte Reißleine über alle Stufen: Bei einer 2-GB-Datei kostet auch
-    /// eine dünne Kette noch echten Platz.
+    /// Last line of defence across all tiers: with a 2 GB file even a
+    /// thin chain costs real space.
     public static let maxPerFile = 50
 
     private enum Tier {
@@ -46,8 +46,8 @@ public enum VersionRetention {
         }
     }
 
-    /// Ein Schlüssel je Zeitfach. Fassungen mit demselben Schlüssel sind
-    /// austauschbar — die jüngste davon bleibt.
+    /// One key per time bucket. Versions sharing a key are
+    /// interchangeable — the newest of them stays.
     private static func bucket(
         for date: Date, now: Date, index: Int, calendar: Calendar
     ) -> String {
@@ -56,7 +56,7 @@ public enum VersionRetention {
         )
         switch tier(age: now.timeIntervalSince(date)) {
         case .recent:
-            // Kein Zusammenfassen: jede Fassung ihr eigenes Fach.
+            // No bucketing: every version gets its own slot.
             return "recent-\(index)"
         case .daily:
             return "day-\(parts.year ?? 0)-\(parts.month ?? 0)-\(parts.day ?? 0)"
@@ -67,11 +67,11 @@ public enum VersionRetention {
         }
     }
 
-    /// Die Fassungen, die gelöscht werden dürfen.
+    /// The versions that may be deleted.
     ///
-    /// - Parameter versions: absteigend nach Datum, jüngste zuerst.
-    /// - Returns: eine Teilmenge von `versions`. Die jüngste Fassung ist
-    ///   **nie** dabei — solange es überhaupt eine gibt, bleibt eine übrig.
+    /// - Parameter versions: descending by date, newest first.
+    /// - Returns: a subset of `versions`. The newest version is **never**
+    ///   among them — as long as there is one at all, one is left.
     public static func expendable(
         _ versions: [FileVersion], now: Date, calendar: Calendar = .current
     ) -> [FileVersion] {
@@ -98,8 +98,8 @@ public enum VersionRetention {
             }
         }
 
-        // Reißleine: Was über die Obergrenze hinausgeht, fällt von hinten
-        // weg — die jüngsten Fassungen sind die, die jemand wirklich sucht.
+        // Last line of defence: whatever exceeds the ceiling falls off the
+        // back — the newest versions are the ones people actually look for.
         if kept.count > maxPerFile {
             drop.append(contentsOf: kept.dropFirst(maxPerFile))
         }

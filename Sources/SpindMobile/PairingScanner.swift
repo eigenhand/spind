@@ -19,7 +19,7 @@ import CoreImage
 import PhotosUI
 import SpindCore
 
-/// Kamera-Scanner für den Kopplungscode aus der Mac-App.
+/// Camera scanner for the pairing code from the Mac app.
 struct PairingScanner: UIViewControllerRepresentable {
     var onCode: (String) -> Void
 
@@ -72,7 +72,7 @@ struct PairingScanner: UIViewControllerRepresentable {
     }
 }
 
-/// Kopplung: scannen oder Screenshot des Codes aus der Fotobibliothek wählen.
+/// Pairing: scan the code, or pick a screenshot of it from the library.
 struct PairingView: View {
     var onPaired: () -> Void
     var dismiss: () -> Void
@@ -126,8 +126,8 @@ struct PairingView: View {
         }
     }
 
-    /// QR aus einem Bild lesen — für Codes, die per AirDrop oder Screenshot
-    /// aufs iPhone kommen, statt vom Bildschirm gescannt zu werden.
+    /// Read a QR from an image — for codes that arrive on the iPhone by
+    /// AirDrop or as a screenshot instead of being scanned off a screen.
     static func readQR(from data: Data) -> String? {
         guard let image = CIImage(data: data) else { return nil }
         let detector = CIDetector(

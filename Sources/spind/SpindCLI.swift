@@ -56,8 +56,8 @@ struct Setup: AsyncParsableCommand {
             host: host, port: port ?? SpindConfig.defaultPort(forHost: host), username: user,
             privateKeyPath: key, remoteRoot: remoteRoot, localRoot: localRoot
         )
-        // Server-Schlüssel anpinnen (TOFU): ab jetzt wird jeder andere
-        // Schlüssel abgewiesen.
+        // Pin the host key (TOFU): from now on any other key is refused.
+        //
         config.hostPublicKey = try? await HostKey.scan(host: host, port: config.port)
         if config.hostPublicKey == nil {
             print("⚠ Server-Schlüssel nicht abrufbar – wird beim ersten Kontakt angepinnt.")

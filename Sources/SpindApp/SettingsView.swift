@@ -35,7 +35,7 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Verbindung
+// MARK: - Connection
 
 struct ConnectionSettings: View {
     @ObservedObject var controller: SyncController
@@ -52,8 +52,8 @@ struct ConnectionSettings: View {
     @State private var publicKeyCopied = false
     @State private var excludedPaths: [String] = []
     @State private var newExclusion = ""
-    // Angepinnter Server-Schlüssel: bleibt erhalten, solange Host und Port
-    // unverändert sind; bei neuem Ziel wird er verworfen und frisch geholt.
+    // Pinned host key: kept as long as host and port are unchanged; on a
+    // new target it is discarded and fetched afresh.
     @State private var loadedHostKey: String?
     @State private var loadedEndpoint = ""
     @State private var showingEnroll = ProcessInfo.processInfo.environment["SPIND_PREVIEW_ENROLL"] != nil
@@ -105,8 +105,8 @@ struct ConnectionSettings: View {
         }
     }
 
-    /// Test und Speichern kleben am Fensterrand – sie dürfen nie aus dem
-    /// Sichtfeld scrollen (DAU-Befund: „Wo speichere ich das jetzt?").
+    /// Test and Save stick to the window edge – they must never scroll
+    /// out of sight (naive-user finding: "where do I save this now?").
     private var actionBar: some View {
         HStack {
             Button {
@@ -134,9 +134,9 @@ struct ConnectionSettings: View {
         .background(.bar)
     }
 
-    /// QR-Kopplung. Eigenes Gerät: Schlüssel ans eigene Konto hängen, voller
-    /// Zugriff. Andere Person: eigener Subaccount mit eigenem Ordner — sie
-    /// sieht nur diesen, und der Zugang ist einzeln widerrufbar.
+    /// QR pairing. Own device: hang the key on your own account, full
+    /// access. Another person: their own subaccount with their own folder
+    /// — they see only that, and the access can be revoked on its own.
     private func makePairingCode() {
         enrollBusy = true
         enrollResult = nil
@@ -182,7 +182,7 @@ struct ConnectionSettings: View {
 
     enum EnrollStage { case choose, personDetails, code, paste }
 
-    /// Eine Frage pro Bild: erst WER, dann Details, dann NUR der Code.
+    /// One question per screen: first WHO, then details, then ONLY the code.
     private var enrollSheet: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
@@ -621,7 +621,7 @@ struct ConnectionSettings: View {
     }
 }
 
-// MARK: - Teilen
+// MARK: - Sharing
 
 struct SharingSettings: View {
     @ObservedObject var controller: SyncController
@@ -832,7 +832,7 @@ struct SharingSettings: View {
     }
 }
 
-// MARK: - Allgemein
+// MARK: - General
 
 struct GeneralSettings: View {
     @ObservedObject var controller: SyncController
@@ -843,15 +843,25 @@ struct GeneralSettings: View {
 
     var body: some View {
         Form {
-            Section("Synchronisierung") {
-                Toggle("Ordner-Sync (\(controller.config?.localRoot ?? "~/Spind"))",
+            Section {
+                Toggle("Alle Dateien zusätzlich auf diesem Mac halten",
                        isOn: $controller.folderSyncEnabled)
+                if controller.folderSyncEnabled {
+                    LabeledContent("Ordner",
+                                   value: controller.config?.localRoot ?? "~/Spind")
+                }
                 Picker("Nach Änderungen auf der Box suchen", selection: $controller.pollInterval) {
                     Text("alle 15 Sekunden").tag(15)
                     Text("alle 30 Sekunden").tag(30)
                     Text("jede Minute").tag(60)
                     Text("alle 5 Minuten").tag(300)
                 }
+            } header: {
+                Text("Synchronisierung")
+            } footer: {
+                Text("Normalerweise liegen deine Dateien nur auf der Box und im Finder unter »Spind«; Platz belegen sie erst beim Öffnen. Ist der Schalter an, legt Spind zusätzlich eine vollständige Kopie im Ordner ab – praktisch für Offline-Arbeit und Backups, aber alles zählt dann doppelt.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             Section {

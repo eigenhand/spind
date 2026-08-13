@@ -22,11 +22,11 @@ import SpindCore
 /// storage box, revocable at any time.
 enum ShareManager {
     static let descriptionPrefix = "Spind-Freigabe: "
-    /// Freigaben aus der Zeit vor der Umbenennung bleiben sichtbar und
-    /// widerrufbar; neue werden nur noch mit der neuen Marke angelegt.
+    /// Shares from before the rename stay visible and revocable; new ones
+    /// are only ever created with the new marker.
     static let legacyDescriptionPrefix = "HDrive-Freigabe: "
 
-    /// Ordnerpfad aus der Subaccount-Beschreibung, alte wie neue Marke.
+    /// Folder path from the subaccount description, old marker as new.
     static func folderPath(fromDescription description: String) -> String? {
         for prefix in [descriptionPrefix, legacyDescriptionPrefix]
         where description.hasPrefix(prefix) {

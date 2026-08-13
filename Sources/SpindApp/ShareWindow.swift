@@ -255,8 +255,8 @@ struct ShareView: View {
                     .foregroundStyle(.red)
                     .fixedSize(horizontal: false, vertical: true)
                 HStack {
-                    // Sackgassen vermeiden: fehlt der API-Token, führt der
-                    // Knopf direkt dorthin, wo er hinterlegt wird.
+                    // Avoid dead ends: if the API token is missing, the
+                    // button leads straight to where it is entered.
                     if message.contains("API-Token") {
                         Button("Einstellungen öffnen") {
                             NSApp.sendAction(
@@ -316,8 +316,8 @@ struct ShareView: View {
     // MARK: - Actions
 
     private func checkExisting() async {
-        // Freigaben entstehen über die Subaccount-API der Storage Box —
-        // auf einem allgemeinen SFTP-Server gibt es diesen Mechanismus nicht.
+        // Shares are created through the storage box subaccount API — a
+        // general SFTP server has no such mechanism.
         guard controller.config?.isHetznerBox != false else {
             phase = .failed(
                 "Ordner-Freigaben gibt es nur mit einer Hetzner Storage Box. "

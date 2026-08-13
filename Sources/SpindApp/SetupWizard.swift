@@ -17,12 +17,12 @@ import SwiftUI
 import AppKit
 import SpindCore
 
-/// Geführte Ersteinrichtung.
+/// Guided first-time setup.
 ///
-/// Ohne sie scheitert jeder, der kein Terminal benutzt: Der SSH-Schlüssel
-/// muss existieren, bevor irgendetwas funktioniert, und „Wählen …" kann
-/// nur auswählen, was schon da ist. Der Assistent erzeugt ihn deshalb
-/// selbst und führt Schritt für Schritt bis zur geprüften Verbindung.
+/// Without it, anyone who does not use a terminal fails: the SSH key has
+/// to exist before anything works at all, and "Choose …" can only pick
+/// what is already there. So the assistant creates it itself and leads
+/// step by step to a tested connection.
 @MainActor
 enum SetupWizardManager {
     private static var window: NSWindow?
@@ -122,8 +122,8 @@ struct SetupWizardView: View {
         }
     }
 
-    /// Der Assistent hört nicht einfach auf: Er sagt, was jetzt da ist,
-    /// wo es wohnt und was der nächste sinnvolle Handgriff wäre.
+    /// The assistant does not simply stop: it says what exists now, where
+    /// it lives and what the next sensible move would be.
     private var doneStep: some View {
         VStack(alignment: .leading, spacing: 13) {
             Label("Eingerichtet – Spind läuft", systemImage: "checkmark.seal.fill")
@@ -234,7 +234,7 @@ struct SetupWizardView: View {
                 TextField("Adresse", text: $host,
                           prompt: Text("u123456.your-storagebox.de oder sftp.example.org"))
                     .onChange(of: host) { _, newValue in
-                        // Port-Automatik, solange niemand von Hand eingreift:
+                        // Automatic port as long as nobody intervenes:
                         // Storage Box 23, alle anderen 22.
                         if !portEdited {
                             port = SpindConfig.defaultPort(forHost:
@@ -332,7 +332,7 @@ struct SetupWizardView: View {
         }
     }
 
-    // MARK: - Aktionen
+    // MARK: - Actions
 
     private func generateKey() {
         keyBusy = true
@@ -400,7 +400,7 @@ struct SetupWizardView: View {
         }
     }
 
-    /// Fehler in Handlungsanweisungen übersetzen statt sie durchzureichen.
+    /// Translate errors into instructions instead of passing them on.
     private func hint(for error: Error) -> String {
         let text = String(describing: error).lowercased()
         if text.contains("authent") {
@@ -427,8 +427,8 @@ struct SetupWizardView: View {
             privateKeyPath: keyPath, remoteRoot: ".", localRoot: localRoot
         )
         Task {
-            // Server-Schlüssel gleich beim Einrichten anpinnen — ab jetzt
-            // wird jeder andere Schlüssel abgewiesen.
+            // Pin the host key right at setup — from now on any other
+            // key is refused.
             config.hostPublicKey = try? await HostKey.scan(
                 host: config.host, port: config.port
             )
@@ -440,7 +440,7 @@ struct SetupWizardView: View {
     }
 }
 
-/// Zeilen des Abschlussbilds: Symbol oben ausgerichtet, Text mehrzeilig.
+/// Rows of the closing screen: symbol aligned to the top, text multi-line.
 struct WizardHintLabelStyle: LabelStyle {
     func makeBody(configuration: Configuration) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: 10) {

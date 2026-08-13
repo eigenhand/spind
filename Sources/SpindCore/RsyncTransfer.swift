@@ -38,10 +38,10 @@ public enum RsyncTransfer {
     }
 
     #if os(macOS)
-    /// Bewusst NUR das System-rsync (openrsync): Homebrew-rsync ≥ 3.2.4
-    /// schützt Argumente selbst — die für openrsync nötigen Shell-Quotes
-    /// würden dort Teil des Dateinamens und jede Übertragung landete in
-    /// »'name'« statt »name«.
+    /// Deliberately ONLY the system rsync (openrsync): Homebrew rsync
+    /// ≥ 3.2.4 quotes arguments itself — the shell quotes openrsync needs
+    /// would become part of the filename there, and every transfer would
+    /// land in "'name'" instead of "name".
     public static let binaryPath: String? = ["/usr/bin/rsync"]
         .first { FileManager.default.isExecutableFile(atPath: $0) }
     #else
@@ -63,8 +63,8 @@ public enum RsyncTransfer {
         let key = (config.privateKeyPath as NSString).expandingTildeInPath
         var ssh = "ssh -p \(config.port) -i \(key) -o IdentitiesOnly=yes "
             + "-o BatchMode=yes"
-        // Denselben angepinnten Server-Schlüssel verlangen wie der
-        // SFTP-Client — sonst wäre rsync das schwächste Glied.
+        // Demand the same pinned host key as the SFTP client — otherwise
+        // rsync would be the weakest link.
         var hostsFile: URL?
         if let pinned = config.hostPublicKey {
             let entry = config.port == 22

@@ -47,7 +47,7 @@ public enum HostKey {
             let lines = String(decoding: data, as: UTF8.self)
                 .split(separator: "\n")
                 .filter { !$0.hasPrefix("#") }
-            // "host ssh-ed25519 AAAA…" → Schlüsseltyp + Material, Host weg.
+            // "host ssh-ed25519 AAAA…" → keep type and material, drop host.
             let keys = lines.compactMap { line -> String? in
                 let parts = line.split(separator: " ", maxSplits: 2)
                 guard parts.count >= 3 else { return nil }

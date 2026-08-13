@@ -16,10 +16,10 @@
 import Foundation
 import SpindCore
 
-/// Zugang für eine andere Person: ein eigener Storage-Box-Subaccount mit
-/// eigenem Verzeichnis und eigenem Schlüssel. Anders als beim eigenen
-/// Zweitgerät sieht die Person nur diesen einen Ordner — und der Zugang
-/// lässt sich jederzeit einzeln widerrufen, ohne eigene Geräte zu stören.
+/// Access for another person: a storage box subaccount of their own,
+/// with its own directory and its own key. Unlike a second device of
+/// your own, the person sees only this one folder — and the access can
+/// be revoked on its own at any time, without disturbing your devices.
 enum PersonEnrollment {
     static let descriptionPrefix = "Spind-Zugang: "
 
@@ -40,8 +40,8 @@ enum PersonEnrollment {
         }
     }
 
-    /// Legt Subaccount + Ordner an, hinterlegt den Schlüssel im Zuhause des
-    /// Subaccounts und liefert den fertigen Kopplungscode.
+    /// Creates the subaccount and folder, puts the key into the
+    /// subaccount's home and returns the finished pairing code.
     static func createAccess(
         folder: String, label: String, readonly: Bool,
         pair: SSHKeyGen.KeyPair, config: SpindConfig
@@ -49,8 +49,8 @@ enum PersonEnrollment {
         guard config.isHetznerBox else { throw PersonError.notAStorageBox }
         let relative = folder.trimmingCharacters(in: CharacterSet(charactersIn: "/ "))
 
-        // 1. Ordner sicherstellen und Schlüssel dort hinterlegen — der
-        //    Subaccount landet beim Login genau darin.
+        // 1. Make sure the folder exists and put the key there — the
+        //    subaccount lands exactly inside it on login.
         let client = StorageBoxClient(config: config)
         try await client.connect()
         defer { Task { await client.disconnect() } }
@@ -59,7 +59,7 @@ enum PersonEnrollment {
         let remoteFolder = root.isEmpty ? relative : root + "/" + relative
         try await client.run("mkdir -p -- \(StorageBoxClient.quote(remoteFolder))")
 
-        // 2. Subaccount mit genau diesem Zuhause anlegen.
+        // 2. Create the subaccount with precisely that home.
         let api = try HetznerAPI()
         let box = try await api.findBox(forUser: config.username)
         let home = box.username + "/" + relative
@@ -70,7 +70,7 @@ enum PersonEnrollment {
             description: description, readonly: readonly, sshEnabled: true
         )
 
-        // 3. Auf das Erscheinen warten (Anlage ist asynchron).
+        // 3. Wait for it to appear (creation is asynchronous).
         var created: HetznerAPI.Subaccount?
         for _ in 0..<20 {
             try? await Task.sleep(for: .seconds(3))
@@ -80,7 +80,7 @@ enum PersonEnrollment {
         }
         guard let account = created else { throw PersonError.notReady }
 
-        // 4. Schlüssel in das Zuhause des Subaccounts schreiben.
+        // 4. Write the key into the subaccount's home.
         var keyConfig = config
         keyConfig.remoteRoot = remoteFolder
         let keyClient = StorageBoxClient(config: keyConfig)

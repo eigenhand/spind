@@ -15,10 +15,10 @@
 
 import Foundation
 
-/// „Weiteres Gerät verbinden": ein bereits verbundenes Gerät hängt den
-/// öffentlichen Schlüssel eines neuen Geräts an die authorized_keys des
-/// Kontos an. Die Hetzner Console kann Schlüssel nur beim Anlegen einer
-/// Box setzen — dieser Weg funktioniert jederzeit, auf jedem Server.
+/// "Connect another device": a device that is already paired appends
+/// the public key of a new one to the account's authorized_keys. The
+/// Hetzner console can only set keys while a box is being created —
+/// this way works at any time, on any server.
 public enum DeviceEnrollment {
     public enum EnrollmentError: LocalizedError {
         case invalidKey
@@ -34,7 +34,7 @@ public enum DeviceEnrollment {
         "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521",
     ]
 
-    /// Prüft und normalisiert eine authorized_keys-Zeile.
+    /// Validates and normalises an authorized_keys line.
     public static func validated(_ line: String) throws -> String {
         let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
         let parts = trimmed.split(separator: " ").map(String.init)
@@ -45,12 +45,12 @@ public enum DeviceEnrollment {
         return trimmed
     }
 
-    /// Hängt den Schlüssel an `.ssh/authorized_keys` des verbundenen Kontos
-    /// an. Idempotent: existiert das Schlüsselmaterial schon, passiert
-    /// nichts. Gibt true zurück, wenn der Schlüssel neu hinzukam.
-    /// - Parameter home: Zuhause, in dessen `.ssh` geschrieben wird.
-    ///   Standard ist das Zuhause des verbundenen Kontos; für einen frisch
-    ///   angelegten Subaccount steht hier dessen Ordner.
+    /// Appends the key to `.ssh/authorized_keys` of the connected
+    /// account. Idempotent: if the key material is already there,
+    /// nothing happens. Returns true when the key was newly added.
+    /// - Parameter home: the home whose `.ssh` is written to. Defaults
+    ///   to the connected account's home; for a freshly created
+    ///   subaccount this is its folder.
     @discardableResult
     public static func addAuthorizedKey(
         _ line: String, client: StorageBoxClient, home: String = ""
@@ -84,7 +84,7 @@ public enum DeviceEnrollment {
         try await client.run("mkdir -p -- " + StorageBoxClient.quote(sshDir))
         try await client.run("chmod 700 -- " + StorageBoxClient.quote(sshDir))
         try await client.upload(temporary, to: keysPath)
-        // sshd verweigert zu offene authorized_keys — Rechte festziehen.
+        // sshd refuses authorized_keys that are too permissive.
         try await client.run("chmod 600 -- " + StorageBoxClient.quote(keysPath))
         return true
     }

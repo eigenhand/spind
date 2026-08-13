@@ -97,9 +97,9 @@ public final class MetadataStore {
         _ = try dbQueue.write { try FileState.deleteOne($0, key: path) }
     }
 
-    /// Entfernt einen Ordner samt aller Einträge darunter. Ohne das bleiben
-    /// verwaiste Zeilen zurück, die im nächsten Lauf Löschungen auf der
-    /// Gegenseite auslösen.
+    /// Removes a folder and every entry below it. Without this, orphaned
+    /// rows stay behind and make the next run delete their counterparts
+    /// on the other side.
     public func deleteSubtree(path: String) throws {
         try dbQueue.write { db in
             try db.execute(
@@ -109,11 +109,11 @@ public final class MetadataStore {
         }
     }
 
-    /// Der Basiszustand gilt nur für genau eine Kombination aus Box,
-    /// Remote- und lokalem Ordner. Ändert sich einer davon, ist der alte
-    /// Zustand bedeutungslos — er darf dann **nicht** als „alles gelöscht"
-    /// gedeutet werden.
-    /// - Returns: true, wenn der Zustand wegen eines Wechsels verworfen wurde.
+    /// The base state is valid for exactly one combination of box, remote
+    /// root and local root. If any of them changes, the old state is
+    /// meaningless — and must **not** be read as "everything was deleted".
+    ///
+    /// - Returns: true when the state was discarded because of a switch.
     @discardableResult
     public func resetIfScopeChanged(fingerprint: String) throws -> Bool {
         try dbQueue.write { db in
@@ -132,8 +132,8 @@ public final class MetadataStore {
         }
     }
 
-    /// Rein lesende Variante für Probeläufe: würde der nächste echte Lauf
-    /// den Basiszustand verwerfen?
+    /// Read-only variant for dry runs: would the next real run discard
+    /// the base state?
     public func scopeChanged(fingerprint: String) throws -> Bool {
         try dbQueue.read { db in
             let stored = try String.fetchOne(

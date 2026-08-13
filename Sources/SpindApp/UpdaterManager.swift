@@ -18,12 +18,12 @@ import Foundation
 import Sparkle
 #endif
 
-/// Automatische Updates über Sparkle. Der Appcast liegt als Datei beim
-/// jeweils neuesten GitHub-Release (SUFeedURL in der Info.plist), jede
-/// DMG ist mit dem EdDSA-Schlüssel signiert (SUPublicEDKey).
+/// Automatic updates through Sparkle. The appcast sits as a file with
+/// the newest GitHub release (SUFeedURL in the Info.plist), every DMG is
+/// signed with the EdDSA key (SUPublicEDKey).
 ///
-/// Sparkle hängt nur am Xcode-Projekt (project.yml); beim reinen
-/// SPM-Build (swift build/test) läuft ein No-op-Ersatz.
+/// Sparkle hangs off the Xcode project (project.yml) only; a plain SPM
+/// build (swift build/test) runs a no-op stand-in.
 @MainActor
 final class UpdaterManager {
     static let shared = UpdaterManager()
@@ -46,6 +46,6 @@ final class UpdaterManager {
     func checkForUpdates() {}
     #endif
 
-    /// Startet die Hintergrund-Prüfung — einmal beim App-Start aufrufen.
+    /// Starts the background check — call once at app launch.
     func start() {}
 }

@@ -79,9 +79,9 @@ public final class StorageBoxClient {
             throw StorageBoxError.privateKeyUnreadable(keyPath)
         }
 
-        // Angepinnter Server-Schlüssel (TOFU): einmal gesehen, immer
-        // verlangt. Ohne Pin (Erstkontakt, alte Configs) wird der erste
-        // Kontakt akzeptiert; die App holt den Schlüssel dann nach.
+        // Pinned host key (TOFU): seen once, demanded ever after. Without
+        // a pin (first contact, older configs) the first contact is
+        // accepted; the app fetches and stores the key afterwards.
         let validator: SSHHostKeyValidator
         if let pinned = config.hostPublicKey,
            let parsed = try? NIOSSHPublicKey(openSSHPublicKey: pinned) {
@@ -208,10 +208,10 @@ public final class StorageBoxClient {
         let totalSize = (try? FileManager.default.attributesOfItem(atPath: localURL.path)[.size] as? UInt64) ?? 0
         let handle = try FileHandle(forReadingFrom: localURL)
         defer { try? handle.close() }
-        // Nicht direkt in die Zieldatei schreiben: .truncate kürzt sie
-        // sofort, und ein Abbruch (Netz weg, Box voll) hinterlässt eine
-        // kaputte Datei. Stattdessen daneben schreiben und erst am Ende
-        // serverseitig an den Platz ziehen.
+        // Do not write straight into the target file: .truncate empties it
+        // immediately, and an interruption (network gone, box full) leaves
+        // a broken file behind. Write beside it instead and move it into
+        // place on the server at the very end.
         let temporaryPath = remotePath + ".spind-upload-tmp"
         let file = try await sftp.openFile(
             filePath: temporaryPath,
@@ -226,8 +226,8 @@ public final class StorageBoxClient {
                 progress?(offset, totalSize)
             }
             try await file.close()
-            // mv ist auf dem Server ein atomarer rename — entweder die alte
-            // oder die neue Fassung, nie eine halbe.
+            // On the server mv is an atomic rename — either the old or the
+            // new version, never half of one.
             try await run("mv -- \(Self.quote(temporaryPath)) \(Self.quote(remotePath))")
         } catch {
             try? await file.close()

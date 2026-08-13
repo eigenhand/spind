@@ -75,11 +75,11 @@ struct StorageOptimizer {
         return result
     }
 
-    /// Sammelt die Freigabe-Kandidaten ein.
+    /// Collects the candidates for eviction.
     ///
-    /// Bewusst synchron: Ein Verzeichnis-Enumerator darf aus einem
-    /// asynchronen Zusammenhang nicht gelesen werden — in Swift 6 ist das
-    /// ein Fehler, nicht bloß eine Warnung.
+    /// Deliberately synchronous: a directory enumerator must not be read
+    /// from an asynchronous context — in Swift 6 that is an error, not
+    /// merely a warning.
     private static func candidates(
         root: URL, cutoff: Date
     ) -> [(relative: String, size: UInt64)] {

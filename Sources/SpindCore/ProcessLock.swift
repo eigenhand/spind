@@ -15,18 +15,17 @@
 
 import Foundation
 
-/// Exklusive Sperre über eine Datei, damit nie zwei Spind-Prozesse
-/// gleichzeitig synchronisieren.
+/// An exclusive lock held on a file, so that two Spind processes never
+/// sync at the same time.
 ///
-/// Ohne sie können Menüleisten-App und `spind watch` (bzw. zwei manuell
-/// gestartete Instanzen) aus je eigenen, veralteten Scans planen — die
-/// eine lädt hoch, während die andere die alte Fassung herunterlädt.
-/// Die Sperre wird vom Betriebssystem gehalten und fällt beim Beenden
-/// des Prozesses automatisch weg, auch bei einem Absturz.
+/// Without it the menu bar app and `spind watch` (or two hand-started
+/// instances) plan from their own stale scans — one uploads while the
+/// other downloads the older copy. The lock is held by the operating
+/// system and is released when the process ends, including a crash.
 public final class ProcessLock {
     private let descriptor: Int32
 
-    /// Gibt nil zurück, wenn bereits ein anderer Prozess die Sperre hält.
+    /// Returns nil when another process already holds the lock.
     public init?(path: String) {
         try? FileManager.default.createDirectory(
             at: URL(fileURLWithPath: path).deletingLastPathComponent(),

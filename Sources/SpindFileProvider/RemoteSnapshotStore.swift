@@ -17,13 +17,13 @@ import CryptoKit
 import Foundation
 import SpindCore
 
-/// Der zuletzt gesehene Stand eines Ordners auf dem Server.
+/// The state of a folder as it was last seen on the server.
 ///
-/// SFTP hat keinen Benachrichtigungs-Kanal: Der Server meldet von sich aus
-/// nie, dass anderswo etwas gelöscht wurde. Ohne einen gespeicherten
-/// Vergleichspunkt kann die Extension auf die Frage „was hat sich geändert?"
-/// nur „nichts" antworten — und die Dateien-App zeigt Gelöschtes für immer
-/// weiter an. Dieser Speicher ist der Vergleichspunkt.
+/// SFTP has no notification channel: the server never says by itself
+/// that something was deleted elsewhere. Without a stored reference
+/// point the extension can only answer "nothing" to the question "what
+/// changed?" — and the Files app goes on showing deleted items forever.
+/// This store is that reference point.
 actor RemoteSnapshotStore {
     static let shared = RemoteSnapshotStore()
 
@@ -46,7 +46,7 @@ actor RemoteSnapshotStore {
     private var lastSweep: Double = 0
     private var sweeping = false
 
-    // MARK: - Ablage in der App-Gruppe
+    // MARK: - Storage in the app group
 
     private static var directoryURL: URL? {
         FileManager.default.containerURL(
@@ -54,8 +54,8 @@ actor RemoteSnapshotStore {
         )?.appendingPathComponent("spind/enum", isDirectory: true)
     }
 
-    /// Pfade taugen nicht als Dateinamen (Schrägstriche, Länge, Groß- und
-    /// Kleinschreibung) — der Hash schon.
+    /// Paths make poor filenames (slashes, length, upper and lower case) —
+    /// the hash does not.
     private static func fileURL(for path: String) -> URL? {
         let digest = SHA256.hash(data: Data(path.utf8))
             .map { String(format: "%02x", $0) }.joined()
@@ -97,15 +97,15 @@ actor RemoteSnapshotStore {
                 result[snapshot.path] = snapshot
             }
         }
-        // Der Zwischenspeicher ist immer der frischere Stand.
+        // The cache always holds the fresher state.
         for (path, snapshot) in cache { result[path] = snapshot }
         return Array(result.values)
     }
 
-    // MARK: - Stand merken und vergleichen
+    // MARK: - Remembering and comparing
 
-    /// Übernimmt einen Stand, ohne ihn als Änderung zu melden — für die
-    /// vollständige Auflistung, die selbst der neue Vergleichspunkt ist.
+    /// Takes over a state without reporting it as a change — for the full
+    /// listing, which is itself the new reference point.
     func record(_ entries: [String: Entry], in directory: String) {
         var snapshot = self.snapshot(for: directory)
             ?? Snapshot(path: directory, anchor: 1, lastSeen: 0, entries: [:])
@@ -115,9 +115,9 @@ actor RemoteSnapshotStore {
         persist(snapshot)
     }
 
-    /// Vergleicht eine frische Auflistung mit dem gemerkten Stand und
-    /// übernimmt sie. Nur mit einer **erfolgreichen** Auflistung aufrufen:
-    /// Was hier fehlt, gilt als gelöscht.
+    /// Compares a fresh listing against the remembered state and adopts
+    /// it. Only call this with a **successful** listing: whatever is
+    /// missing here counts as deleted.
     func diff(_ entries: [String: Entry], in directory: String) -> Change {
         let previous = snapshot(for: directory)
         let old = previous?.entries ?? [:]
@@ -135,8 +135,8 @@ actor RemoteSnapshotStore {
         snapshot.lastSeen = Date().timeIntervalSince1970
         persist(snapshot)
 
-        // Ein verschwundener Ordner nimmt die Stände darunter mit, sonst
-        // meldet ein späterer Durchlauf dessen Inhalt noch einmal.
+        // A folder that vanished takes the states below it along, or a
+        // later round would report its content all over again.
         for path in change.deleted where old[path]?.isDirectory == true {
             forgetSubtree(path)
         }
@@ -159,9 +159,9 @@ actor RemoteSnapshotStore {
         }
     }
 
-    /// Ordner, die die Dateien-App schon einmal gesehen hat — nur die
-    /// müssen nachgeprüft werden. Am längsten nicht geprüfte zuerst, damit
-    /// bei begrenzter Zeit reihum jeder drankommt statt immer dieselben.
+    /// Folders the Files app has seen at least once — only those need
+    /// checking. Longest unchecked first, so that with limited time
+    /// everyone gets a turn instead of always the same ones.
     func directoriesToRecheck(limit: Int = 25) -> [String] {
         allSnapshots()
             .sorted { $0.lastSeen < $1.lastSeen }
@@ -169,14 +169,14 @@ actor RemoteSnapshotStore {
             .map(\.path)
     }
 
-    /// Bremse für den Nachprüf-Durchlauf: Der Arbeitssatz wird oft
-    /// abgefragt, der Server soll davon nichts merken.
-    /// - Parameter force: Die App hat ausdrücklich um eine Nachschau
-    ///   gebeten (geöffnete App, Knopf) — dann zählt nur, dass nicht schon
-    ///   ein Durchlauf läuft.
+    /// The throttle for the re-check round: the working set is queried
+    /// often, and the server should not notice.
+    /// - Parameter force: the app asked for a look explicitly (open app,
+    ///   button) — then all that counts is that no round is already
+    ///   running.
     func beginSweep(minimumInterval: Double, force: Bool) -> Bool {
-        // Zwei Durchläufe gleichzeitig wären doppelte Serverlast und
-        // doppelte Meldungen — bei kurzem Takt sonst der Normalfall.
+        // Two rounds at once would be double the server load and double
+        // the reports — at a short interval otherwise the normal case.
         guard !sweeping else { return false }
         let now = Date().timeIntervalSince1970
         guard force || now - lastSweep >= minimumInterval else { return false }

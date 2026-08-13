@@ -68,7 +68,7 @@ public enum SyncError: LocalizedError, CustomStringConvertible {
         }
     }
 
-    /// Ohne das zeigt die Oberfläche „(SpindCore.SyncError error 3.)".
+    /// Without this the interface shows "(SpindCore.SyncError error 3.)".
     public var errorDescription: String? { description }
 }
 
@@ -151,9 +151,9 @@ public final class SyncEngine {
     // MARK: - Scanning
 
     public func scanLocal(createIfMissing: Bool = true) throws -> [String: LocalItem] {
-        // Symlinks auflösen: der Enumerator liefert standardisierte Pfade
-        // (/tmp → /private/tmp). Ohne diesen Schritt passt der Präfix nicht
-        // und es entstehen Müllschlüssel, die zu Löschungen führen.
+        // Resolve symlinks: the enumerator hands out standardised paths
+        // (/tmp → /private/tmp). Without this step the prefix does not
+        // match and junk keys appear, which lead to deletions.
         var root = localRoot.standardizedFileURL
         var isDirectory: ObjCBool = false
         if FileManager.default.fileExists(atPath: root.path, isDirectory: &isDirectory) {
@@ -164,15 +164,15 @@ public final class SyncEngine {
                 throw SyncError.localRootUnusable(localRoot.path)
             }
         } else if !createIfMissing {
-            // Probelauf: nichts anfassen, leerer Ordner ist die ehrliche Sicht.
+            // Dry run: touch nothing, an empty folder is the honest view.
             return [:]
         } else {
-            // Der Ordner fehlt. Ihn stillschweigend neu anzulegen ist doppelt
-            // schädlich, sobald schon einmal abgeglichen wurde: der Abgleich
-            // sähe lauter Löschungen, und der leere Ordner steht der
-            // naheliegenden Reparatur im Weg — ein „mv AlterName RichtigerName"
-            // schiebt den Ordner dann *hinein* statt an seine Stelle, und alles
-            // liegt eine Ebene zu tief.
+            // The folder is gone. Recreating it silently is doubly harmful
+            // once a sync has happened: the comparison would see nothing
+            // but deletions, and the empty folder stands in the way of the
+            // obvious repair — a "mv OldName RightName" then moves the
+            // folder *into* it instead of onto its place, and everything
+            // ends up one level too deep.
             let known = (try? store.allStates().count) ?? 0
             guard known == 0 else { throw SyncError.localRootMissing(localRoot.path) }
             try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
@@ -191,9 +191,9 @@ public final class SyncEngine {
         let prefix = root.path.hasSuffix("/") ? root.path : root.path + "/"
         for case let url as URL in enumerator {
             let values = try url.resourceValues(forKeys: Set(keys))
-            // Symlinks überspringen: Größe und Änderungszeit beziehen sich
-            // auf den Link, der Inhalt käme aber vom Ziel — das führt zu
-            // stillen Nicht-Übertragungen.
+            // Skip symlinks: size and modification time describe the link,
+            // while the content would come from the target — that leads to
+            // silent non-transfers.
             if values.isSymbolicLink == true {
                 if values.isDirectory != true { enumerator.skipDescendants() }
                 continue
@@ -217,10 +217,10 @@ public final class SyncEngine {
                 modTime: values.contentModificationDate?.timeIntervalSince1970 ?? 0
             )
         }
-        // Der Fehlerbehandler des Enumerators bricht den Durchlauf ab. Ohne
-        // diese Prüfung käme eine halbe Liste zurück und alles, was nicht
-        // mehr gelesen wurde, sähe aus wie gelöscht — der Abgleich würde es
-        // auf dem Server hinterherlöschen.
+        // The enumerator's error handler ends the walk. Without this check
+        // a half list would come back, and everything that was no longer
+        // read would look deleted — the comparison would go on to delete it
+        // on the server.
         if let scanFailure {
             throw SyncError.localScanFailed(scanFailure.localizedDescription)
         }
@@ -237,9 +237,9 @@ public final class SyncEngine {
         let entries = try await client.listDirectory(path)
         for entry in entries {
             if ignoredNames.contains(entry.name) || entry.name.hasPrefix(".") { continue }
-            // Reste abgebrochener Uploads sind keine echten Dateien — nicht
-            // herunterladen, sondern nach einem Tag serverseitig wegräumen
-            // (ein frischer könnte zu einem gerade laufenden Upload gehören).
+            // Leftovers of aborted uploads are not real files — do not
+            // download them, clear them out server-side after a day (a
+            // fresh one may belong to an upload that is still running).
             if entry.name.hasSuffix(".spind-upload-tmp") {
                 let age = entry.modificationDate.map { Date().timeIntervalSince($0) } ?? 0
                 if age > 86_400 {
@@ -289,9 +289,9 @@ public final class SyncEngine {
         }
         for newPath in locallyAppeared {
             guard let item = local[newPath] else { continue }
-            // Zusätzlich zum Dateinamen vergleichen: Größe und Zeitstempel
-            // allein paaren sonst zufällig gleich große Dateien (entpackte
-            // Archive, cp -p) und benennen auf der Box die falsche um.
+            // Compare the filename as well: size and timestamp alone would
+            // pair up coincidentally equal files (unpacked archives, cp -p)
+            // and rename the wrong one on the box.
             let name = (newPath as NSString).lastPathComponent
             let matches = locallyVanished.filter {
                 !consumed.contains($0)
@@ -342,10 +342,10 @@ public final class SyncEngine {
                 case (.some, .none, .some): actions.append(.deleteLocal(path))
                 case (.none, .some, .some): actions.append(.deleteRemote(path))
                 case (.some, .some, .none):
-                    // Beide Seiten haben den Ordner, die Basis kennt ihn noch
-                    // nicht (Erstlauf, Wurzelwechsel, aufgehobener Ausschluss):
-                    // übernehmen — sonst kennt die Basis ihn nie und eine
-                    // spätere Löschung kommt als Wiederbelebung zurück.
+                    // Both sides have the folder, the base does not know it
+                    // yet (first run, root change, lifted exclusion): adopt
+                    // it — otherwise the base never learns of it and a later
+                    // deletion comes back as a resurrection.
                     try? store.upsert(FileState(
                         path: path, isDirectory: true,
                         lastSyncedAt: Date().timeIntervalSince1970
@@ -436,20 +436,20 @@ public final class SyncEngine {
 
     // MARK: - Execution
 
-    /// Erlaubt einmalig eine ungewöhnlich große Löschaktion.
+    /// Allows one unusually large deletion, just this once.
     public var allowBulkDeletions = false
 
-    /// Box + Remote-Ordner + lokaler Ordner. Ändert sich davon etwas,
-    /// verliert der gespeicherte Basiszustand seine Bedeutung.
+    /// box + remote folder + local folder. If any of them changes, the
+    /// stored base state loses its meaning.
     private var scopeFingerprint: String {
         let root = (config.localRoot as NSString).expandingTildeInPath
         return "\(config.host)|\(config.username)|\(config.remoteRoot)|\(root)"
     }
 
     public func sync(dryRun: Bool = false) async throws -> [SyncAction] {
-        // Ein Probelauf liest nur: er verwirft weder den Basiszustand noch
-        // legt er Ordner an — er rechnet aber so, wie es der echte Lauf
-        // nach einem Scope-Wechsel täte (mit leerer Basis).
+        // A dry run only reads: it discards no base state and creates no
+        // folders — but it does calculate the way the real run would after
+        // a change of scope (with an empty base).
         let scopeChanged = dryRun
             ? try store.scopeChanged(fingerprint: scopeFingerprint)
             : try store.resetIfScopeChanged(fingerprint: scopeFingerprint)
@@ -460,19 +460,19 @@ public final class SyncEngine {
         var remote = try await scanRemote()
         var base = dryRun && scopeChanged ? [:] : try store.allStates()
 
-        // Die Box unterscheidet Groß-/Kleinschreibung, APFS meist nicht:
-        // »Readme.txt« und »readme.txt« wären lokal EINE Datei und würden
-        // einander abwechselnd überschreiben. Solche Pfade werden komplett
-        // eingefroren, bis eine Seite umbenannt ist.
+        // The box distinguishes upper and lower case, APFS usually does
+        // not: "Readme.txt" and "readme.txt" would be ONE file locally and
+        // would overwrite each other in turn. Such paths are frozen
+        // entirely until one side is renamed.
         let collisions = Self.caseCollisions(local: local, remote: remote)
         if !collisions.isEmpty {
             emit("⚠ Nicht übertragen (Namen unterscheiden sich nur in Groß-/"
                  + "Kleinschreibung, bitte eine Seite umbenennen): "
                  + collisions.sorted().joined(separator: ", "))
         }
-        // Gleicher Pfad, hier Ordner, dort Datei: jede Übertragung müsste
-        // die eine Form löschen, um die andere hinzuschreiben. Auch das
-        // wird eingefroren, bis eine Seite umbenannt oder entfernt ist.
+        // Same path, a folder here and a file there: any transfer would
+        // have to delete one form to write the other. That is frozen too,
+        // until one side is renamed or removed.
         let typeClashes = Self.typeConflicts(local: local, remote: remote)
         if !typeClashes.isEmpty {
             emit("⚠ Nicht übertragen (hier Ordner, dort Datei – bitte eine "
@@ -495,9 +495,9 @@ public final class SyncEngine {
 
         if dryRun { return actions }
 
-        // Ein Fehler darf nicht den Rest der Liste verhindern — sonst bleibt
-        // der Sync dauerhaft an derselben Stelle stehen und Downloads, die
-        // Daten hereinholen würden, laufen nie.
+        // One error must not hold up the rest of the list — otherwise the
+        // sync stops at the same place forever and downloads that would
+        // bring data in never run.
         var failures: [(SyncAction, Error)] = []
         for action in actions {
             do {
@@ -519,9 +519,9 @@ public final class SyncEngine {
         }
     }
 
-    /// Pfade, die sich nur in der Groß-/Kleinschreibung unterscheiden —
-    /// lokal (APFS, meist case-insensitiv) fielen sie zusammen. Intern
-    /// statt privat, damit die Tests sie direkt prüfen können.
+    /// Paths that differ only in case — locally (APFS, usually
+    /// case-insensitive) they would collapse into one. Internal rather
+    /// than private so the tests can check them directly.
     static func caseCollisions(
         local: [String: LocalItem], remote: [String: RemoteItem]
     ) -> Set<String> {
@@ -532,8 +532,8 @@ public final class SyncEngine {
         return Set(byFold.values.filter { $0.count > 1 }.flatMap { $0 })
     }
 
-    /// Pfade, die auf einer Seite Ordner und auf der anderen Datei sind.
-    /// Intern statt privat, damit die Tests sie direkt prüfen können.
+    /// Paths that are a folder on one side and a file on the other.
+    /// Internal rather than private so the tests can check them directly.
     static func typeConflicts(
         local: [String: LocalItem], remote: [String: RemoteItem]
     ) -> Set<String> {
@@ -546,9 +546,9 @@ public final class SyncEngine {
         return conflicts
     }
 
-    /// Fängt die Fälle ab, in denen ein Scan fälschlich leer ist — ein
-    /// verschobener Sync-Ordner oder ein leeres Remote-Listing würden sonst
-    /// die jeweils andere Seite komplett löschen.
+    /// Catches the cases where a scan is wrongly empty — a sync folder
+    /// that was moved away, or an empty remote listing, would otherwise
+    /// delete the other side completely.
     private func checkPlausibility(
         local: [String: LocalItem], remote: [String: RemoteItem], base: [String: FileState]
     ) throws {
@@ -561,7 +561,7 @@ public final class SyncEngine {
         }
     }
 
-    // Intern statt privat, damit die Tests die Bremse direkt ansteuern können.
+    // Internal rather than private so the tests can drive the brake.
     func checkDeletionVolume(_ actions: [SyncAction], known: Int) throws {
         guard !allowBulkDeletions, known > 0 else { return }
         let deletions = actions.filter {
@@ -602,8 +602,8 @@ public final class SyncEngine {
             let localSize = local[path]?.size ?? 0
             // Preserve what is about to be overwritten (server-side copy).
             if remote[path] != nil {
-                // Wirft, wenn die Sicherung scheitert — dann wird bewusst
-                // nicht überschrieben.
+                // Throws when the snapshot fails — nothing is overwritten
+                // then, deliberately.
                 try await VersionStore.snapshot(
                     relativePath: path, remotePath: remotePath,
                     client: client, config: config
@@ -686,8 +686,8 @@ public final class SyncEngine {
             emit("✕ lokal: \(path)")
             let url = resolvedLocalURL(path)
             if FileManager.default.fileExists(atPath: url.path) {
-                // Papierkorb statt endgültig: lokal gibt es keinen
-                // Versionsverlauf, der einen Fehler auffangen könnte.
+                // Trash rather than final: locally there is no version
+                // history that could catch a mistake.
                 if (try? FileManager.default.trashItem(at: url, resultingItemURL: nil)) == nil {
                     try FileManager.default.removeItem(at: url)
                 }

@@ -17,9 +17,9 @@ import QuickLook
 import SwiftUI
 import SpindCore
 
-/// Papierkorb und Versionsverlauf am iPhone. Beides liegt auf dem Server:
-/// Was hier auftaucht, hängt nicht davon ab, ob dieses Gerät die Datei je
-/// geladen hat.
+/// Trash and version history on the iPhone. Both live on the server:
+/// what shows up here does not depend on whether this device ever
+/// downloaded the file.
 enum Recovery {
     static func withClient<T>(
         _ config: SpindConfig,
@@ -46,7 +46,7 @@ enum Recovery {
     }
 }
 
-// MARK: - Papierkorb
+// MARK: - Trash
 
 struct TrashView: View {
     let config: SpindConfig
@@ -168,7 +168,7 @@ struct TrashView: View {
                     client: client, config: config
                 )
             }
-            // Damit die Datei sofort wieder in der Dateien-App steht.
+            // So the file is back in the Files app right away.
             await SpindDomain.refresh()
             message = "»\(name(of: file.relativePath))« ist wieder da."
             await load()
@@ -178,7 +178,7 @@ struct TrashView: View {
     }
 }
 
-// MARK: - Versionsverlauf einer Datei
+// MARK: - Version history of one file
 
 struct VersionsView: View {
     let config: SpindConfig
@@ -280,8 +280,8 @@ struct VersionsView: View {
         loading = false
     }
 
-    /// Lädt die Fassung in eine Vorschau — unter ihrem echten Namen, sonst
-    /// erkennt die Vorschau den Dateityp nicht.
+    /// Downloads the version for a preview — under its real name, or the
+    /// preview cannot tell what kind of file it is.
     private func open(_ version: FileVersion) async {
         busy = version.id
         defer { busy = nil }
@@ -321,10 +321,10 @@ struct VersionsView: View {
     }
 }
 
-// MARK: - Datei für den Verlauf auswählen
+// MARK: - Picking a file for the history
 
-/// Ein schlichter Blick auf den Server, nur um eine Datei auszuwählen.
-/// Zum Arbeiten mit Dateien ist die Dateien-App da.
+/// A plain look at the server, only to pick a file. Working with files
+/// is what the Files app is for.
 struct RemoteBrowserView: View {
     let config: SpindConfig
     var relative: String = ""
@@ -398,10 +398,10 @@ struct RemoteBrowserView: View {
     }
 }
 
-// MARK: - Vorschau
+// MARK: - Preview
 
 extension View {
-    /// Zeigt eine heruntergeladene Fassung in der Systemvorschau.
+    /// Shows a downloaded version in the system preview.
     func quickLookSheet(_ url: Binding<URL?>) -> some View {
         sheet(isPresented: Binding(
             get: { url.wrappedValue != nil },

@@ -48,7 +48,7 @@ struct PhotoBackupView: View {
         }
     }
 
-    // MARK: - Laufender Upload
+    // MARK: - Upload in progress
 
     @ViewBuilder
     private var progressSection: some View {
@@ -66,8 +66,8 @@ struct PhotoBackupView: View {
                         }
                     }
                     ProgressView(value: run.fraction)
-                    // Es laufen mehrere Übertragungen gleichzeitig — „gerade
-                    // diese eine" wäre gelogen, also die zuletzt fertige.
+                    // Several transfers run at once — naming "this one"
+                    // would be a lie, so name the last one finished.
                     Text(run.current.map { "zuletzt: \($0)" } ?? "Wird vorbereitet …")
                         .font(.caption).foregroundStyle(.secondary)
                         .lineLimit(1).truncationMode(.middle)
@@ -86,7 +86,7 @@ struct PhotoBackupView: View {
         }
     }
 
-    // MARK: - Einstellungen
+    // MARK: - Settings
 
     private var switchSection: some View {
         Section {
@@ -178,15 +178,15 @@ struct PhotoBackupView: View {
 
     // MARK: -
 
-    /// „Nur neue": Der Stand wird auf jetzt gesetzt, alles Ältere gilt als
-    /// erledigt. Sonst nimmt der erste Durchgang die ganze Mediathek mit.
+    /// "Only new": the state is set to now, everything older counts as
+    /// done. Otherwise the first run takes the whole library along.
     private func start(existing: Bool) {
         backup.markExisting(asDone: !existing)
         Task { await backup.run(config: config, manual: true) }
     }
 
-    /// Zeigt am Beispiel von heute, wo eine Aufnahme landen würde — das
-    /// erklärt die Aufteilung besser als jede Beschreibung.
+    /// Shows with today as an example where a picture would land — that
+    /// explains the split better than any description.
     private var example: String {
         backup.settings.layout.path(
             for: Date(),

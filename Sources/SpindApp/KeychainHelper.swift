@@ -20,11 +20,11 @@ import Security
 /// Spind stores, and it never touches disk in plain text.
 enum KeychainHelper {
     private static let service = "dev.eigenhand.spind.app"
-    /// Einträge aus der HDrive-Zeit. Wichtig: die Übernahme in den neuen
-    /// Dienst MUSS die App selbst machen — per `security`-CLI kopierte
-    /// Einträge tragen eine Partitions-Sperre, bei der „Immer erlauben"
-    /// nicht greift, und macOS fragt dann in einer Endlosschleife nach
-    /// dem Schlüsselbund-Passwort.
+    /// Entries from the HDrive days. Important: the app MUST do the
+    /// migration to the new service itself — entries copied with the
+    /// `security` CLI carry a partition lock where "always allow" has no
+    /// effect, and macOS then asks for the keychain password in an
+    /// endless loop.
     private static let legacyService = "me.hdrive.app"
 
     static func save(_ value: String, account: String) {
@@ -47,8 +47,8 @@ enum KeychainHelper {
         if let value = read(service: service, account: account) {
             return value
         }
-        // Einmalige Übernahme: unter dem neuen Dienst neu anlegen — der
-        // Eintrag gehört dann dieser App, macOS fragt nie wieder.
+        // One-time migration: create it anew under the new service — the
+        // entry then belongs to this app and macOS never asks again.
         guard let legacy = read(service: legacyService, account: account) else {
             return nil
         }

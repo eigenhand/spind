@@ -15,9 +15,9 @@
 
 import Foundation
 
-/// Wohin ein Foto einsortiert wird. Der Aufnahmezeitpunkt bestimmt die
-/// Ordner — nicht der Zeitpunkt des Hochladens, sonst landet ein spät
-/// nachgereichtes Bild im falschen Monat.
+/// Where a photo is filed. The moment it was taken decides the folders —
+/// not the moment it was uploaded, or a picture handed over late would
+/// land in the wrong month.
 public enum PhotoLayout: String, Codable, CaseIterable, Sendable {
     /// Bilder/2026/08
     case yearMonth
@@ -25,7 +25,7 @@ public enum PhotoLayout: String, Codable, CaseIterable, Sendable {
     case yearMonthName
     /// Bilder/2026
     case year
-    /// Alles direkt in den Zielordner
+    /// Everything straight into the target folder
     case flat
 
     public var label: String {
@@ -37,7 +37,7 @@ public enum PhotoLayout: String, Codable, CaseIterable, Sendable {
         }
     }
 
-    /// Die Unterordner unterhalb des Zielordners.
+    /// The subfolders below the target folder.
     public func components(for date: Date, calendar: Calendar = .current,
                            locale: Locale = .current) -> [String] {
         let parts = calendar.dateComponents([.year, .month], from: date)
@@ -54,7 +54,7 @@ public enum PhotoLayout: String, Codable, CaseIterable, Sendable {
         }
     }
 
-    /// Der vollständige Pfad relativ zur Wurzel des Spinds.
+    /// The full path relative to the root of the Spind.
     public func path(for date: Date, folder: String, fileName: String,
                      calendar: Calendar = .current, locale: Locale = .current) -> String {
         var parts = folder
@@ -66,8 +66,8 @@ public enum PhotoLayout: String, Codable, CaseIterable, Sendable {
         return parts.joined(separator: "/")
     }
 
-    /// Ausgeschriebener Monat in der Sprache des Geräts, mit führender Zahl
-    /// gäbe es Sortierprobleme — die Ordner stehen ohnehin unter dem Jahr.
+    /// Month name in the language of the device. No leading number: the
+    /// folders sit under their year anyway, so sorting is not at stake.
     static func monthName(_ month: Int, locale: Locale) -> String {
         var calendar = Calendar(identifier: .gregorian)
         calendar.locale = locale

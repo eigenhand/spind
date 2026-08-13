@@ -126,12 +126,30 @@ final class SyncController: ObservableObject {
     /// Oberfläche fragt damit einmalig nach.
     @Published var pendingBulkDeletions: Int?
     private var bulkDeletionConfirmed = false
-    @Published var folderSyncEnabled: Bool = UserDefaults.standard
-        .object(forKey: "folderSyncEnabled") as? Bool ?? true {
+    /// A second, complete copy of everything in a plain folder. Off by
+    /// default: the Finder volume is the point of Spind, and files there
+    /// cost space only once they are opened. Whoever wants everything on
+    /// this Mac says so — anything else fills the disk unasked, and a
+    /// photo library arriving from a phone fills it fast.
+    @Published var folderSyncEnabled: Bool = SyncController.storedFolderSync {
         didSet {
             UserDefaults.standard.set(folderSyncEnabled, forKey: "folderSyncEnabled")
             if folderSyncEnabled { syncNow() }
         }
+    }
+
+    /// Installations from before this default keep what they had: they
+    /// have been mirroring all along, and switching that off behind their
+    /// back would quietly stop a folder people rely on.
+    private static var storedFolderSync: Bool {
+        if let chosen = UserDefaults.standard.object(forKey: "folderSyncEnabled") as? Bool {
+            return chosen
+        }
+        let existingInstall = FileManager.default.fileExists(
+            atPath: SpindConfig.defaultConfigURL.path
+        )
+        UserDefaults.standard.set(existingInstall, forKey: "folderSyncEnabled")
+        return existingInstall
     }
     @Published var pollInterval: Int = UserDefaults.standard
         .object(forKey: "pollInterval") as? Int ?? 30 {
@@ -601,8 +619,8 @@ final class SyncController: ObservableObject {
         }
     }
 
-    /// Opens files in the browser editor (Finder → „Im Browser gemeinsam
-    /// bearbeiten“) and puts the link on the clipboard so it can be sent
+    /// Opens files in the browser editor (Finder → "Im Browser gemeinsam
+    /// bearbeiten") and puts the link on the clipboard so it can be sent
     /// to whoever should join.
     private func processEditRequests() {
         guard let container = FileManager.default.containerURL(
@@ -657,7 +675,7 @@ final class SyncController: ObservableObject {
         }
     }
 
-    /// Opens the version history window (Finder → „Versionsverlauf
+    /// Opens the version history window (Finder → "Versionsverlauf
     /// anzeigen").
     private func processVersionRequests() {
         guard let container = FileManager.default.containerURL(
@@ -673,7 +691,7 @@ final class SyncController: ObservableObject {
             .appendingPathComponent("Library/CloudStorage/Spind-Spind")
         for path in paths {
             // Verlauf gibt es je Datei — auf einem Ordner würde das Fenster
-            // dauerhaft »noch keine Fassungen« zeigen und ewig warten lassen.
+            // dauerhaft "noch keine Fassungen" zeigen und ewig warten lassen.
             var isDirectory: ObjCBool = false
             FileManager.default.fileExists(
                 atPath: root.appendingPathComponent(path).path, isDirectory: &isDirectory

@@ -15,15 +15,15 @@
 
 import Foundation
 
-/// Dateinamen in der App-Gruppe, über die App und Extension sich
-/// verständigen — beide Seiten müssen denselben meinen.
+/// Names of files in the app group that the app and the extension use
+/// to talk to each other — both sides must mean the same one.
 public enum SpindGroupFile {
-    /// „Bitte jetzt beim Server nachsehen": von der App abgelegt, von der
-    /// Extension gelesen und gelöscht.
+    /// "Please look at the server now": written by the app, read and
+    /// deleted by the extension.
     public static let sweepRequest = "sweep-now"
 }
 
-/// Ein Eintrag, so wie er zuletzt auf dem Server gesehen wurde.
+/// An entry as it was last seen on the server.
 public struct RemoteEntry: Codable, Equatable, Sendable {
     public var isDirectory: Bool
     public var size: Int64
@@ -43,14 +43,13 @@ public struct RemoteListingChange: Equatable, Sendable {
     public var isEmpty: Bool { updated.isEmpty && deleted.isEmpty }
 }
 
-/// Der Vergleich zweier Ordner-Auflistungen. SFTP kennt keinen
-/// Änderungs-Kanal — wer wissen will, was anderswo passiert ist, muss
-/// nachsehen und mit dem letzten bekannten Stand vergleichen.
+/// The comparison of two directory listings. SFTP has no channel for
+/// changes — whoever wants to know what happened elsewhere has to look
+/// and compare against the last known state.
 public enum RemoteListingDiff {
-    /// - Warning: `current` muss aus einer **erfolgreichen** Auflistung
-    ///   stammen. Was hier fehlt, gilt als gelöscht — eine leere Liste nach
-    ///   einem Verbindungsfehler würde den ganzen Ordner für gelöscht
-    ///   erklären.
+    /// - Warning: `current` must come from a **successful** listing.
+    ///   Whatever is missing here counts as deleted — an empty list after
+    ///   a connection error would declare the whole folder gone.
     public static func compare(
         previous: [String: RemoteEntry], current: [String: RemoteEntry]
     ) -> RemoteListingChange {

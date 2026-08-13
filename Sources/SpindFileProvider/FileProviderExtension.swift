@@ -18,8 +18,8 @@ import SpindCore
 import UniformTypeIdentifiers
 import os
 
-/// Aus der Info.plist (Build-Einstellung SPIND_APP_GROUP in
-/// Config.xcconfig) — damit im Quelltext keine Team-ID klebt.
+/// From the Info.plist (build setting SPIND_APP_GROUP in
+/// Config.xcconfig) — so that no team ID sticks to the source.
 let appGroupID = (Bundle.main.object(forInfoDictionaryKey: "SpindAppGroup") as? String)
     ?? "dev.eigenhand.spind.group"
 
@@ -27,9 +27,9 @@ private let osLogger = Logger(subsystem: "dev.eigenhand.spind.ext", category: "p
 
 func extLog(_ message: String) {
     osLogger.error("\(message, privacy: .public)")
-    // Simulator-Logging verliert os_log-Zeilen — zusätzlich in eine Datei
-    // schreiben. /tmp des Simulators ist das /tmp des Macs: verlässlich
-    // lesbar, ganz ohne Gruppencontainer-Abhängigkeit.
+    // Simulator logging loses os_log lines — also write to a file. The
+    // simulator's /tmp is the Mac's /tmp: reliably readable, without any
+    // dependency on the group container.
     #if targetEnvironment(simulator)
     let url = URL(fileURLWithPath: "/tmp/spind-ext.log")
     let line = "\(Date())  \(message)\n"
@@ -73,16 +73,16 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
     // MARK: - Helpers
 
-    /// Übersetzt Transportfehler in den passenden File-Provider-Fehler.
-    /// Vorher wurde pauschal »Server nicht erreichbar« gemeldet — wer einen
-    /// kaputten Schlüsselpfad hatte, suchte den Fehler beim Netzwerk.
+    /// Translates transport errors into the matching file provider error.
+    /// It used to report "server unreachable" for everything — anyone with
+    /// a broken key path went looking for the fault in their network.
     fileprivate func mapToFileProviderError(_ error: Error) -> Error {
         if error is NSFileProviderError { return error }
         if let boxError = error as? StorageBoxError {
             switch boxError {
             case .privateKeyUnreadable: return NSFileProviderError(.notAuthenticated)
             case .notConnected: return NSFileProviderError(.serverUnreachable)
-            // Falscher Server-Schlüssel: bewusst verweigert, nicht „weg".
+            // Wrong host key: deliberately refused, not "gone".
             case .hostKeyMismatch: return NSFileProviderError(.notAuthenticated)
             }
         }
@@ -414,10 +414,10 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     let stat = try? await client.stat(target)
                     if stat?.isDirectory == true {
                         // Ordner: jede enthaltene Datei einzeln sichern —
-                        // sonst ist der komplette Inhalt unwiederbringlich.
-                        // Schlägt eine Sicherung fehl (volle Box), bricht das
-                        // Löschen ab. Eine übersprungene Sicherung wäre genau
-                        // die Datei, die niemand zurückholen kann.
+                        // or the whole content is beyond recovery. When a
+                        // snapshot fails (full box) the delete is aborted:
+                        // a skipped snapshot would be exactly the file
+                        // nobody can bring back.
                         for file in try await self.collectFiles(client, config, relative) {
                             try await VersionStore.snapshot(
                                 relativePath: file,
@@ -752,8 +752,8 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 extLog("enumerateItems: '\(relative)' start")
                 let items = try await ext.listItems(relative)
                 extLog("enumerateItems: '\(relative)' -> \(items.count) Einträge")
-                // Die vollständige Auflistung ist der Vergleichspunkt für
-                // spätere Änderungsabfragen — ohne ihn bliebe jede Löschung
+                // The full listing is the reference point for later change
+                // queries — without it every deletion would stay invisible.
                 // unsichtbar.
                 await RemoteSnapshotStore.shared.record(
                     RemoteSnapshotStore.entries(for: items), in: relative
@@ -773,9 +773,9 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         for observer: NSFileProviderChangeObserver,
         from anchor: NSFileProviderSyncAnchor
     ) {
-        // SFTP hat keinen Änderungs-Kanal: Der einzige Weg herauszufinden,
-        // was sich geändert hat, ist nachzusehen und mit dem zuletzt
-        // gemerkten Stand zu vergleichen.
+        // SFTP has no channel for changes: the only way to find out what
+        // happened is to look, and compare against the state remembered
+        // last time.
         guard container == .workingSet else {
             let relative = FileProviderItem.relativePath(for: container)
             Task {
@@ -801,8 +801,8 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                         moreComing: false
                     )
                 } catch {
-                    // Kein Kontakt zum Server heißt NICHT „alles gelöscht".
-                    // Der Fehler geht durch, das System fragt später erneut.
+                    // No contact with the server does NOT mean "all deleted".
+                    // The error goes through, the system asks again later.
                     extLog("enumerateChanges: '\(relative)' Fehler: \(error)")
                     observer.finishEnumeratingWithError(
                         ext.mapToFileProviderError(error)
@@ -821,10 +821,10 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var updatedPaths = queueUpdated.union(appFeed.updated)
             var deletedPaths = queueDeleted.union(appFeed.deleted)
             updatedPaths.subtract(deletedPaths)
-            // Auf dem iPhone gibt es keine App, die im Hintergrund synct und
-            // den Änderungs-Feed füllt — hier ist der Arbeitssatz die einzige
-            // Gelegenheit, von sich aus beim Server nachzusehen. Geprüft
-            // werden nur schon besuchte Ordner, gebremst gegen Dauerabfragen.
+            // On the iPhone there is no app syncing in the background and
+            // filling the change feed — here the working set is the only
+            // chance to look at the server unprompted. Only folders that
+            // were already visited are checked, and throttled at that.
             #if os(iOS)
             let swept = await self.sweepKnownDirectories(ext)
             #else
@@ -832,8 +832,8 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             #endif
             var items = swept.updated
             deletedPaths.formUnion(swept.deleted)
-            // Der Zähler muss sich bewegen, wenn Neues von außen kam —
-            // sonst hält das System seinen Stand für aktuell.
+            // The counter has to move when something arrived from outside —
+            // otherwise the system considers its state current.
             let outOfBand = !appFeed.updated.isEmpty || !appFeed.deleted.isEmpty
                 || !swept.updated.isEmpty || !swept.deleted.isEmpty
             let current = outOfBand
@@ -865,24 +865,24 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
     }
 
-    /// Fragt die bereits besuchten Ordner beim Server nach und meldet, was
-    /// sich seither geändert hat. Ordner, die gerade nicht erreichbar sind,
-    /// bleiben unangetastet — eine Löschmeldung ins Blaue würde die
-    /// Dateien-App echte Dateien wegräumen lassen.
+    /// Asks the server about the folders that were already visited and
+    /// reports what changed since. Folders that are unreachable right now
+    /// are left alone — a deletion reported into the blue would have the
+    /// Files app clear away real files.
     private func sweepKnownDirectories(
         _ ext: FileProviderExtension
     ) async -> (updated: [FileProviderItem], deleted: Set<String>) {
-        // Die geöffnete App bittet im kurzen Takt ausdrücklich um Nachschau;
-        // das System selbst fragt den Arbeitssatz unvorhersehbar oft ab und
-        // wird gebremst.
+        // The open app asks for a look explicitly and often; the system
+        // itself queries the working set at unpredictable intervals and
+        // gets throttled.
         let requested = Self.consumeSweepRequest()
         guard await RemoteSnapshotStore.shared.beginSweep(
             minimumInterval: 20, force: requested
         ) else { return ([], []) }
         var updated: [FileProviderItem] = []
         var deleted: Set<String> = []
-        // Das System wartet nicht ewig auf eine Änderungsabfrage. Was in
-        // dieser Zeit nicht drankommt, ist beim nächsten Durchlauf vorn.
+        // The system does not wait forever for a change query. Whatever
+        // does not get its turn is at the front of the next round.
         let deadline = Date().addingTimeInterval(8)
         for directory in await RemoteSnapshotStore.shared.directoriesToRecheck() {
             if Date() > deadline { break }
@@ -900,9 +900,9 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         return (updated, deleted)
     }
 
-    /// Die App legt diese Marke ab, bevor sie den Arbeitssatz anstößt —
-    /// daran erkennt die Extension eine ausdrücklich gewünschte Nachschau
-    /// und lässt sie an der Bremse vorbei.
+    /// The app drops this marker before it nudges the working set — that
+    /// is how the extension recognises a deliberately requested look and
+    /// lets it past the throttle.
     private static func consumeSweepRequest() -> Bool {
         guard let url = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
@@ -943,9 +943,9 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 completionHandler(NSFileProviderSyncAnchor(Data("spind-\(anchor)".utf8)))
                 return
             }
-            // Ordner führen ihren eigenen Zähler — er muss zum Marker aus
-            // enumerateChanges passen, sonst verwirft das System die
-            // Änderungsverfolgung für diesen Ordner wieder.
+            // Folders keep their own counter — it has to match the marker
+            // from enumerateChanges, or the system drops change tracking
+            // for that folder again.
             let relative = FileProviderItem.relativePath(for: container)
             let anchor = await RemoteSnapshotStore.shared.anchor(for: relative)
             completionHandler(

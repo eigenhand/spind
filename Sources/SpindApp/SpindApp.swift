@@ -26,7 +26,7 @@ struct SpindApp: App {
         if isPreview {
             Self.openPreviewWindow()
         }
-        // Sparkle früh starten, damit die Hintergrund-Prüfung läuft.
+        // Start Sparkle early so the background check runs.
         UpdaterManager.shared.start()
     }
 

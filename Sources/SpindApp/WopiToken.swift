@@ -34,8 +34,8 @@ enum WopiToken {
         KeychainHelper.load(account: secretAccount)?.isEmpty == false
     }
 
-    /// Adresse des eigenen Collabora-Servers; ohne Eintrag bleiben die
-    /// Bearbeiten-Funktionen aus (siehe server/collabora/README.md).
+    /// Address of your own Collabora server; without an entry the editing
+    /// features stay switched off (see server/collabora/README.md).
     static var server: String {
         let stored = UserDefaults.standard.string(forKey: "docServerURL") ?? ""
         return stored.hasSuffix("/") ? String(stored.dropLast()) : stored

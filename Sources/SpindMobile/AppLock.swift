@@ -16,10 +16,10 @@
 import LocalAuthentication
 import SwiftUI
 
-/// Freiwillige Sperre vor der App. Sie schützt, was **in dieser App** zu
-/// sehen ist — den Serverzugang, den Papierkorb, den Verlauf. Die Dateien
-/// selbst liegen in der Dateien-App und bleiben dort sichtbar; das sagt die
-/// Oberfläche auch, sonst wäre es Beruhigung statt Schutz.
+/// A voluntary lock in front of the app. It protects what is visible
+/// **in this app** — the server access, the trash, the history. The
+/// files themselves live in the Files app and stay visible there; the
+/// interface says so, or it would be comfort rather than protection.
 @MainActor
 final class AppLock: ObservableObject {
     static let shared = AppLock()
@@ -42,12 +42,12 @@ final class AppLock: ObservableObject {
         locked = on
     }
 
-    /// Gibt es überhaupt Face ID, Touch ID oder wenigstens einen Code?
+    /// Is there a Face ID, Touch ID or at least a passcode at all?
     var available: Bool {
         LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
     }
 
-    /// Wie die Sperre auf diesem Gerät heißt.
+    /// What the lock is called on this device.
     var methodName: String {
         let context = LAContext()
         _ = context.canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
@@ -68,9 +68,9 @@ final class AppLock: ObservableObject {
         let context = LAContext()
         context.localizedCancelTitle = "Abbrechen"
         do {
-            // deviceOwnerAuthentication und nicht …WithBiometrics: Bei einer
-            // Maske oder nassen Fingern bleibt der Gerätecode als Weg —
-            // sonst sperrt man sich aus der eigenen App aus.
+            // deviceOwnerAuthentication rather than …WithBiometrics: with
+            // a mask on or wet fingers the passcode remains a way in —
+            // otherwise you lock yourself out of your own app.
             let ok = try await context.evaluatePolicy(
                 .deviceOwnerAuthentication,
                 localizedReason: "Spind entsperren"
