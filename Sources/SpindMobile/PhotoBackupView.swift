@@ -66,7 +66,9 @@ struct PhotoBackupView: View {
                         }
                     }
                     ProgressView(value: run.fraction)
-                    Text(run.current ?? "Wird vorbereitet …")
+                    // Es laufen mehrere Übertragungen gleichzeitig — „gerade
+                    // diese eine" wäre gelogen, also die zuletzt fertige.
+                    Text(run.current.map { "zuletzt: \($0)" } ?? "Wird vorbereitet …")
                         .font(.caption).foregroundStyle(.secondary)
                         .lineLimit(1).truncationMode(.middle)
                 }
