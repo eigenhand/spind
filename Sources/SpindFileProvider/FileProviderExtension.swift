@@ -415,8 +415,11 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                     if stat?.isDirectory == true {
                         // Ordner: jede enthaltene Datei einzeln sichern —
                         // sonst ist der komplette Inhalt unwiederbringlich.
+                        // Schlägt eine Sicherung fehl (volle Box), bricht das
+                        // Löschen ab. Eine übersprungene Sicherung wäre genau
+                        // die Datei, die niemand zurückholen kann.
                         for file in try await self.collectFiles(client, config, relative) {
-                            try? await VersionStore.snapshot(
+                            try await VersionStore.snapshot(
                                 relativePath: file,
                                 remotePath: self.remotePath(file, config),
                                 client: client, config: config
