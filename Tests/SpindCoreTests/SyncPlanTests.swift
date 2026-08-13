@@ -644,4 +644,83 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(change.updated, ["x"])
         XCTAssertEqual(change.deleted, [])
     }
+
+    // MARK: - Fotos einsortieren
+
+    private var august: Date {
+        var parts = DateComponents()
+        parts.year = 2026; parts.month = 8; parts.day = 13; parts.hour = 12
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+        return calendar.date(from: parts)!
+    }
+
+    private var berlin: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+        return calendar
+    }
+
+    func testFotoLandetImRichtigenOrdner() {
+        let german = Locale(identifier: "de_DE")
+        XCTAssertEqual(
+            PhotoLayout.yearMonth.path(for: august, folder: "Bilder",
+                                       fileName: "IMG_1.HEIC",
+                                       calendar: berlin, locale: german),
+            "Bilder/2026/08/IMG_1.HEIC"
+        )
+        XCTAssertEqual(
+            PhotoLayout.yearMonthName.path(for: august, folder: "Bilder",
+                                           fileName: "IMG_1.HEIC",
+                                           calendar: berlin, locale: german),
+            "Bilder/2026/August/IMG_1.HEIC"
+        )
+        XCTAssertEqual(
+            PhotoLayout.year.path(for: august, folder: "Bilder",
+                                  fileName: "IMG_1.HEIC",
+                                  calendar: berlin, locale: german),
+            "Bilder/2026/IMG_1.HEIC"
+        )
+        XCTAssertEqual(
+            PhotoLayout.flat.path(for: august, folder: "Bilder",
+                                  fileName: "IMG_1.HEIC",
+                                  calendar: berlin, locale: german),
+            "Bilder/IMG_1.HEIC"
+        )
+    }
+
+    /// Der Monat muss zweistellig sein, sonst sortiert jede Ansicht
+    /// 10, 11, 12, 1, 2 … statt der Reihe nach.
+    func testMonatIstZweistellig() {
+        var parts = DateComponents()
+        parts.year = 2026; parts.month = 3; parts.day = 1; parts.hour = 12
+        let märz = berlin.date(from: parts)!
+        XCTAssertEqual(
+            PhotoLayout.yearMonth.components(for: märz, calendar: berlin,
+                                             locale: Locale(identifier: "de_DE")),
+            ["2026", "03"]
+        )
+    }
+
+    /// Der ausgeschriebene Monat folgt der Sprache des Geräts.
+    func testMonatsnameFolgtDerSprache() {
+        XCTAssertEqual(PhotoLayout.monthName(5, locale: Locale(identifier: "de_DE")), "Mai")
+        XCTAssertEqual(PhotoLayout.monthName(5, locale: Locale(identifier: "en_US")), "May")
+    }
+
+    /// Ein Zielordner mit Schrägstrichen, Leerzeichen oder Punkt davor darf
+    /// keinen kaputten Pfad ergeben.
+    func testZielordnerWirdAufgeraeumt() {
+        XCTAssertEqual(
+            PhotoLayout.flat.path(for: august, folder: "/Fotos/vom Handy/",
+                                  fileName: "a.jpg", calendar: berlin,
+                                  locale: Locale(identifier: "de_DE")),
+            "Fotos/vom Handy/a.jpg"
+        )
+        XCTAssertEqual(
+            PhotoLayout.flat.path(for: august, folder: "./", fileName: "a.jpg",
+                                  calendar: berlin, locale: Locale(identifier: "de_DE")),
+            "a.jpg"
+        )
+    }
 }

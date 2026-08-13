@@ -28,6 +28,10 @@
 	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Zum Scannen des Kopplungscodes aus der Mac-App.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Um die App beim Öffnen zu entsperren.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Um deine Aufnahmen in deinen eigenen Spind zu sichern. Spind liest nur und löscht nichts vom iPhone.</string>
 	<key>SpindAppGroup</key>
 	<string>$(SPIND_IOS_APP_GROUP)</string>
 	<key>SpindRefreshTaskID</key>

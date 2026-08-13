@@ -78,6 +78,9 @@ targets:
         SpindAppGroup: $(SPIND_IOS_APP_GROUP)
         UILaunchScreen: {}
         NSCameraUsageDescription: Zum Scannen des Kopplungscodes aus der Mac-App.
+        NSPhotoLibraryUsageDescription: Um deine Aufnahmen in deinen eigenen Spind
+          zu sichern. Spind liest nur und löscht nichts vom iPhone.
+        NSFaceIDUsageDescription: Um die App beim Öffnen zu entsperren.
         ITSAppUsesNonExemptEncryption: false
         # SFTP kann nicht von sich aus Bescheid geben, dass anderswo etwas
         # gelöscht wurde. iOS weckt die App gelegentlich auf, damit sie die

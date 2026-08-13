@@ -1,6 +1,7 @@
 .build/
 build/
 .xcbuild/
+AGENT.md
 dist/
 *.xcodeproj
 .DS_Store

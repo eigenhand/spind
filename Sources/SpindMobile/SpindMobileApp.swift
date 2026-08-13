@@ -103,34 +103,51 @@ func connectionHint(for error: Error) -> String {
 @main
 struct SpindMobileApp: App {
     @Environment(\.scenePhase) private var scenePhase
+    @ObservedObject private var lock = AppLock.shared
     @State private var config = MobileStore.loadConfig()
 
     var body: some Scene {
         WindowGroup {
-            if let config {
-                StatusView(config: config) {
-                    self.config = MobileStore.loadConfig()
+            ZStack {
+                if let config {
+                    StatusView(config: config) {
+                        self.config = MobileStore.loadConfig()
+                    }
+                    .onAppear {
+                        // Bei jedem Start neu anmelden — schadet nie und heilt
+                        // verlorene Registrierungen (App-Update, Neuinstallation).
+                        SpindDomain.register()
+                    }
+                } else {
+                    OnboardingView {
+                        config = MobileStore.loadConfig()
+                    }
                 }
-                .onAppear {
-                    // Bei jedem Start neu anmelden — schadet nie und heilt
-                    // verlorene Registrierungen (App-Update, Neuinstallation).
-                    SpindDomain.register()
-                }
-            } else {
-                OnboardingView {
-                    config = MobileStore.loadConfig()
-                }
+                // Deckt alles zu, solange nicht entsperrt ist — bewusst kein
+                // Blatt, das sich wegschieben ließe.
+                if lock.locked { LockView() }
             }
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
-            case .active: Task { await SpindDomain.refresh() }
-            case .background: SpindDomain.scheduleBackgroundRefresh()
-            default: break
+            case .active:
+                Task {
+                    await SpindDomain.refresh()
+                    if let config { await PhotoBackup.shared.run(config: config) }
+                }
+            case .background:
+                lock.lock()
+                PhotoBackup.shared.pause()
+                SpindDomain.scheduleBackgroundRefresh()
+            default:
+                break
             }
         }
         .backgroundTask(.appRefresh(SpindDomain.refreshTaskID)) {
             await SpindDomain.refresh()
+            if let config = MobileStore.loadConfig() {
+                await PhotoBackup.shared.run(config: config, limited: true)
+            }
             await MainActor.run { SpindDomain.scheduleBackgroundRefresh() }
         }
     }
@@ -328,6 +345,8 @@ struct StatusView: View {
     @State private var confirmReset = false
     @State private var keyCopied = false
     @State private var refreshing = false
+    @ObservedObject private var lock = AppLock.shared
+    @ObservedObject private var backup = PhotoBackup.shared
 
     private let beat = Timer
         .publish(every: SpindDomain.foregroundInterval, on: .main, in: .common)
@@ -338,7 +357,9 @@ struct StatusView: View {
             Form {
                 connectionSection
                 filesSection
+                photoSection
                 recoverySection
+                lockSection
                 keySection
                 resetSection
             }
@@ -349,6 +370,7 @@ struct StatusView: View {
             .onReceive(beat) { _ in
                 Task { await SpindDomain.refresh() }
             }
+            .task { backup.countWaiting() }
             .confirmationDialog(
                 "Einrichtung zurücksetzen?", isPresented: $confirmReset,
                 titleVisibility: .visible
@@ -419,6 +441,53 @@ struct StatusView: View {
                  + "kurz aufweckt – das kann dauern. Ein SFTP-Server kann "
                  + "von sich aus nicht Bescheid geben; in der Dateien-App "
                  + "holt ein Zug nach unten den Stand sofort.")
+        }
+    }
+
+    private var photoSection: some View {
+        Section {
+            NavigationLink {
+                PhotoBackupView(config: config)
+            } label: {
+                Label {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Fotos")
+                        Text(photoSubtitle)
+                            .font(.caption).foregroundStyle(.secondary)
+                            .lineLimit(1).truncationMode(.head)
+                    }
+                } icon: {
+                    Image(systemName: "photo.on.rectangle.angled")
+                }
+            }
+        }
+    }
+
+    /// Der laufende Upload soll auch von hier aus zu sehen sein, ohne dass
+    /// man erst hineingehen muss.
+    private var photoSubtitle: String {
+        if let run = backup.run {
+            return "Sichert \(run.done) von \(run.total) …"
+        }
+        guard backup.settings.enabled else { return "Aus" }
+        if let waiting = backup.waiting, waiting > 0 {
+            return "\(waiting) warten"
+        }
+        return backup.settings.layout.path(
+            for: Date(), folder: backup.settings.folder, fileName: "…"
+        )
+    }
+
+    @ViewBuilder
+    private var lockSection: some View {
+        if lock.available {
+            Section {
+                Toggle("Mit \(lock.methodName) öffnen", isOn: $lock.enabled)
+            } footer: {
+                Text("Fragt beim Öffnen der App nach. Schützt Zugang, Papierkorb "
+                     + "und Verlauf – **nicht** die Dateien selbst: die stehen "
+                     + "weiter in der Dateien-App.")
+            }
         }
     }
 
