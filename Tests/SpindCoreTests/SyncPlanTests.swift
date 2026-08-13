@@ -708,6 +708,123 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(PhotoLayout.monthName(5, locale: Locale(identifier: "en_US")), "May")
     }
 
+    // MARK: - Verlauf ausdünnen
+
+    private func version(_ daysAgo: Double, _ hoursAgo: Double = 0,
+                         from reference: Date) -> FileVersion {
+        let date = reference.addingTimeInterval(-(daysAgo * 86_400 + hoursAgo * 3_600))
+        return FileVersion(id: "\(date.timeIntervalSince1970)", date: date,
+                           size: 100, remotePath: "/v/\(date.timeIntervalSince1970)")
+    }
+
+    /// Fester Kalender und fester »jetzt«: Tages-, Wochen- und
+    /// Monatsgrenzen lassen sich nur mit echten Daten prüfen, nicht durch
+    /// Abziehen von Stunden — sonst rutscht ein Fall über Mitternacht und
+    /// der Test misst den Zufall.
+    private var kalender: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
+        return calendar
+    }
+
+    private func tag(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 12) -> Date {
+        var parts = DateComponents()
+        parts.year = year; parts.month = month; parts.day = day; parts.hour = hour
+        return kalender.date(from: parts)!
+    }
+
+    private func fassung(_ date: Date) -> FileVersion {
+        FileVersion(id: "\(date.timeIntervalSince1970)", date: date,
+                    size: 100, remotePath: "/v/\(date.timeIntervalSince1970)")
+    }
+
+    private func bleiben(_ versions: [FileVersion], _ now: Date) -> Int {
+        versions.count - VersionRetention.expendable(
+            versions, now: now, calendar: kalender
+        ).count
+    }
+
+    private var jetzt: Date { tag(2026, 8, 13) }
+
+    /// Solange es Fassungen gibt, bleibt mindestens eine — auch bei einer
+    /// einzigen uralten.
+    func testDieJuengsteFassungBleibtImmer() {
+        let alt = [version(4000, from: jetzt)]
+        XCTAssertTrue(VersionRetention.expendable(alt, now: jetzt).isEmpty)
+        let viele = (0..<5).map { version(3000 + Double($0) * 40, from: jetzt) }
+        let bleibt = Set(viele.map(\.id))
+            .subtracting(VersionRetention.expendable(viele, now: jetzt).map(\.id))
+        XCTAssertTrue(bleibt.contains(viele[0].id), "die jüngste wurde weggeräumt")
+    }
+
+    /// Am ersten Tag wird nichts zusammengefasst — das ist das Zeitfenster
+    /// für »das war ich gerade, mach das rückgängig«.
+    func testAmErstenTagBleibtJedeFassung() {
+        let heute = (0..<12).map { version(0, Double($0) * 2, from: jetzt) }
+        XCTAssertEqual(VersionRetention.expendable(heute, now: jetzt).count, 0)
+    }
+
+    /// Nur ein Programm, das im Minutentakt speichert, wird gedeckelt.
+    func testDauerspeichernWirdGedeckelt() {
+        let sturm = (0..<80).map { version(0, Double($0) * 0.1, from: jetzt) }
+        let weg = VersionRetention.expendable(sturm, now: jetzt)
+        XCTAssertEqual(sturm.count - weg.count, VersionRetention.burstCap)
+        // Gedeckelt wird von hinten: die jüngsten überleben.
+        XCTAssertFalse(weg.contains { $0.id == sturm[0].id })
+    }
+
+    /// Älter als ein Tag: eine pro Kalendertag — die jüngste des Tages.
+    func testAelteresWirdAufEinenProTagGeduennt() {
+        let alle = [
+            fassung(tag(2026, 8, 11, 22)), fassung(tag(2026, 8, 11, 9)),
+            fassung(tag(2026, 8, 11, 3)),
+            fassung(tag(2026, 8, 10, 18)), fassung(tag(2026, 8, 10, 7)),
+            fassung(tag(2026, 8, 9, 15)),
+        ]
+        XCTAssertEqual(bleiben(alle, jetzt), 3, "erwartet: eine je Kalendertag")
+        let weg = VersionRetention.expendable(alle, now: jetzt, calendar: kalender)
+        XCTAssertFalse(weg.contains { $0.date == tag(2026, 8, 11, 22) },
+                       "die jüngste des Tages muss bleiben")
+    }
+
+    /// Älter als ein Monat: eine pro Kalenderwoche.
+    func testAelteresAlsEinMonatWirdWoechentlich() {
+        // 1.–3. Juni 2026 ist Mo–Mi derselben Woche, gut zwei Monate her.
+        let woche = [fassung(tag(2026, 6, 3)), fassung(tag(2026, 6, 2)),
+                     fassung(tag(2026, 6, 1))]
+        XCTAssertEqual(bleiben(woche, jetzt), 1)
+        // Eine Woche später ist ein eigenes Fach.
+        XCTAssertEqual(bleiben(woche + [fassung(tag(2026, 6, 10))], jetzt), 2)
+    }
+
+    /// Älter als ein Jahr: eine pro Kalendermonat.
+    func testAelteresAlsEinJahrWirdMonatlich() {
+        let monat = [fassung(tag(2024, 3, 20)), fassung(tag(2024, 3, 12)),
+                     fassung(tag(2024, 3, 5))]
+        XCTAssertEqual(bleiben(monat, jetzt), 1)
+        XCTAssertEqual(bleiben(monat + [fassung(tag(2024, 4, 2))], jetzt), 2)
+    }
+
+    /// Auch eine dünne Kette bekommt eine Obergrenze — bei großen Dateien
+    /// kostet jede Fassung eine volle Kopie.
+    func testObergrenzeGreiftUeberAlleStufen() {
+        // Je eine Fassung pro Woche über acht Jahre.
+        let jahre = (0..<400).map { version(40 + Double($0) * 7, from: jetzt) }
+        let bleiben = jahre.count - VersionRetention.expendable(jahre, now: jetzt).count
+        XCTAssertLessThanOrEqual(bleiben, VersionRetention.maxPerFile)
+        XCTAssertGreaterThan(bleiben, 20, "so dünn sollte es dann doch nicht werden")
+    }
+
+    /// Nichts darf doppelt in der Löschliste stehen — sonst scheitert das
+    /// zweite »rm« und der Lauf sieht kaputt aus.
+    func testLoeschlisteIstUeberschneidungsfrei() {
+        var alle = (0..<40).map { version(0, Double($0) * 0.5, from: jetzt) }
+        alle += (0..<300).map { version(2 + Double($0) * 3, from: jetzt) }
+        let weg = VersionRetention.expendable(alle, now: jetzt)
+        XCTAssertEqual(Set(weg.map(\.id)).count, weg.count)
+        XCTAssertEqual(Set(alle.map(\.id)).count, alle.count, "Testdaten selbst eindeutig")
+    }
+
     /// Ein Zielordner mit Schrägstrichen, Leerzeichen oder Punkt davor darf
     /// keinen kaputten Pfad ergeben.
     func testZielordnerWirdAufgeraeumt() {

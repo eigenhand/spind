@@ -903,7 +903,7 @@ struct GeneralSettings: View {
             } header: {
                 Text("Sicherheitsnetz")
             } footer: {
-                Text("Vor jedem Überschreiben oder Löschen sichert Spind die aktuelle Fassung auf der Box (bis zu \(VersionStore.keepPerFile) je Datei). Gelöschtes lässt sich hier mit einem Klick zurückholen.")
+                Text("Vor jedem Überschreiben oder Löschen sichert Spind die aktuelle Fassung auf der Box. Der Verlauf wird mit der Zeit ausgedünnt: heute jede Fassung, diesen Monat eine pro Tag, dieses Jahr eine pro Woche, davor eine pro Monat. Gelöschtes lässt sich hier mit einem Klick zurückholen.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

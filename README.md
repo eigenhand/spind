@@ -10,7 +10,9 @@ ohne Abo und ohne fremde Cloud dazwischen.
 - Beidseitiger Sync, wahlweise zusätzlich als klassischer Spiegelordner
 - Delta-Übertragung für große Dateien; Verschieben ist ein serverseitiges
   Umbenennen und kostet nichts
-- Versionsverlauf für jede Datei, gelöschte Dateien lassen sich wiederherstellen
+- Versionsverlauf für jede Datei – mit der Zeit ausgedünnt (heute jede Fassung,
+  diesen Monat eine pro Tag, dieses Jahr eine pro Woche), jede davon eine
+  gewöhnliche Datei auf dem Server; gelöschte Dateien lassen sich wiederherstellen
 - Ordner teilen per Link, mit eigener Web-Oberfläche: Vorschau, Suche,
   bei Schreibfreigaben auch Upload, Umbenennen, Löschen
 - Optional gemeinsames Bearbeiten von Office-Dokumenten im Browser

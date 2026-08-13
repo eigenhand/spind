@@ -31,7 +31,10 @@ public struct FileVersion: Sendable, Identifiable {
 
 public enum VersionStore {
     public static let folderName = ".spind-versions"
-    public static let keepPerFile = 25
+    /// Wie viele Fassungen höchstens je Datei liegen bleiben. Die
+    /// tatsächliche Auswahl trifft `VersionRetention` — je älter, desto
+    /// grober das Raster.
+    public static let keepPerFile = VersionRetention.maxPerFile
 
     private static let stamp: DateFormatter = {
         let formatter = DateFormatter()
@@ -61,7 +64,19 @@ public enum VersionStore {
         relativePath: String, remotePath: String,
         client: StorageBoxClient, config: SpindConfig
     ) async throws -> Bool {
-        guard (try? await client.stat(remotePath)) != nil else { return false }
+        guard let current = try? await client.stat(remotePath) else { return false }
+        // Unverändert? Dann wäre die Kopie ein Zwilling der jüngsten
+        // Fassung. Erst die Größe vergleichen (kostet nichts, weil schon
+        // bekannt), nur bei Gleichstand den Hash — beides serverseitig,
+        // es geht dabei kein Byte über die Leitung.
+        if let newest = await list(
+            relativePath: relativePath.canonicalPathKey, client: client, config: config
+        ).first, newest.size == Int64(current.size),
+           let now = try? await checksum(remotePath, client: client),
+           let before = try? await checksum(newest.remotePath, client: client),
+           now == before {
+            return false
+        }
         let directory = versionsDirectory(for: relativePath.canonicalPathKey, config: config)
         // Sekundenauflösung reicht nicht: zwei Sicherungen derselben Datei
         // in derselben Sekunde würden einander überschreiben.
@@ -171,12 +186,25 @@ public enum VersionStore {
         return result.sorted { $0.latest.date > $1.latest.date }
     }
 
+    /// Prüfsumme einer Datei, gebildet auf dem Server.
+    static func checksum(
+        _ remotePath: String, client: StorageBoxClient
+    ) async throws -> String? {
+        let output = try await client.run(
+            "sha256sum -- " + StorageBoxClient.quote(remotePath)
+        )
+        // Ausgabeformat: »<hash>  <dateiname>«
+        return output.split(whereSeparator: \.isWhitespace).first.map(String.init)
+    }
+
+    /// Dünnt den Verlauf aus, statt ihn hinten abzuschneiden: heute jede
+    /// Fassung, diesen Monat eine pro Tag, dieses Jahr eine pro Woche,
+    /// davor eine pro Monat.
     private static func prune(
         relativePath: String, client: StorageBoxClient, config: SpindConfig
     ) async {
         let versions = await list(relativePath: relativePath, client: client, config: config)
-        guard versions.count > keepPerFile else { return }
-        for version in versions.dropFirst(keepPerFile) {
+        for version in VersionRetention.expendable(versions, now: Date()) {
             try? await client.run("rm -- \(StorageBoxClient.quote(version.remotePath))")
         }
     }
