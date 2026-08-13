@@ -13,6 +13,7 @@
 // You should have received a copy of the GNU Affero General Public
 // License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+import BackgroundTasks
 import SwiftUI
 import FileProvider
 import SpindCore
@@ -101,6 +102,7 @@ func connectionHint(for error: Error) -> String {
 
 @main
 struct SpindMobileApp: App {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var config = MobileStore.loadConfig()
 
     var body: some Scene {
@@ -119,6 +121,17 @@ struct SpindMobileApp: App {
                     config = MobileStore.loadConfig()
                 }
             }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .active: Task { await SpindDomain.refresh() }
+            case .background: SpindDomain.scheduleBackgroundRefresh()
+            default: break
+            }
+        }
+        .backgroundTask(.appRefresh(SpindDomain.refreshTaskID)) {
+            await SpindDomain.refresh()
+            await MainActor.run { SpindDomain.scheduleBackgroundRefresh() }
         }
     }
 }
@@ -314,6 +327,11 @@ struct StatusView: View {
     @State private var testResult: (ok: Bool, text: String)?
     @State private var confirmReset = false
     @State private var keyCopied = false
+    @State private var refreshing = false
+
+    private let beat = Timer
+        .publish(every: SpindDomain.foregroundInterval, on: .main, in: .common)
+        .autoconnect()
 
     var body: some View {
         NavigationStack {
@@ -348,9 +366,30 @@ struct StatusView: View {
                         Image(systemName: "folder.badge.gearshape")
                             .foregroundStyle(.blue)
                     }
+                    Button {
+                        refreshing = true
+                        Task {
+                            await SpindDomain.refresh()
+                            try? await Task.sleep(for: .seconds(2))
+                            refreshing = false
+                        }
+                    } label: {
+                        HStack {
+                            if refreshing { ProgressView().padding(.trailing, 4) }
+                            Text("Jetzt nach Änderungen sehen")
+                        }
+                    }
+                    .disabled(refreshing)
                     Button("Dateien-App-Eintrag neu anlegen") {
                         SpindDomain.register()
                     }
+                } footer: {
+                    Text("Solange diese App offen ist, sieht Spind alle "
+                         + "\(Int(SpindDomain.foregroundInterval)) Sekunden nach. "
+                         + "Im Hintergrund entscheidet iOS, wann es die App dafür "
+                         + "kurz aufweckt – das kann dauern. Ein SFTP-Server kann "
+                         + "von sich aus nicht Bescheid geben; in der Dateien-App "
+                         + "holt ein Zug nach unten den Stand sofort.")
                 }
 
                 if let publicLine = MobileStore.existingPublicLine() {
@@ -385,6 +424,12 @@ struct StatusView: View {
                 }
             }
             .navigationTitle("Spind")
+            // Solange die App offen ist, wird im kurzen Takt nachgesehen.
+            // Der Timer der Hauptschleife ruht im Hintergrund von selbst —
+            // dort übernimmt das Aufwecken durch iOS.
+            .onReceive(beat) { _ in
+                Task { await SpindDomain.refresh() }
+            }
             .confirmationDialog(
                 "Einrichtung zurücksetzen?", isPresented: $confirmReset,
                 titleVisibility: .visible
@@ -454,6 +499,43 @@ enum SpindDomain {
 
     static func remove() {
         NSFileProviderManager.remove(domain) { _ in }
+    }
+
+    // MARK: - Nachsehen, was sich geändert hat
+
+    static let refreshTaskID = (Bundle.main.object(
+        forInfoDictionaryKey: "SpindRefreshTaskID"
+    ) as? String) ?? "dev.eigenhand.spind.refresh"
+
+    /// Takt, in dem die geöffnete App nachsehen lässt.
+    static let foregroundInterval: TimeInterval = 10
+
+    /// Stupst die Extension an, beim Server nachzufragen. SFTP kennt keine
+    /// Push-Nachricht: Ohne dieses Anstupsen erfährt das iPhone von einer
+    /// Löschung am Mac erst, wenn jemand den Ordner in der Dateien-App von
+    /// Hand neu lädt.
+    static func refresh() async {
+        guard let manager = NSFileProviderManager(for: domain) else { return }
+        // Die Marke sagt der Extension: Das ist eine gewollte Nachschau,
+        // nicht das System, das den Arbeitssatz durchzählt.
+        if let url = MobileStore.directory?
+            .appendingPathComponent(SpindGroupFile.sweepRequest) {
+            try? FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(), withIntermediateDirectories: true
+            )
+            try? Data().write(to: url, options: .atomic)
+        }
+        try? await manager.signalEnumerator(for: .workingSet)
+        try? await manager.signalEnumerator(for: .rootContainer)
+    }
+
+    /// Fünf Minuten sind der Wunsch, keine Zusage: iOS entscheidet selbst,
+    /// wann es die App kurz aufweckt — nach Akku, Netz und danach, wie oft
+    /// die App sonst benutzt wird. Es können auch Stunden werden.
+    static func scheduleBackgroundRefresh() {
+        let request = BGAppRefreshTaskRequest(identifier: refreshTaskID)
+        request.earliestBeginDate = Date(timeIntervalSinceNow: 5 * 60)
+        try? BGTaskScheduler.shared.submit(request)
     }
 }
 

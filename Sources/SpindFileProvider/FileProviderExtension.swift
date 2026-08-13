@@ -76,7 +76,7 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
     /// Übersetzt Transportfehler in den passenden File-Provider-Fehler.
     /// Vorher wurde pauschal »Server nicht erreichbar« gemeldet — wer einen
     /// kaputten Schlüsselpfad hatte, suchte den Fehler beim Netzwerk.
-    private func mapToFileProviderError(_ error: Error) -> Error {
+    fileprivate func mapToFileProviderError(_ error: Error) -> Error {
         if error is NSFileProviderError { return error }
         if let boxError = error as? StorageBoxError {
             switch boxError {
@@ -749,6 +749,12 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 extLog("enumerateItems: '\(relative)' start")
                 let items = try await ext.listItems(relative)
                 extLog("enumerateItems: '\(relative)' -> \(items.count) Einträge")
+                // Die vollständige Auflistung ist der Vergleichspunkt für
+                // spätere Änderungsabfragen — ohne ihn bliebe jede Löschung
+                // unsichtbar.
+                await RemoteSnapshotStore.shared.record(
+                    RemoteSnapshotStore.entries(for: items), in: relative
+                )
                 if !items.isEmpty {
                     observer.didEnumerate(items)
                 }
@@ -764,11 +770,42 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         for observer: NSFileProviderChangeObserver,
         from anchor: NSFileProviderSyncAnchor
     ) {
-        // No server-side change feed on SFTP — but keep/free policy
-        // switches are queued in PendingUpdates and delivered through the
-        // working set so the system applies them immediately.
+        // SFTP hat keinen Änderungs-Kanal: Der einzige Weg herauszufinden,
+        // was sich geändert hat, ist nachzusehen und mit dem zuletzt
+        // gemerkten Stand zu vergleichen.
         guard container == .workingSet else {
-            observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
+            let relative = FileProviderItem.relativePath(for: container)
+            Task {
+                guard let ext = self.ext else {
+                    observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
+                    return
+                }
+                do {
+                    let items = try await ext.listItems(relative)
+                    let change = await RemoteSnapshotStore.shared.diff(
+                        RemoteSnapshotStore.entries(for: items), in: relative
+                    )
+                    if !change.updated.isEmpty || !change.deleted.isEmpty {
+                        extLog("enumerateChanges: '\(relative)' -> "
+                               + "\(change.updated.count) neu oder geändert, "
+                               + "\(change.deleted.count) verschwunden")
+                    }
+                    Self.report(change, items: items, to: observer)
+                    observer.finishEnumeratingChanges(
+                        upTo: NSFileProviderSyncAnchor(
+                            Data("spind-\(relative)-\(change.anchor)".utf8)
+                        ),
+                        moreComing: false
+                    )
+                } catch {
+                    // Kein Kontakt zum Server heißt NICHT „alles gelöscht".
+                    // Der Fehler geht durch, das System fragt später erneut.
+                    extLog("enumerateChanges: '\(relative)' Fehler: \(error)")
+                    observer.finishEnumeratingWithError(
+                        ext.mapToFileProviderError(error)
+                    )
+                }
+            }
             return
         }
         Task {
@@ -781,10 +818,24 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             var updatedPaths = queueUpdated.union(appFeed.updated)
             var deletedPaths = queueDeleted.union(appFeed.deleted)
             updatedPaths.subtract(deletedPaths)
-            let current = (appFeed.updated.isEmpty && appFeed.deleted.isEmpty)
-                ? drainedAnchor
-                : await PendingUpdates.shared.bump()
-            var items: [FileProviderItem] = []
+            // Auf dem iPhone gibt es keine App, die im Hintergrund synct und
+            // den Änderungs-Feed füllt — hier ist der Arbeitssatz die einzige
+            // Gelegenheit, von sich aus beim Server nachzusehen. Geprüft
+            // werden nur schon besuchte Ordner, gebremst gegen Dauerabfragen.
+            #if os(iOS)
+            let swept = await self.sweepKnownDirectories(ext)
+            #else
+            let swept: (updated: [FileProviderItem], deleted: Set<String>) = ([], [])
+            #endif
+            var items = swept.updated
+            deletedPaths.formUnion(swept.deleted)
+            // Der Zähler muss sich bewegen, wenn Neues von außen kam —
+            // sonst hält das System seinen Stand für aktuell.
+            let outOfBand = !appFeed.updated.isEmpty || !appFeed.deleted.isEmpty
+                || !swept.updated.isEmpty || !swept.deleted.isEmpty
+            let current = outOfBand
+                ? await PendingUpdates.shared.bump()
+                : drainedAnchor
             for path in updatedPaths {
                 if let item = try? await ext.loadItem(path) {
                     items.append(item)
@@ -793,6 +844,7 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     deletedPaths.insert(path)
                 }
             }
+            items = items.filter { !deletedPaths.contains($0.relativePath) }
             if !items.isEmpty {
                 extLog("Änderungs-Feed: \(items.count) Item(s) aktualisiert")
                 observer.didUpdate(items)
@@ -810,10 +862,92 @@ final class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
     }
 
+    /// Fragt die bereits besuchten Ordner beim Server nach und meldet, was
+    /// sich seither geändert hat. Ordner, die gerade nicht erreichbar sind,
+    /// bleiben unangetastet — eine Löschmeldung ins Blaue würde die
+    /// Dateien-App echte Dateien wegräumen lassen.
+    private func sweepKnownDirectories(
+        _ ext: FileProviderExtension
+    ) async -> (updated: [FileProviderItem], deleted: Set<String>) {
+        // Die geöffnete App bittet im kurzen Takt ausdrücklich um Nachschau;
+        // das System selbst fragt den Arbeitssatz unvorhersehbar oft ab und
+        // wird gebremst.
+        let requested = Self.consumeSweepRequest()
+        guard await RemoteSnapshotStore.shared.beginSweep(
+            minimumInterval: 20, force: requested
+        ) else { return ([], []) }
+        var updated: [FileProviderItem] = []
+        var deleted: Set<String> = []
+        // Das System wartet nicht ewig auf eine Änderungsabfrage. Was in
+        // dieser Zeit nicht drankommt, ist beim nächsten Durchlauf vorn.
+        let deadline = Date().addingTimeInterval(8)
+        for directory in await RemoteSnapshotStore.shared.directoriesToRecheck() {
+            if Date() > deadline { break }
+            guard let items = try? await ext.listItems(directory) else { continue }
+            let change = await RemoteSnapshotStore.shared.diff(
+                RemoteSnapshotStore.entries(for: items), in: directory
+            )
+            guard !change.updated.isEmpty || !change.deleted.isEmpty else { continue }
+            updated += Self.items(for: change.updated, in: items)
+            deleted.formUnion(change.deleted)
+            extLog("Nachschau '\(directory)': \(change.updated.count) neu oder "
+                   + "geändert, \(change.deleted.count) verschwunden")
+        }
+        await RemoteSnapshotStore.shared.endSweep()
+        return (updated, deleted)
+    }
+
+    /// Die App legt diese Marke ab, bevor sie den Arbeitssatz anstößt —
+    /// daran erkennt die Extension eine ausdrücklich gewünschte Nachschau
+    /// und lässt sie an der Bremse vorbei.
+    private static func consumeSweepRequest() -> Bool {
+        guard let url = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: appGroupID
+        )?.appendingPathComponent("spind/\(SpindGroupFile.sweepRequest)"),
+              FileManager.default.fileExists(atPath: url.path)
+        else { return false }
+        try? FileManager.default.removeItem(at: url)
+        return true
+    }
+
+    private static func items(
+        for paths: [String], in items: [FileProviderItem]
+    ) -> [FileProviderItem] {
+        let byPath = Dictionary(
+            items.map { ($0.relativePath, $0) }, uniquingKeysWith: { first, _ in first }
+        )
+        return paths.compactMap { byPath[$0] }
+    }
+
+    private static func report(
+        _ change: RemoteSnapshotStore.Change,
+        items: [FileProviderItem],
+        to observer: NSFileProviderChangeObserver
+    ) {
+        let updated = Self.items(for: change.updated, in: items)
+        if !updated.isEmpty { observer.didUpdate(updated) }
+        if !change.deleted.isEmpty {
+            observer.didDeleteItems(
+                withIdentifiers: change.deleted.map(FileProviderItem.identifier(for:))
+            )
+        }
+    }
+
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
         Task {
-            let anchor = await PendingUpdates.shared.anchor
-            completionHandler(NSFileProviderSyncAnchor(Data("spind-\(anchor)".utf8)))
+            if container == .workingSet {
+                let anchor = await PendingUpdates.shared.anchor
+                completionHandler(NSFileProviderSyncAnchor(Data("spind-\(anchor)".utf8)))
+                return
+            }
+            // Ordner führen ihren eigenen Zähler — er muss zum Marker aus
+            // enumerateChanges passen, sonst verwirft das System die
+            // Änderungsverfolgung für diesen Ordner wieder.
+            let relative = FileProviderItem.relativePath(for: container)
+            let anchor = await RemoteSnapshotStore.shared.anchor(for: relative)
+            completionHandler(
+                NSFileProviderSyncAnchor(Data("spind-\(relative)-\(anchor)".utf8))
+            )
         }
     }
 }

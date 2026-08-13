@@ -578,4 +578,70 @@ final class PairingCodeTests: XCTestCase {
             XCTAssertThrowsError(try DeviceEnrollment.validated(bad), "akzeptiert: \(bad)")
         }
     }
+
+    // MARK: - Änderungen auf dem Server erkennen
+
+    private func entry(_ size: Int64, _ modified: Double = 100, dir: Bool = false)
+        -> RemoteEntry {
+        RemoteEntry(isDirectory: dir, size: size, modified: modified)
+    }
+
+    /// Was am Mac gelöscht wurde, muss am iPhone als gelöscht ankommen —
+    /// sonst zeigt die Dateien-App Karteileichen bis in alle Ewigkeit.
+    func testGeloeschtesWirdAlsGeloeschtGemeldet() {
+        let change = RemoteListingDiff.compare(
+            previous: ["a.txt": entry(10), "b.txt": entry(20), "ordner": entry(0, dir: true)],
+            current: ["a.txt": entry(10)]
+        )
+        XCTAssertEqual(change.deleted, ["b.txt", "ordner"])
+        XCTAssertEqual(change.updated, [])
+    }
+
+    func testNeueUndGeaenderteDateienWerdenGemeldet() {
+        let previous = ["a.txt": entry(10), "b.txt": entry(20)]
+        // Neu, größer geworden, nur neu gespeichert (gleiche Größe).
+        XCTAssertEqual(
+            RemoteListingDiff.compare(
+                previous: previous, current: previous.merging(["c.txt": entry(1)]) { a, _ in a }
+            ).updated, ["c.txt"]
+        )
+        XCTAssertEqual(
+            RemoteListingDiff.compare(
+                previous: previous, current: ["a.txt": entry(10), "b.txt": entry(99)]
+            ).updated, ["b.txt"]
+        )
+        XCTAssertEqual(
+            RemoteListingDiff.compare(
+                previous: previous, current: ["a.txt": entry(10, 200), "b.txt": entry(20)]
+            ).updated, ["a.txt"]
+        )
+    }
+
+    /// Unverändert heißt unverändert: keine Meldung, kein Neuladen.
+    func testUnveraenderterOrdnerMeldetNichts() {
+        let listing = ["a.txt": entry(10), "unter": entry(0, dir: true)]
+        XCTAssertTrue(
+            RemoteListingDiff.compare(previous: listing, current: listing).isEmpty
+        )
+    }
+
+    /// Ein leerer Ordner ist ein gültiges Ergebnis — deshalb darf der
+    /// Vergleich NUR nach einer erfolgreichen Auflistung laufen. Der Test
+    /// hält fest, wie scharf dieses Messer ist.
+    func testLeereAuflistungLoeschtAlles() {
+        let change = RemoteListingDiff.compare(
+            previous: ["a.txt": entry(10)], current: [:]
+        )
+        XCTAssertEqual(change.deleted, ["a.txt"])
+    }
+
+    /// Datei wird zu Ordner (gleicher Name): das ist eine Änderung, keine
+    /// Löschung — sonst verliert die Dateien-App den Eintrag ganz.
+    func testTypwechselIstEineAenderung() {
+        let change = RemoteListingDiff.compare(
+            previous: ["x": entry(10)], current: ["x": entry(0, dir: true)]
+        )
+        XCTAssertEqual(change.updated, ["x"])
+        XCTAssertEqual(change.deleted, [])
+    }
 }

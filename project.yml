@@ -79,6 +79,14 @@ targets:
         UILaunchScreen: {}
         NSCameraUsageDescription: Zum Scannen des Kopplungscodes aus der Mac-App.
         ITSAppUsesNonExemptEncryption: false
+        # SFTP kann nicht von sich aus Bescheid geben, dass anderswo etwas
+        # gelöscht wurde. iOS weckt die App gelegentlich auf, damit sie die
+        # Dateien-App zum Nachsehen anstößt.
+        UIBackgroundModes:
+          - fetch
+        SpindRefreshTaskID: $(SPIND_IOS_BUNDLE_ID).refresh
+        BGTaskSchedulerPermittedIdentifiers:
+          - $(SPIND_IOS_BUNDLE_ID).refresh
     entitlements:
       path: xcode/SpindMobile.entitlements
       properties:
