@@ -336,92 +336,11 @@ struct StatusView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Verbindung") {
-                    LabeledContent("Server", value: config.host)
-                    LabeledContent("Benutzer", value: config.username)
-                    LabeledContent("Port", value: String(config.port))
-                    Button {
-                        test()
-                    } label: {
-                        HStack {
-                            if testing { ProgressView().padding(.trailing, 4) }
-                            Text("Verbindung testen")
-                        }
-                    }
-                    .disabled(testing)
-                    if let testResult {
-                        Label(testResult.text,
-                              systemImage: testResult.ok
-                                  ? "checkmark.circle.fill" : "xmark.circle.fill")
-                            .font(.footnote)
-                            .foregroundStyle(testResult.ok ? .green : .red)
-                    }
-                }
-
-                Section {
-                    Label {
-                        // Ein einzelnes Literal, damit SwiftUI das Markdown rendert.
-                        Text("Deine Dateien findest du in der **Dateien-App** unter »Durchsuchen« → **Spind**. Sie laden erst beim Öffnen und belegen sonst keinen Platz.")
-                    } icon: {
-                        Image(systemName: "folder.badge.gearshape")
-                            .foregroundStyle(.blue)
-                    }
-                    Button {
-                        refreshing = true
-                        Task {
-                            await SpindDomain.refresh()
-                            try? await Task.sleep(for: .seconds(2))
-                            refreshing = false
-                        }
-                    } label: {
-                        HStack {
-                            if refreshing { ProgressView().padding(.trailing, 4) }
-                            Text("Jetzt nach Änderungen sehen")
-                        }
-                    }
-                    .disabled(refreshing)
-                    Button("Dateien-App-Eintrag neu anlegen") {
-                        SpindDomain.register()
-                    }
-                } footer: {
-                    Text("Solange diese App offen ist, sieht Spind alle "
-                         + "\(Int(SpindDomain.foregroundInterval)) Sekunden nach. "
-                         + "Im Hintergrund entscheidet iOS, wann es die App dafür "
-                         + "kurz aufweckt – das kann dauern. Ein SFTP-Server kann "
-                         + "von sich aus nicht Bescheid geben; in der Dateien-App "
-                         + "holt ein Zug nach unten den Stand sofort.")
-                }
-
-                if let publicLine = MobileStore.existingPublicLine() {
-                    Section {
-                        Text(publicLine)
-                            .font(.system(size: 11, design: .monospaced))
-                            .lineLimit(3)
-                            .truncationMode(.middle)
-                        Button {
-                            UIPasteboard.general.string = publicLine
-                            keyCopied = true
-                        } label: {
-                            Label(keyCopied ? "Kopiert!" : "Öffentlichen Schlüssel kopieren",
-                                  systemImage: keyCopied ? "checkmark" : "doc.on.doc")
-                        }
-                    } header: {
-                        Text("Öffentlicher Schlüssel")
-                    } footer: {
-                        Text("Diesen Schlüssel kannst du bei weiteren Boxen oder "
-                             + "Servern hinterlegen – er bleibt auf diesem iPhone "
-                             + "immer derselbe.")
-                    }
-                }
-
-                Section {
-                    Button("Einrichtung zurücksetzen …", role: .destructive) {
-                        confirmReset = true
-                    }
-                } footer: {
-                    Text("Entfernt Zugang und Schlüssel von diesem iPhone. "
-                         + "Auf dem Server ändert sich nichts.")
-                }
+                connectionSection
+                filesSection
+                recoverySection
+                keySection
+                resetSection
             }
             .navigationTitle("Spind")
             // Solange die App offen ist, wird im kurzen Takt nachgesehen.
@@ -437,6 +356,126 @@ struct StatusView: View {
                 Button("Zurücksetzen", role: .destructive) { reset() }
                 Button("Abbrechen", role: .cancel) {}
             }
+        }
+    }
+
+    // Einzelne Abschnitte: als ein Ausdruck ist der Aufbau zu groß, der
+    // Übersetzer gibt beim Typprüfen auf.
+
+    private var connectionSection: some View {
+        Section("Verbindung") {
+            LabeledContent("Server", value: config.host)
+            LabeledContent("Benutzer", value: config.username)
+            LabeledContent("Port", value: String(config.port))
+            Button {
+                test()
+            } label: {
+                HStack {
+                    if testing { ProgressView().padding(.trailing, 4) }
+                    Text("Verbindung testen")
+                }
+            }
+            .disabled(testing)
+            if let testResult {
+                Label(testResult.text,
+                      systemImage: testResult.ok
+                          ? "checkmark.circle.fill" : "xmark.circle.fill")
+                    .font(.footnote)
+                    .foregroundStyle(testResult.ok ? .green : .red)
+            }
+        }
+    }
+
+    private var filesSection: some View {
+        Section {
+            Label {
+                // Ein einzelnes Literal, damit SwiftUI das Markdown rendert.
+                Text("Deine Dateien findest du in der **Dateien-App** unter »Durchsuchen« → **Spind**. Sie laden erst beim Öffnen und belegen sonst keinen Platz.")
+            } icon: {
+                Image(systemName: "folder.badge.gearshape")
+                    .foregroundStyle(.blue)
+            }
+            Button {
+                refreshing = true
+                Task {
+                    await SpindDomain.refresh()
+                    try? await Task.sleep(for: .seconds(2))
+                    refreshing = false
+                }
+            } label: {
+                HStack {
+                    if refreshing { ProgressView().padding(.trailing, 4) }
+                    Text("Jetzt nach Änderungen sehen")
+                }
+            }
+            .disabled(refreshing)
+            Button("Dateien-App-Eintrag neu anlegen") {
+                SpindDomain.register()
+            }
+        } footer: {
+            Text("Solange diese App offen ist, sieht Spind alle "
+                 + "\(Int(SpindDomain.foregroundInterval)) Sekunden nach. "
+                 + "Im Hintergrund entscheidet iOS, wann es die App dafür "
+                 + "kurz aufweckt – das kann dauern. Ein SFTP-Server kann "
+                 + "von sich aus nicht Bescheid geben; in der Dateien-App "
+                 + "holt ein Zug nach unten den Stand sofort.")
+        }
+    }
+
+    private var recoverySection: some View {
+        Section {
+            NavigationLink {
+                TrashView(config: config)
+            } label: {
+                Label("Papierkorb", systemImage: "arrow.uturn.backward.circle")
+            }
+            NavigationLink {
+                RemoteBrowserView(config: config)
+            } label: {
+                Label("Versionsverlauf", systemImage: "clock.arrow.circlepath")
+            }
+        } header: {
+            Text("Wiederherstellen")
+        } footer: {
+            Text("Beides liegt auf dem Server: Gelöschtes und frühere "
+                 + "Fassungen sind hier auch dann zu finden, wenn dieses "
+                 + "iPhone die Datei nie geladen hat.")
+        }
+    }
+
+    @ViewBuilder
+    private var keySection: some View {
+        if let publicLine = MobileStore.existingPublicLine() {
+            Section {
+                Text(publicLine)
+                    .font(.system(size: 11, design: .monospaced))
+                    .lineLimit(3)
+                    .truncationMode(.middle)
+                Button {
+                    UIPasteboard.general.string = publicLine
+                    keyCopied = true
+                } label: {
+                    Label(keyCopied ? "Kopiert!" : "Öffentlichen Schlüssel kopieren",
+                          systemImage: keyCopied ? "checkmark" : "doc.on.doc")
+                }
+            } header: {
+                Text("Öffentlicher Schlüssel")
+            } footer: {
+                Text("Diesen Schlüssel kannst du bei weiteren Boxen oder "
+                     + "Servern hinterlegen – er bleibt auf diesem iPhone "
+                     + "immer derselbe.")
+            }
+        }
+    }
+
+    private var resetSection: some View {
+        Section {
+            Button("Einrichtung zurücksetzen …", role: .destructive) {
+                confirmReset = true
+            }
+        } footer: {
+            Text("Entfernt Zugang und Schlüssel von diesem iPhone. "
+                 + "Auf dem Server ändert sich nichts.")
         }
     }
 
