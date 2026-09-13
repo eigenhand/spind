@@ -55,7 +55,7 @@ final class SyncPlanTests: XCTestCase {
         try? FileManager.default.removeItem(at: temporaryDirectory)
     }
 
-    // MARK: - Hilfen
+    // MARK: - Helpers
 
     private func local(_ path: String, size: Int64 = 10, mod: Double = 1000) -> LocalItem {
         LocalItem(relativePath: path, isDirectory: false, size: size, modTime: mod)
@@ -97,7 +97,7 @@ final class SyncPlanTests: XCTestCase {
         }
     }
 
-    // MARK: - Grundfälle
+    // MARK: - Basic cases
 
     func testNeueLokaleDateiWirdHochgeladen() {
         let actions = engine.plan(local: ["a.txt": local("a.txt")], remote: [:], base: [:])
@@ -118,7 +118,7 @@ final class SyncPlanTests: XCTestCase {
         XCTAssertTrue(actions.isEmpty, "Unveränderte Dateien dürfen nichts auslösen")
     }
 
-    // MARK: - Der Fall „Rechner lag lange still"
+    // MARK: - The case "machine sat idle for a long time"
 
     func testVeralteterRechnerUeberschreibtNeuereFassungNicht() {
         // Lokal unverändert seit dem letzten Abgleich, entfernt geändert.
@@ -140,7 +140,7 @@ final class SyncPlanTests: XCTestCase {
         XCTAssertEqual(describe(actions), ["upload:a.txt"])
     }
 
-    // MARK: - Konflikte: es darf nie etwas verloren gehen
+    // MARK: - Conflicts: nothing may ever be lost
 
     func testBeidseitigGeaendertErzeugtKonfliktStattVerlust() {
         let actions = engine.plan(
@@ -172,7 +172,7 @@ final class SyncPlanTests: XCTestCase {
                        "Eine lokale Änderung darf durch fremdes Löschen nicht verschwinden")
     }
 
-    // MARK: - Löschungen ohne Gegenänderung
+    // MARK: - Deletions without a counter-change
 
     func testLokalGeloeschtWirdEntferntGeloescht() {
         let actions = engine.plan(
@@ -188,7 +188,7 @@ final class SyncPlanTests: XCTestCase {
         XCTAssertEqual(describe(actions), ["deleteLocal:a.txt"])
     }
 
-    // MARK: - Verschieben statt neu übertragen
+    // MARK: - Moving instead of transferring again
 
     func testVerschiebenWirdAlsUmbenennungErkannt() {
         let item = local("Archiv/gross.bin", size: 67_108_864, mod: 1000)
@@ -222,7 +222,7 @@ final class SyncPlanTests: XCTestCase {
         XCTAssertTrue(described.contains("upload:neu.bin"))
     }
 
-    // MARK: - Umlaute (macOS speichert zerlegt, Server zusammengesetzt)
+    // MARK: - Umlauts (macOS stores decomposed, the server composed)
 
     func testZerlegteUndZusammengesetzteUmlauteGeltenAlsDieselbeDatei() {
         let decomposed = "Ma\u{0308}rz.txt"          // a + Trema
@@ -245,7 +245,7 @@ final class SyncPlanTests: XCTestCase {
                       "Gleiche Datei in beiden Schreibweisen darf keinen Konflikt erzeugen")
     }
 
-    // MARK: - Sortierung der Aktionen
+    // MARK: - Ordering of actions
 
     func testOrdnerWerdenVorInhaltAngelegtUndTiefZuerstGeloescht() {
         let actions = engine.plan(
@@ -355,7 +355,7 @@ final class SafetyGuardTests: XCTestCase {
                        "Verwaiste Kindeinträge lösen sonst Löschungen auf der Gegenseite aus")
     }
 
-    /// »Readme.txt« und »readme.txt« sind auf der Box zwei Dateien, lokal
+    /// "Readme.txt" und "readme.txt" sind auf der Box zwei Dateien, lokal
     /// (APFS) meist eine — beide Pfade müssen als Kollision erkannt werden,
     /// Ordner-Kollisionen erfassen den ganzen Teilbaum über den Präfix.
     func testGrossKleinschreibungsKollisionWirdErkannt() {
@@ -395,7 +395,7 @@ final class SafetyGuardTests: XCTestCase {
     /// Ein Ordner, der bei Erstkontakt auf beiden Seiten existiert
     /// (Wurzelwechsel, aufgehobener Ausschluss), muss in die Basis
     /// übernommen werden — sonst wird eine spätere lokale Löschung als
-    /// »remote neu« gedeutet und der Ordner kommt wieder.
+    /// "remote neu" gedeutet und der Ordner kommt wieder.
     func testBeidseitigerOrdnerWirdInDieBasisUebernommen() throws {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("spind-plan-\(UUID().uuidString)")
@@ -579,7 +579,7 @@ final class PairingCodeTests: XCTestCase {
         }
     }
 
-    // MARK: - Änderungen auf dem Server erkennen
+    // MARK: - Detecting changes on the server
 
     private func entry(_ size: Int64, _ modified: Double = 100, dir: Bool = false)
         -> RemoteEntry {
@@ -645,7 +645,7 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(change.deleted, [])
     }
 
-    // MARK: - Fotos einsortieren
+    // MARK: - Filing photos
 
     private var august: Date {
         var parts = DateComponents()
@@ -708,7 +708,7 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(PhotoLayout.monthName(5, locale: Locale(identifier: "en_US")), "May")
     }
 
-    // MARK: - Verlauf ausdünnen
+    // MARK: - Thinning the history
 
     private func version(_ daysAgo: Double, _ hoursAgo: Double = 0,
                          from reference: Date) -> FileVersion {
@@ -717,7 +717,7 @@ final class PairingCodeTests: XCTestCase {
                            size: 100, remotePath: "/v/\(date.timeIntervalSince1970)")
     }
 
-    /// Fester Kalender und fester »jetzt«: Tages-, Wochen- und
+    /// Fester Kalender und fester "jetzt": Tages-, Wochen- und
     /// Monatsgrenzen lassen sich nur mit echten Daten prüfen, nicht durch
     /// Abziehen von Stunden — sonst rutscht ein Fall über Mitternacht und
     /// der Test misst den Zufall.
@@ -758,7 +758,7 @@ final class PairingCodeTests: XCTestCase {
     }
 
     /// Am ersten Tag wird nichts zusammengefasst — das ist das Zeitfenster
-    /// für »das war ich gerade, mach das rückgängig«.
+    /// für "das war ich gerade, mach das rückgängig".
     func testAmErstenTagBleibtJedeFassung() {
         let heute = (0..<12).map { version(0, Double($0) * 2, from: jetzt) }
         XCTAssertEqual(VersionRetention.expendable(heute, now: jetzt).count, 0)
@@ -816,7 +816,7 @@ final class PairingCodeTests: XCTestCase {
     }
 
     /// Nichts darf doppelt in der Löschliste stehen — sonst scheitert das
-    /// zweite »rm« und der Lauf sieht kaputt aus.
+    /// zweite "rm" und der Lauf sieht kaputt aus.
     func testLoeschlisteIstUeberschneidungsfrei() {
         var alle = (0..<40).map { version(0, Double($0) * 0.5, from: jetzt) }
         alle += (0..<300).map { version(2 + Double($0) * 3, from: jetzt) }

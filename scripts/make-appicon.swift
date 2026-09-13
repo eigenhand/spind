@@ -1,18 +1,18 @@
 #!/usr/bin/env swift
 //
-// Zeichnet das Spind-App-Symbol — ein weißer Spind auf schwarzem Grund — und
-// schreibt alle PNG-Größen in die beiden Asset-Kataloge.
+// Draws the Spind app icon and writes every PNG size into the two asset
+// catalogues.
 //
 //   swift scripts/make-appicon.swift
 //
-// Der Spind steht als Quader im Raum: 30° um die Hochachse gedreht, dazu eine
-// leichte Neigung, sodass Front, linke Seite und Deckel sichtbar sind. Alles
-// ist vektorbasiert und wird für jede Kantenlänge neu gerastert, damit auch
-// 16×16 scharf bleibt.
+// House style, shared with the other apps (Fundus, PerBu): a flat mark in
+// slate on an almost white ground, no perspective, no shadow, a generous
+// margin. Outer contour 40/1024, inner marks 18/1024. Everything is vector
+// based and rasterised afresh for each edge length, so 16x16 stays crisp.
 
 import AppKit
 
-// MARK: - Pfad-Helfer
+// MARK: - Path helpers
 
 /// Rechteck mit stetig gekrümmten Ecken — gerade Kanten, Ecken als Viertel einer
 /// Superellipse. Nähert die Squircle-Form der macOS-Symbole an.
@@ -54,74 +54,44 @@ func roundedRect(_ r: CGRect, radius: CGFloat) -> CGPath {
     CGPath(roundedRect: r, cornerWidth: radius, cornerHeight: radius, transform: nil)
 }
 
-/// Konvexe Hülle nach Andrew — liefert den Umriss des projizierten Quaders.
-func convexHull(_ points: [CGPoint]) -> [CGPoint] {
-    let sorted = points.sorted { $0.x == $1.x ? $0.y < $1.y : $0.x < $1.x }
-    func cross(_ o: CGPoint, _ a: CGPoint, _ b: CGPoint) -> CGFloat {
-        (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
-    }
-    func chain(_ points: [CGPoint]) -> [CGPoint] {
-        var result: [CGPoint] = []
-        for point in points {
-            while result.count >= 2, cross(result[result.count - 2], result[result.count - 1], point) <= 0 {
-                result.removeLast()
-            }
-            result.append(point)
-        }
-        result.removeLast()
-        return result
-    }
-    return chain(sorted) + chain(sorted.reversed())
-}
-
-/// Polygon mit gebrochenen Ecken. Der Radius wird je Ecke auf die halbe Länge
-/// der angrenzenden Kanten begrenzt, damit kurze Kanten nicht ausbrechen.
-func roundedPolygon(_ points: [CGPoint], radius: CGFloat) -> CGPath {
-    let path = CGMutablePath()
-    guard points.count >= 3 else { return path }
-
-    func midpoint(_ a: CGPoint, _ b: CGPoint) -> CGPoint {
-        CGPoint(x: (a.x + b.x) / 2, y: (a.y + b.y) / 2)
-    }
-    func length(_ a: CGPoint, _ b: CGPoint) -> CGFloat {
-        hypot(b.x - a.x, b.y - a.y)
-    }
-
-    path.move(to: midpoint(points[points.count - 1], points[0]))
-    for index in points.indices {
-        let previous = points[(index + points.count - 1) % points.count]
-        let corner = points[index]
-        let next = points[(index + 1) % points.count]
-        let limit = min(length(previous, corner), length(corner, next)) / 2
-        path.addArc(
-            tangent1End: corner,
-            tangent2End: midpoint(corner, next),
-            radius: min(radius, limit)
-        )
-    }
-    path.closeSubpath()
-    return path
-}
-
-// MARK: - Zeichnung
+// MARK: - Drawing
 
 enum Platform {
-    case mac  // eigene Squircle-Form, Rand ringsum
-    case iOS  // randlos, das System maskiert selbst
+    case mac  // its own squircle, with a margin all round
+    case iOS  // full bleed, the system masks it itself
 }
 
-/// Anteil der Kantenlänge, den die Symbolfläche auf dem Mac einnimmt.
+/// Share of the edge length the tile takes up on the Mac.
 let macPlateRatio: CGFloat = 824.0 / 1024.0
 
-func drawIcon(size: CGFloat, platform: Platform, into ctx: CGContext) {
+/// iOS 18 asks for three versions of an app icon. Light is the one that
+/// matters; dark and tinted are drawn on a transparent ground, because the
+/// system puts its own backdrop behind them.
+enum Theme {
+    case light, dark, tinted
+}
+
+/// The slate of the other apps, sampled from their icons: #374559.
+let slate = CGColor(red: 55 / 255, green: 69 / 255, blue: 89 / 255, alpha: 1)
+
+func markColor(_ theme: Theme) -> CGColor {
+    switch theme {
+    case .light: return slate
+    case .dark: return CGColor(red: 233 / 255, green: 236 / 255, blue: 242 / 255, alpha: 1)
+    case .tinted: return CGColor(gray: 1, alpha: 1)
+    }
+}
+
+func drawIcon(size: CGFloat, platform: Platform, theme: Theme = .light,
+              into ctx: CGContext) {
     ctx.translateBy(x: 0, y: size)
-    ctx.scaleBy(x: 1, y: -1)  // ab hier wächst y nach unten
+    ctx.scaleBy(x: 1, y: -1)  // from here y grows downwards
     ctx.setAllowsAntialiasing(true)
     ctx.setShouldAntialias(true)
 
-    // `plate` ist der schwarze Grund, `content` das Quadrat, auf das sich die
-    // Maße des Spinds beziehen. Auf dem Mac fallen beide zusammen; auf iOS geht
-    // der Grund randlos bis zur Kante, der Spind bleibt aber gleich groß.
+    // `plate` is the ground, `content` the square the locker is measured
+    // against. On the Mac the two coincide; on iOS the ground runs to the
+    // edge while the locker keeps its size.
     let plate: CGRect
     let plateShape: CGPath
     let content: CGRect
@@ -134,160 +104,122 @@ func drawIcon(size: CGFloat, platform: Platform, into ctx: CGContext) {
     case .iOS:
         plate = CGRect(x: 0, y: 0, width: size, height: size)
         plateShape = CGPath(rect: plate, transform: nil)
-        let side = (size * 0.86).rounded()
-        content = CGRect(x: (size - side) / 2, y: (size - side) / 2, width: side, height: side)
+        content = plate
     }
 
-    // Hintergrund: schwarz, mit einem kaum sichtbaren Verlauf für etwas Tiefe.
+    // The ground: almost white, with a barely visible diagonal gradient so
+    // the tile has an edge on a light background without drawing a border.
+    if theme == .light {
+    ctx.saveGState()
+    ctx.addPath(plateShape)
+    ctx.clip()
     let space = CGColorSpace(name: CGColorSpace.sRGB)!
     let gradient = CGGradient(
         colorsSpace: space,
         colors: [
-            CGColor(srgbRed: 0.078, green: 0.078, blue: 0.086, alpha: 1),
-            CGColor(srgbRed: 0.000, green: 0.000, blue: 0.000, alpha: 1),
+            CGColor(red: 252 / 255, green: 252 / 255, blue: 253 / 255, alpha: 1),
+            CGColor(red: 241 / 255, green: 243 / 255, blue: 247 / 255, alpha: 1),
         ] as CFArray,
         locations: [0, 1]
     )!
-    func paintBackground() {
-        ctx.drawLinearGradient(
-            gradient,
-            start: CGPoint(x: plate.midX, y: plate.minY),
-            end: CGPoint(x: plate.midX, y: plate.maxY),
-            options: [.drawsBeforeStartLocation, .drawsAfterEndLocation]
-        )
-    }
-
-    ctx.saveGState()
-    ctx.addPath(plateShape)
-    ctx.clip()
-    paintBackground()
-    ctx.restoreGState()
-
-    // MARK: Quader im Raum
-
-    // Unter 32 px reicht die Auflösung für die Türfuge nicht mehr — dort steht
-    // ein Spind ohne Fuge, mit gröberen Schlitzen und größerem Griff.
-    let compact = size <= 32
-
-    let s = content.width
-    let halfWidth: CGFloat = 0.23, halfHeight: CGFloat = 0.325, halfDepth: CGFloat = 0.125
-    let yaw = 30 * CGFloat.pi / 180  // Drehung um die Hochachse
-    let pitch = 9 * CGFloat.pi / 180  // Neigung, damit der Deckel sichtbar wird
-
-    /// Parallelprojektion: erst um die Hoch-, dann um die Querachse drehen. Der
-    /// Blick liegt leicht über dem Spind, näher Liegendes rutscht also nach unten.
-    func project(_ x: CGFloat, _ y: CGFloat, _ z: CGFloat) -> CGPoint {
-        let rx = x * cos(yaw) + z * sin(yaw)
-        let rz = -x * sin(yaw) + z * cos(yaw)
-        let ry = y * cos(pitch) + rz * sin(pitch)
-        return CGPoint(x: content.midX + rx * s, y: content.midY + ry * s)
-    }
-
-    func quad(_ corners: [(CGFloat, CGFloat, CGFloat)]) -> CGPath {
-        let path = CGMutablePath()
-        path.addLines(between: corners.map { project($0.0, $0.1, $0.2) })
-        path.closeSubpath()
-        return path
-    }
-
-    let (w, h, d) = (halfWidth, halfHeight, halfDepth)
-    var vertices: [CGPoint] = []
-    for sx in [-w, w] {
-        for sy in [-h, h] {
-            for sz in [-d, d] { vertices.append(project(sx, sy, sz)) }
-        }
-    }
-    let silhouette = roundedPolygon(convexHull(vertices), radius: 0.020 * s)
-
-    // Der ganze Umriss zuerst in Weiß, danach die abgewandten Flächen dunkler
-    // darüber. So bleiben außen die gebrochenen Ecken, innen scharfe Kanten.
-    ctx.saveGState()
-    ctx.addPath(silhouette)
-    ctx.clip()
-
-    ctx.setFillColor(CGColor(gray: 1.00, alpha: 1))
-    ctx.fill(content.insetBy(dx: -s, dy: -s))
-
-    ctx.setFillColor(CGColor(gray: 0.42, alpha: 1))
-    ctx.addPath(quad([(-w, -h, -d), (-w, -h, d), (-w, h, d), (-w, h, -d)]))  // linke Seite
-    ctx.fillPath()
-
-    ctx.setFillColor(CGColor(gray: 0.70, alpha: 1))
-    ctx.addPath(quad([(-w, -h, -d), (w, -h, -d), (w, -h, d), (-w, -h, d)]))  // Deckel
-    ctx.fillPath()
-
-    // MARK: Tür auf der Frontfläche
-
-    // Die Projektion einer Ebene ist affin — deshalb genügt ein
-    // CGAffineTransform, um flach gezeichnete Pfade auf die Front zu legen.
-    let faceOrigin = project(0, 0, d)
-    let faceX = project(1, 0, d)
-    let faceY = project(0, 1, d)
-    let toFace = CGAffineTransform(
-        a: faceX.x - faceOrigin.x, b: faceX.y - faceOrigin.y,
-        c: faceY.x - faceOrigin.x, d: faceY.y - faceOrigin.y,
-        tx: faceOrigin.x, ty: faceOrigin.y
+    ctx.drawLinearGradient(
+        gradient,
+        start: CGPoint(x: plate.minX, y: plate.minY),
+        end: CGPoint(x: plate.maxX, y: plate.maxY),
+        options: []
     )
-
-    /// Aussparungen werden mit demselben Verlauf übermalt, damit der Hintergrund
-    /// exakt durchscheint.
-    func knockOut(_ path: CGPath, rule: CGPathFillRule = .winding) {
-        var transform = toFace
-        guard let projected = path.copy(using: &transform) else { return }
-        ctx.saveGState()
-        ctx.addPath(projected)
-        ctx.clip(using: rule)
-        paintBackground()
-        ctx.restoreGState()
-    }
-
-    // Türfuge — ein schmaler Ring, der den Korpus von der Tür trennt.
-    let frame: CGFloat = 0.035
-    let door = CGRect(x: -w + frame, y: -h + frame, width: 2 * (w - frame), height: 2 * (h - frame))
-    if !compact {
-        let seam = CGMutablePath()
-        seam.addPath(roundedRect(door, radius: 0.030))
-        seam.addPath(roundedRect(door.insetBy(dx: 0.013, dy: 0.013), radius: 0.022))
-        knockOut(seam, rule: .evenOdd)
-    }
-
-    // Lüftungsschlitze und Griff.
-    let details = CGMutablePath()
-    let ventHeight: CGFloat = compact ? 0.036 : 0.026
-    let ventWidth: CGFloat = compact ? 0.150 : 0.125
-    let ventGap: CGFloat = compact ? 0.026 : 0.019
-    for row in 0..<3 {
-        let top = door.minY + 0.065 + CGFloat(row) * (ventHeight + ventGap)
-        let slit = CGRect(x: -ventWidth, y: top, width: 2 * ventWidth, height: ventHeight)
-        details.addPath(roundedRect(slit, radius: ventHeight / 2))
-    }
-    let handle = compact
-        ? CGRect(x: 0.120, y: 0.045, width: 0.034, height: 0.105)
-        : CGRect(x: 0.130, y: 0.010, width: 0.024, height: 0.090)
-    details.addPath(roundedRect(handle, radius: handle.width / 2))
-    knockOut(details)
-
     ctx.restoreGState()
+    }
 
-    // Hauchdünner Rand, damit die Kante auf dunklem Untergrund nicht verschwindet.
-    if platform == .mac {
-        let width = max(1, size * 0.004)
-        ctx.setStrokeColor(CGColor(gray: 1, alpha: 0.10))
-        ctx.setLineWidth(width)
-        ctx.addPath(squircle(in: plate.insetBy(dx: width / 2, dy: width / 2)))
+    let detail: Detail = size >= 256 ? .full : (size >= 64 ? .medium : .minimal)
+    drawLocker(in: content, detail: detail, theme: theme, into: ctx)
+}
+
+/// How much detail a size can carry. Below a certain edge length the
+/// contour and the door seam land on the same pixel and turn to mud, so
+/// the small sizes get their own, blunter drawing — the way Apple's own
+/// icons do.
+enum Detail {
+    case full     // body, door seam, vents, handle
+    case medium   // body, vents, handle — the seam would blur
+    case minimal  // a solid door: at 16 pixels an outline is grey soup
+}
+
+/// The locker, seen from the front: body, door, three vents, one handle.
+/// Nothing else — at small sizes every extra line turns into mud.
+func drawLocker(in content: CGRect, detail: Detail, theme: Theme,
+                into ctx: CGContext) {
+    let unit = content.width / 1024  // all measurements are for a 1024 canvas
+    func u(_ value: CGFloat) -> CGFloat { value * unit }
+    func rect(_ x: CGFloat, _ y: CGFloat, _ w: CGFloat, _ h: CGFloat) -> CGRect {
+        CGRect(x: content.minX + u(x), y: content.minY + u(y), width: u(w), height: u(h))
+    }
+
+    ctx.setStrokeColor(markColor(theme))
+    ctx.setFillColor(markColor(theme))
+    ctx.setLineJoin(.round)
+    ctx.setLineCap(.round)
+
+    if detail == .minimal {
+        // Solid, and larger: what survives here is the silhouette, so it
+        // may as well be a confident one. Vents and handle are punched out
+        // of it rather than drawn on top.
+        ctx.addPath(roundedRect(rect(196, 104, 632, 816), radius: u(96)))
+        ctx.fillPath()
+        ctx.setBlendMode(.clear)
+        ctx.addPath(roundedRect(rect(360, 260, 304, 72), radius: u(36)))
+        ctx.addPath(roundedRect(rect(628, 520, 64, 180), radius: u(32)))
+        ctx.fillPath()
+        ctx.setBlendMode(.normal)
+        return
+    }
+
+    // Body: portrait, filling the frame as confidently as the other icons.
+    let bodyStroke: CGFloat = detail == .full ? 40 : 56
+    let body = rect(216, 124, 592, 776)
+    ctx.setLineWidth(u(bodyStroke))
+    ctx.addPath(roundedRect(body.insetBy(dx: u(bodyStroke / 2), dy: u(bodyStroke / 2)),
+                            radius: u(56)))
+    ctx.strokePath()
+
+    // Door: a seam inside the body, or the shape would read as a crate.
+    // The gap is as wide as the contour, so the two lines stay apart
+    // instead of blurring into one thick edge.
+    if detail == .full {
+        let doorStroke: CGFloat = 18
+        let door = rect(296, 204, 432, 616)
+        ctx.setLineWidth(u(doorStroke))
+        ctx.addPath(roundedRect(door.insetBy(dx: u(doorStroke / 2), dy: u(doorStroke / 2)),
+                                radius: u(32)))
         ctx.strokePath()
     }
+
+    // Vents in the upper third, solid like the marks in the other icons.
+    let ventHeight: CGFloat = detail == .full ? 26 : 40
+    let ventGap: CGFloat = detail == .full ? 52 : 66
+    for row in 0..<3 {
+        ctx.addPath(roundedRect(
+            rect(427, 288 + CGFloat(row) * ventGap, 170, ventHeight),
+            radius: u(ventHeight / 2)
+        ))
+    }
+    ctx.fillPath()
+
+    // Handle on the closing edge, at the height where a hand would grip.
+    let handleWidth: CGFloat = detail == .full ? 26 : 40
+    ctx.addPath(roundedRect(rect(640, 528, handleWidth, 132), radius: u(handleWidth / 2)))
+    ctx.fillPath()
 }
 
 // MARK: - Ausgabe
 
-func renderPNG(size: Int, platform: Platform) -> Data {
+func renderPNG(size: Int, platform: Platform, theme: Theme = .light) -> Data {
     let ctx = CGContext(
         data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,
         space: CGColorSpace(name: CGColorSpace.sRGB)!,
         bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
     )!
-    drawIcon(size: CGFloat(size), platform: platform, into: ctx)
+    drawIcon(size: CGFloat(size), platform: platform, theme: theme, into: ctx)
 
     let data = NSMutableData()
     let dest = CGImageDestinationCreateWithData(data, "public.png" as CFString, 1, nil)!
@@ -326,5 +258,10 @@ for (name, px) in macFiles {
     print("macOS  \(name) — \(px)px")
 }
 
-try renderPNG(size: 1024, platform: .iOS).write(to: iosSet.appendingPathComponent("icon_1024.png"))
-print("iOS    icon_1024.png — 1024px")
+for (name, theme) in [("icon_1024.png", Theme.light),
+                      ("icon_1024-dark.png", .dark),
+                      ("icon_1024-tinted.png", .tinted)] {
+    try renderPNG(size: 1024, platform: .iOS, theme: theme)
+        .write(to: iosSet.appendingPathComponent(name))
+    print("iOS    \(name) — 1024px")
+}

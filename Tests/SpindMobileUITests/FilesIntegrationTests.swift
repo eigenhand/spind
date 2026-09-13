@@ -29,7 +29,7 @@ final class FilesIntegrationTests: XCTestCase {
         let files = XCUIApplication(bundleIdentifier: "com.apple.DocumentsApp")
         files.launch()
 
-        // Tab „Durchsuchen"/„Browse" — zweimal antippen landet sicher auf
+        // Tab "Durchsuchen"/"Browse" — zweimal antippen landet sicher auf
         // der Wurzelliste mit den Speicherorten.
         let browseTab = files.tabBars.buttons.element(boundBy: 2)
         XCTAssertTrue(browseTab.waitForExistence(timeout: 10), "Tab-Leiste fehlt")
