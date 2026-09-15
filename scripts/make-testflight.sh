@@ -37,6 +37,24 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# App Store Connect refuses anything built with a beta Xcode ("Unsupported
+# SDK or Xcode version"). The archive builds fine and only the upload is
+# rejected, which costs a full build to find out — so pick the release
+# Xcode here when the active one is a beta.
+if [ -z "${DEVELOPER_DIR:-}" ] && [[ "$(xcode-select -p)" == *[Bb]eta* ]]; then
+    RELEASE_XCODE=/Applications/Xcode.app/Contents/Developer
+    if [ -d "$RELEASE_XCODE" ]; then
+        export DEVELOPER_DIR="$RELEASE_XCODE"
+        echo "▸ Aktives Xcode ist eine Beta — TestFlight nimmt das nicht."
+        echo "  Baue mit $(defaults read /Applications/Xcode.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo Xcode.app)"
+    else
+        echo "✕ Aktives Xcode ist eine Beta und daneben liegt kein Release-Xcode."
+        echo "  App Store Connect lehnt Beta-Builds ab — Xcode aus dem App Store"
+        echo "  installieren oder DEVELOPER_DIR auf ein Release-Xcode setzen."
+        exit 1
+    fi
+fi
+
 ARCHIVE=.dmg-build/Spind-iOS.xcarchive
 EXPORT=.dmg-build/testflight
 
