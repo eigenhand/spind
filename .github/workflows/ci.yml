@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push makes the running job pointless — stop it rather than pay for it.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Signing needs a team ID and certificates that do not belong in a
+      # repository. The example config carries placeholders, which is all
+      # that compiling requires.
+      - name: Configure
+        run: cp Config.example.xcconfig Config.xcconfig
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: spm-${{ runner.os }}-${{ hashFiles('Package.resolved') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: Build the package
+        run: swift build
+
+      # The sync planner, the version retention and the pairing code are
+      # covered here. No network: the tests run against dictionaries.
+      - name: Test
+        run: swift test
+
+      - name: Generate the Xcode project
+        run: |
+          brew install --quiet xcodegen
+          xcodegen generate
+
+      # Both apps are built without signing. This is what catches a file
+      # missing from project.yml, or an extension that no longer compiles.
+      - name: Build the Mac app
+        run: |
+          xcodebuild -project Spind.xcodeproj -scheme Spind \
+            -destination 'platform=macOS' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build
+
+      - name: Build the iPhone app
+        run: |
+          xcodebuild -project Spind.xcodeproj -scheme SpindMobile \
+            -destination 'generic/platform=iOS' -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO build

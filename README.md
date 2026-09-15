@@ -2,6 +2,8 @@
 
 *English · [Deutsch](README.de.md)*
 
+[![CI](https://github.com/eigenhand/spind/actions/workflows/ci.yml/badge.svg)](https://github.com/eigenhand/spind/actions/workflows/ci.yml)
+
 Your own Hetzner Storage Box as a cloud drive. Native macOS, open source,
 no subscription and nobody else's cloud in between.
 
