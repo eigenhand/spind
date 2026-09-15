@@ -38,8 +38,27 @@ NOTARY_PROFILE=spind-notary
 
 echo "▸ Baue Release …"
 xcodegen generate >/dev/null
+# A release DMG must not come out of a beta toolchain: it would carry
+# beta Swift runtime libraries to people running a released macOS.
+if [ -z "${DEVELOPER_DIR:-}" ] && [[ "$(xcode-select -p)" == *[Bb]eta* ]]; then
+    if [ -d /Applications/Xcode.app/Contents/Developer ]; then
+        export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+        echo "▸ Aktives Xcode ist eine Beta — baue mit dem Release-Xcode."
+    else
+        echo "✕ Nur eine Xcode-Beta installiert. Eine Ausgabe damit zu bauen"
+        echo "  hieße, Beta-Laufzeitbibliotheken an Nutzer zu verteilen."
+        exit 1
+    fi
+fi
+
+# Same timestamp scheme as the iPhone side. Sparkle offers an update only
+# when CFBundleVersion has grown, so a fixed number would reach nobody.
+BUILD=$(date +%Y%m%d%H%M)
+echo "▸ Build-Nummer $BUILD"
+
 xcodebuild -project Spind.xcodeproj -scheme Spind -configuration Release \
     -derivedDataPath "$BUILD_DIR" -allowProvisioningUpdates build \
+    CURRENT_PROJECT_VERSION="$BUILD" \
     | grep -E "error:|warning: Sign" || true
 test -d "$APP" || { echo "✕ Build fehlgeschlagen"; exit 1; }
 

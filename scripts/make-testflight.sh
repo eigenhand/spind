@@ -70,13 +70,19 @@ if [ -n "$KEY_ID" ] && [ -n "$ISSUER_ID" ]; then
     echo "▸ Anmeldung über App-Store-Connect-API-Schlüssel $KEY_ID"
 fi
 
-echo "▸ Baue Archiv (Gerät) …"
+# The build number is a timestamp, the way the other apps do it. Hand
+# counted numbers collide the moment two uploads happen on one day, and
+# App Store Connect then rejects the second — this always grows.
+BUILD=$(date +%Y%m%d%H%M)
+
+echo "▸ Baue Archiv (Gerät), Build $BUILD …"
 xcodegen generate >/dev/null
 xcodebuild archive \
     -project Spind.xcodeproj -scheme SpindMobile \
     -destination "generic/platform=iOS" \
     -archivePath "$ARCHIVE" \
     -allowProvisioningUpdates ${AUTH_ARGS[@]+"${AUTH_ARGS[@]}"} \
+    CURRENT_PROJECT_VERSION="$BUILD" \
     | grep -E "error:|BUILD|ARCHIVE" || true
 test -d "$ARCHIVE" || { echo "✕ Archiv fehlgeschlagen"; exit 1; }
 echo "✓ Archiv: $ARCHIVE"
@@ -96,7 +102,7 @@ cat > "$ARCHIVE-export.plist" <<'EOF'
 	<key>signingStyle</key>
 	<string>automatic</string>
 	<key>manageAppVersionAndBuildNumber</key>
-	<true/>
+	<false/>
 </dict>
 </plist>
 EOF
@@ -105,6 +111,6 @@ xcodebuild -exportArchive \
     -exportOptionsPlist "$ARCHIVE-export.plist" \
     -exportPath "$EXPORT" \
     -allowProvisioningUpdates ${AUTH_ARGS[@]+"${AUTH_ARGS[@]}"}
-echo "✓ Hochgeladen — in App Store Connect unter TestFlight erscheint der"
-echo "  Build nach der Verarbeitung (einige Minuten). Dich selbst als"
-echo "  internen Tester hinzufügen, TestFlight-App aufs iPhone, fertig."
+echo "✓ Build $BUILD hochgeladen — in App Store Connect unter TestFlight"
+echo "  erscheint er nach der Verarbeitung (einige Minuten). Interne Tester"
+echo "  bekommen ihn dann von selbst."
