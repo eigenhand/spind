@@ -15,17 +15,17 @@
 
 import Foundation
 import SwiftUI
-// NSFileProviderDomain ist nicht als Sendable ausgezeichnet, wandert hier
-// aber durch Closures. @preconcurrency sagt: Das Modul stammt aus der Zeit
-// vor der strengen Nebenläufigkeit — nicht jede Übergabe ist ein Fehler.
+// NSFileProviderDomain is not marked Sendable but travels through
+// closures here. @preconcurrency says: this module predates strict
+// concurrency — not every hand-over is a mistake.
 @preconcurrency import FileProvider
 import Network
 import UserNotifications
 import ServiceManagement
 import SpindCore
 
-/// Aus der Info.plist (Build-Einstellung SPIND_APP_GROUP in
-/// Config.xcconfig) — damit im Quelltext keine Team-ID klebt.
+/// From the Info.plist (build setting SPIND_APP_GROUP in
+/// Config.xcconfig) — so that no team ID sticks to the source.
 let appGroupID = (Bundle.main.object(forInfoDictionaryKey: "SpindAppGroup") as? String)
     ?? "dev.eigenhand.spind.group"
 
@@ -122,8 +122,8 @@ final class SyncController: ObservableObject {
     @Published var entries: [ActivityEntry] = []
     @Published var transfers: [FileTransfer] = []
     @Published var isPaused = false
-    /// Anzahl der Löschungen, die die Sicherheitsbremse gestoppt hat – die
-    /// Oberfläche fragt damit einmalig nach.
+    /// How many deletions the safety brake stopped – the interface asks
+    /// about them once.
     @Published var pendingBulkDeletions: Int?
     private var bulkDeletionConfirmed = false
     /// A second, complete copy of everything in a plain folder. Off by
@@ -239,8 +239,8 @@ final class SyncController: ObservableObject {
             status = .notConfigured
             return
         }
-        // Zwei gleichzeitig laufende Synchronisierungen können Daten
-        // beschädigen — lieber gar nicht starten.
+        // Two syncs running at the same time can damage data — better
+        // not to start at all.
         guard let lock = ProcessLock(path: ProcessLock.defaultPath) else {
             status = .error(
                 "Spind läuft bereits. Beende die andere Instanz (oder den "
@@ -259,9 +259,9 @@ final class SyncController: ObservableObject {
         self.store = store
         pinHostKeyIfNeeded()
 
-        // Ein Sync-Client gehört in den Autostart — einmal eingerichtet,
-        // soll er einfach immer laufen. Einmalige Selbst-Aktivierung;
-        // wer den Schalter in den Einstellungen ausmacht, bleibt aus.
+        // A sync client belongs in the login items — once set up it
+        // should simply always run. Enabled once by itself; whoever
+        // turns the switch off in the settings stays off.
         if !UserDefaults.standard.bool(forKey: "didAutoEnableLoginItem") {
             do {
                 try SMAppService.mainApp.register()
@@ -272,10 +272,10 @@ final class SyncController: ObservableObject {
             UserDefaults.standard.set(true, forKey: "didAutoEnableLoginItem")
         }
 
-        // Den Sync-Ordner legt die Engine an — und nur, solange es noch
-        // keinen Basiszustand gibt. Ihn hier blind zu erzeugen würde den
-        // Schutz aushebeln, der nach einem versehentlichen Wegverschieben
-        // den Platz für die Reparatur freihält.
+        // The engine creates the sync folder — and only while there is
+        // no base state yet. Creating it blindly here would defeat the
+        // protection that keeps the spot free for a repair after the
+        // folder was moved away by accident.
         let localRoot = (config.localRoot as NSString).expandingTildeInPath
 
         let (events, continuation) = AsyncStream.makeStream(
@@ -633,8 +633,8 @@ final class SyncController: ObservableObject {
         else { return }
         try? FileManager.default.removeItem(at: requestURL)
 
-        // Der Browser-Editor erreicht die Dateien über einen Hetzner-
-        // Subaccount — auf allgemeinen SFTP-Servern gibt es den nicht.
+        // The browser editor reaches the files through a Hetzner
+        // subaccount — general SFTP servers have none.
         guard config.isHetznerBox else {
             notify(
                 "Spind – Bearbeiten nicht verfügbar",
@@ -690,8 +690,8 @@ final class SyncController: ObservableObject {
         let root = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/CloudStorage/Spind-Spind")
         for path in paths {
-            // Verlauf gibt es je Datei — auf einem Ordner würde das Fenster
-            // dauerhaft "noch keine Fassungen" zeigen und ewig warten lassen.
+            // History exists per file — on a folder the window would show
+            // "no versions yet" forever and keep people waiting.
             var isDirectory: ObjCBool = false
             FileManager.default.fileExists(
                 atPath: root.appendingPathComponent(path).path, isDirectory: &isDirectory
@@ -740,8 +740,8 @@ final class SyncController: ObservableObject {
     }
 
     /// Tears everything down and starts fresh — used after settings change.
-    /// TOFU: den Server-Schlüssel beim ersten Kontakt holen und anpinnen —
-    /// ab dann weist der Client jeden anderen Schlüssel ab.
+    /// TOFU: fetch the host key on first contact and pin it — from then
+    /// on the client refuses every other key.
     private func pinHostKeyIfNeeded() {
         guard var config, config.hostPublicKey == nil else { return }
         Task { [weak self] in
@@ -806,8 +806,8 @@ final class SyncController: ObservableObject {
             identifier: NSFileProviderDomainIdentifier("spind"),
             displayName: "Spind"
         )
-        // Kein Papierkorb-Sync — sonst fragt das System den Trash-Container
-        // an, kassiert unseren Fehler und meldet Sync-Probleme.
+        // No trash syncing — otherwise the system asks for the trash
+        // container, collects our error and reports sync problems.
         if #available(macOS 15.0, *) {
             domain.supportsSyncingTrash = false
         }
@@ -821,10 +821,10 @@ final class SyncController: ObservableObject {
             watcher.start()
             groupWatcher = watcher
         }
-        // Rettungsanker: baut das Finder-Laufwerk komplett neu auf (Domain
-        // entfernen + neu anlegen). Nicht destruktiv — die lokale Replik
-        // entsteht frisch aus der Box. Nötig z. B. wenn fileproviderd eine
-        // Domain in kaputtem Zustand festhält.
+        // Last resort: rebuilds the Finder volume from scratch (remove
+        // the domain and add it again). Not destructive — the local
+        // replica is built afresh from the box. Needed when fileproviderd
+        // holds on to a domain in a broken state, for instance.
         let resetRequested = ProcessInfo.processInfo.arguments.contains("--reset-domain")
             || UserDefaults.standard.bool(forKey: "resetDomainOnNextLaunch")
         if resetRequested {
@@ -876,10 +876,10 @@ final class SyncController: ObservableObject {
         }
     }
 
-    /// Für den Knopf in den Einstellungen: beim nächsten Start wird das
-    /// Finder-Laufwerk neu aufgebaut, dann startet die App sich neu.
-    /// Der Umweg über eine kurzlebige Shell lässt die Prozesssperre der
-    /// alten Instanz erst frei werden, bevor die neue startet.
+    /// For the button in the settings: on the next launch the Finder
+    /// volume is rebuilt, then the app restarts itself. The detour via a
+    /// short-lived shell lets the old instance release its process lock
+    /// before the new one starts.
     func rebuildFinderVolume() {
         UserDefaults.standard.set(true, forKey: "resetDomainOnNextLaunch")
         let process = Process()
@@ -909,15 +909,15 @@ final class SyncController: ObservableObject {
         guard !isPaused, folderSyncEnabled, isOnline, let config, let store else { return }
         let wasError = { if case .error = status { return true } else { return false } }()
         status = .syncing
-        // Nicht kleben lassen: scheitert der nächste Lauf an etwas anderem,
-        // gehört der Bestätigen-Knopf nicht mehr ins Fenster.
+        // Do not let it stick: if the next run fails at something else,
+        // the confirm button no longer belongs in the window.
         pendingBulkDeletions = nil
         do {
             let client = StorageBoxClient(config: config)
             try await client.connect()
             let engine = SyncEngine(config: config, client: client, store: store)
-            // Einmalige Freigabe: die Bremse hat zugeschlagen und der Nutzer
-            // hat die Löschungen im Fenster ausdrücklich bestätigt.
+            // A one-time pass: the brake caught something and the user
+            // confirmed the deletions explicitly in the window.
             if bulkDeletionConfirmed {
                 engine.allowBulkDeletions = true
                 bulkDeletionConfirmed = false
@@ -976,8 +976,8 @@ final class SyncController: ObservableObject {
             }
         } catch {
             transfers.removeAll()
-            // Die Bremse ist kein Defekt, sondern eine Rückfrage: die
-            // Oberfläche bietet dazu einen Bestätigen-Knopf an.
+            // The brake is not a defect but a question: the interface
+            // offers a confirm button for it.
             if case SyncError.tooManyDeletions(let count, _) = error {
                 pendingBulkDeletions = count
             }
@@ -989,7 +989,7 @@ final class SyncController: ObservableObject {
         }
     }
 
-    /// Gibt die von der Bremse gestoppten Löschungen für genau einen Lauf frei.
+    /// Releases the deletions the brake stopped, for exactly one run.
     func confirmBulkDeletions() {
         bulkDeletionConfirmed = true
         pendingBulkDeletions = nil
@@ -1058,8 +1058,8 @@ final class SyncController: ObservableObject {
     private func appendToLogFile(_ message: String) {
         let logURL = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/Logs/spind-app.log")
-        // Rotation: ab 5 MB wandert das Log nach .old (eine Generation
-        // genügt zum Nachschauen) — sonst wächst es jahrelang unbemerkt.
+        // Rotation: from 5 MB the log moves to .old (one generation is
+        // enough to look things up) — or it grows unnoticed for years.
         if let size = try? logURL.resourceValues(forKeys: [.fileSizeKey]).fileSize,
            size > 5_000_000 {
             let old = logURL.deletingPathExtension().appendingPathExtension("old.log")

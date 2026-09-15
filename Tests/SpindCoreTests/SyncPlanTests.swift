@@ -18,12 +18,12 @@ import Crypto
 import Citadel
 @testable import SpindCore
 
-/// Tests für die Konfliktlogik des Abgleichs.
+/// Tests for the conflict logic of the comparison.
 ///
-/// Diese Fälle wurden zuvor von Hand gegen eine echte Storage Box
-/// geprüft; hier sind sie festgehalten, damit ein Umbau sie nicht
-/// unbemerkt kaputt macht. Der Planer arbeitet rein auf Wörterbüchern —
-/// keine Netzwerkzugriffe, deshalb schnell und ohne Box lauffähig.
+/// These cases were checked by hand against a real storage box first;
+/// here they are held on to, so that a rebuild cannot break them
+/// unnoticed. The planner works purely on dictionaries — no network
+/// access, so it is fast and runs without a box.
 final class SyncPlanTests: XCTestCase {
     private var temporaryDirectory: URL!
     private var engine: SyncEngine!
@@ -44,7 +44,7 @@ final class SyncPlanTests: XCTestCase {
         let store = try MetadataStore(
             databaseURL: temporaryDirectory.appendingPathComponent("state.sqlite")
         )
-        // plan() spricht nie mit dem Server — der Client wird nicht verbunden.
+        // plan() never talks to the server — the client stays unconnected.
         engine = SyncEngine(
             config: config, client: StorageBoxClient(config: config), store: store
         )
@@ -121,7 +121,7 @@ final class SyncPlanTests: XCTestCase {
     // MARK: - The case "machine sat idle for a long time"
 
     func testVeralteterRechnerUeberschreibtNeuereFassungNicht() {
-        // Lokal unverändert seit dem letzten Abgleich, entfernt geändert.
+        // Unchanged locally since the last comparison, changed remotely.
         let actions = engine.plan(
             local: ["a.txt": local("a.txt", size: 10, mod: 1000)],
             remote: ["a.txt": remote("a.txt", size: 99, mod: 5000)],
@@ -203,8 +203,8 @@ final class SyncPlanTests: XCTestCase {
     }
 
     func testMehrdeutigeVerschiebungFaelltAufUebertragungZurueck() {
-        // Zwei gleich große Kandidaten verschwinden, einer taucht auf —
-        // die Zuordnung wäre geraten, also lieber übertragen.
+        // Two candidates of equal size vanish, one appears — the pairing
+        // would be guesswork, so transfer instead.
         let actions = engine.plan(
             local: ["neu.bin": local("neu.bin", size: 100, mod: 1000)],
             remote: [
@@ -227,8 +227,8 @@ final class SyncPlanTests: XCTestCase {
     func testZerlegteUndZusammengesetzteUmlauteGeltenAlsDieselbeDatei() {
         let decomposed = "Ma\u{0308}rz.txt"          // a + Trema
         let composed = "M\u{00E4}rz.txt"             // ä
-        // Swift vergleicht Zeichenketten kanonisch, die Bytes auf Platte und
-        // auf der Box unterscheiden sich aber — genau darum geht es hier.
+        // Swift compares strings canonically, but the bytes on disk and
+        // on the box differ — which is exactly the point here.
         XCTAssertNotEqual(Array(decomposed.utf8), Array(composed.utf8),
                           "Testvoraussetzung: unterschiedliche Bytefolgen")
         XCTAssertEqual(Array(decomposed.canonicalPathKey.utf8),
@@ -261,20 +261,20 @@ final class SyncPlanTests: XCTestCase {
     }
 }
 
-/// Tests für die Schutzmechanismen gegen Massenlöschung.
+/// Tests for the safeguards against mass deletion.
 final class SSHKeyGenTests: XCTestCase {
-    /// Das erzeugte Format muss von Citadel gelesen werden können und
-    /// denselben öffentlichen Schlüssel ergeben wie die public-Zeile.
+    /// The format produced has to be readable by Citadel and yield the
+    /// same public key as the public line.
     func testErzeugterSchluesselIstGueltigesOpenSSHFormat() throws {
         let pair = SSHKeyGen.generate(comment: "test")
         let parsed = try Curve25519.Signing.PrivateKey(sshEd25519: pair.privateOpenSSH)
         let publicBase64 = pair.publicLine.split(separator: " ")[1]
         let blob = Data(base64Encoded: String(publicBase64))!
-        // Blob: len+"ssh-ed25519"+len+key → die letzten 32 Bytes sind der Schlüssel.
+        // Blob: len+"ssh-ed25519"+len+key → the last 32 bytes are the key.
         XCTAssertEqual(parsed.publicKey.rawRepresentation, blob.suffix(32))
 
         #if os(macOS)
-        // Gegenprobe mit dem echten OpenSSH: ssh-keygen -y muss dieselbe
+        // Cross-check with the real OpenSSH: ssh-keygen -y must give the
         // public-Zeile ableiten.
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("spind-keygen-\(UUID().uuidString)")
@@ -324,7 +324,7 @@ final class SafetyGuardTests: XCTestCase {
                       + "sonst wird alles als gelöscht gedeutet")
     }
 
-    /// Ein Probelauf darf nur lesen: die Wechsel-Erkennung meldet den
+    /// A dry run may only read: the switch detection reports the change
     /// Scope-Wechsel, verwirft aber nichts.
     func testProbelaufVerwirftKeinenBasiszustand() throws {
         let dir = FileManager.default.temporaryDirectory
@@ -355,9 +355,9 @@ final class SafetyGuardTests: XCTestCase {
                        "Verwaiste Kindeinträge lösen sonst Löschungen auf der Gegenseite aus")
     }
 
-    /// "Readme.txt" und "readme.txt" sind auf der Box zwei Dateien, lokal
-    /// (APFS) meist eine — beide Pfade müssen als Kollision erkannt werden,
-    /// Ordner-Kollisionen erfassen den ganzen Teilbaum über den Präfix.
+    /// "Readme.txt" and "readme.txt" are two files on the box, locally
+    /// (APFS) usually one — both paths have to be spotted as a collision,
+    /// and folder collisions cover the whole subtree via the prefix.
     func testGrossKleinschreibungsKollisionWirdErkannt() {
         let remote = [
             "Readme.txt": RemoteItem(
@@ -376,7 +376,7 @@ final class SafetyGuardTests: XCTestCase {
         let collisions = SyncEngine.caseCollisions(local: [:], remote: remote)
         XCTAssertEqual(collisions, ["Readme.txt", "readme.txt"])
 
-        // Auch über die Grenze lokal/remote hinweg.
+        // Across the local/remote boundary as well.
         let local = [
             "docs": LocalItem(relativePath: "docs", isDirectory: true, size: 0, modTime: 0)
         ]
@@ -392,10 +392,10 @@ final class SafetyGuardTests: XCTestCase {
         )
     }
 
-    /// Ein Ordner, der bei Erstkontakt auf beiden Seiten existiert
-    /// (Wurzelwechsel, aufgehobener Ausschluss), muss in die Basis
-    /// übernommen werden — sonst wird eine spätere lokale Löschung als
-    /// "remote neu" gedeutet und der Ordner kommt wieder.
+    /// A folder that exists on both sides at first contact (root change,
+    /// lifted exclusion) has to be adopted into the base — otherwise a
+    /// later local deletion is read as "new remotely" and the folder
+    /// comes back.
     func testBeidseitigerOrdnerWirdInDieBasisUebernommen() throws {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("spind-plan-\(UUID().uuidString)")
@@ -422,7 +422,7 @@ final class SafetyGuardTests: XCTestCase {
         let base = try store.allStates()
         XCTAssertNotNil(base["ordner"], "Der Ordner muss jetzt in der Basis stehen")
 
-        // Lokale Löschung danach: muss als Löschung ankommen, nicht als
+        // Local deletion afterwards: has to arrive as a deletion, not as
         // Wiederbelebung (createLocalDir).
         let afterDelete = engine.plan(local: [:], remote: remoteDir, base: base)
         guard case .deleteRemote("ordner")? = afterDelete.first, afterDelete.count == 1 else {
@@ -430,9 +430,9 @@ final class SafetyGuardTests: XCTestCase {
         }
     }
 
-    /// Ist ein Pfad lokal ein Ordner und remote eine Datei (oder umgekehrt),
-    /// würde jede Übertragung die eine Form löschen — solche Pfade müssen
-    /// als Konflikt erkannt und eingefroren werden.
+    /// If a path is a folder locally and a file remotely (or the other
+    /// way round), any transfer would delete one form — such paths have
+    /// be spotted as a conflict and frozen.
     func testTypWechselDateiOrdnerWirdErkannt() {
         let local = [
             "projekt": LocalItem(relativePath: "projekt", isDirectory: true, size: 0, modTime: 0),
@@ -464,8 +464,8 @@ final class SafetyGuardTests: XCTestCase {
         )
     }
 
-    /// Die Lösch-Bremse stoppt Massenlöschungen, lässt sich aber nach
-    /// ausdrücklicher Bestätigung (Knopf im Fenster) für einen Lauf lösen.
+    /// The deletion brake stops mass deletions but can be released for
+    /// one run after an explicit confirmation (button in the window).
     func testLoeschBremseGreiftUndLaesstSichEinmaligLoesen() throws {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("spind-guard-\(UUID().uuidString)")
@@ -503,10 +503,10 @@ final class SafetyGuardTests: XCTestCase {
         )
     }
 
-    /// Wird der Sync-Ordner verschoben, darf die Engine ihn nicht neu anlegen:
-    /// der leere Ordner stünde sonst dem Zurückschieben im Weg und alles landete
-    /// eine Ebene zu tief (real passiert — der komplette Baum wanderte danach in
-    /// einen Unterordner).
+    /// If the sync folder is moved, the engine must not recreate it: the
+    /// empty folder would stand in the way of moving it back, and
+    /// everything would land one level too deep (this happened for real —
+    /// the whole tree ended up inside a subfolder afterwards).
     func testFehlenderSyncOrdnerWirdNichtNeuAngelegt() throws {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent("spind-guard-\(UUID().uuidString)")
@@ -522,7 +522,7 @@ final class SafetyGuardTests: XCTestCase {
             config: config, client: StorageBoxClient(config: config), store: store
         )
 
-        // Erster Lauf: noch kein Zustand → Ordner darf angelegt werden.
+        // First run: no state yet → the folder may be created.
         _ = try engine.scanLocal()
         XCTAssertTrue(FileManager.default.fileExists(atPath: weg.path),
                       "Beim Einrichten muss der Ordner entstehen dürfen")
@@ -542,8 +542,8 @@ final class SafetyGuardTests: XCTestCase {
 }
 
 final class PairingCodeTests: XCTestCase {
-    /// Der Kopplungscode muss verlustfrei durch QR und zurück — sonst
-    /// scheitert die Einrichtung am neuen Gerät.
+    /// The pairing code has to survive the QR round trip without loss —
+    /// otherwise setup fails on the new device.
     func testKopplungscodeUeberlebtHinUndRueckweg() throws {
         var config = SpindConfig(
             host: "u1.your-storagebox.de", port: 23, username: "u1-sub2",
@@ -559,14 +559,14 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(decoded.username, config.username)
         XCTAssertEqual(decoded.hostPublicKey, config.hostPublicKey)
         XCTAssertEqual(decoded.privateKey, pair.privateOpenSSH)
-        // Der mitgereiste Schlüssel muss weiterhin einlesbar sein.
+        // The key that travelled along must still be readable.
         XCTAssertNoThrow(try Curve25519.Signing.PrivateKey(sshEd25519: decoded.privateKey))
 
         XCTAssertNil(PairingCode.decode("völlig anderer QR-Inhalt"))
         XCTAssertNil(PairingCode.decode("spind1:nicht-base64!"))
     }
 
-    /// Fremde oder kaputte Schlüsselzeilen dürfen nie in authorized_keys.
+    /// Foreign or broken key lines must never reach authorized_keys.
     func testNurEchteSchluesselzeilenWerdenAkzeptiert() throws {
         let ok = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIICf9svRenC/PLKIL9nk6K/pxQgoiFC41wTNvoIncOxs gerät"
         XCTAssertEqual(try DeviceEnrollment.validated("  \(ok)\n"), ok)
@@ -586,8 +586,8 @@ final class PairingCodeTests: XCTestCase {
         RemoteEntry(isDirectory: dir, size: size, modified: modified)
     }
 
-    /// Was am Mac gelöscht wurde, muss am iPhone als gelöscht ankommen —
-    /// sonst zeigt die Dateien-App Karteileichen bis in alle Ewigkeit.
+    /// What was deleted on the Mac has to arrive on the iPhone as
+    /// deleted — or the Files app shows ghosts for all eternity.
     func testGeloeschtesWirdAlsGeloeschtGemeldet() {
         let change = RemoteListingDiff.compare(
             previous: ["a.txt": entry(10), "b.txt": entry(20), "ordner": entry(0, dir: true)],
@@ -599,7 +599,7 @@ final class PairingCodeTests: XCTestCase {
 
     func testNeueUndGeaenderteDateienWerdenGemeldet() {
         let previous = ["a.txt": entry(10), "b.txt": entry(20)]
-        // Neu, größer geworden, nur neu gespeichert (gleiche Größe).
+        // New, grown, and merely saved again (same size).
         XCTAssertEqual(
             RemoteListingDiff.compare(
                 previous: previous, current: previous.merging(["c.txt": entry(1)]) { a, _ in a }
@@ -617,7 +617,7 @@ final class PairingCodeTests: XCTestCase {
         )
     }
 
-    /// Unverändert heißt unverändert: keine Meldung, kein Neuladen.
+    /// Unchanged means unchanged: no report, no reloading.
     func testUnveraenderterOrdnerMeldetNichts() {
         let listing = ["a.txt": entry(10), "unter": entry(0, dir: true)]
         XCTAssertTrue(
@@ -625,9 +625,9 @@ final class PairingCodeTests: XCTestCase {
         )
     }
 
-    /// Ein leerer Ordner ist ein gültiges Ergebnis — deshalb darf der
-    /// Vergleich NUR nach einer erfolgreichen Auflistung laufen. Der Test
-    /// hält fest, wie scharf dieses Messer ist.
+    /// An empty folder is a valid result — which is why the caller must
+    /// only ever compare after a successful listing. This test
+    /// holds on to how sharp this knife is.
     func testLeereAuflistungLoeschtAlles() {
         let change = RemoteListingDiff.compare(
             previous: ["a.txt": entry(10)], current: [:]
@@ -635,8 +635,8 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(change.deleted, ["a.txt"])
     }
 
-    /// Datei wird zu Ordner (gleicher Name): das ist eine Änderung, keine
-    /// Löschung — sonst verliert die Dateien-App den Eintrag ganz.
+    /// File becomes folder (same name): that is a change, not a
+    /// deletion — or the Files app loses the entry entirely.
     func testTypwechselIstEineAenderung() {
         let change = RemoteListingDiff.compare(
             previous: ["x": entry(10)], current: ["x": entry(0, dir: true)]
@@ -689,8 +689,8 @@ final class PairingCodeTests: XCTestCase {
         )
     }
 
-    /// Der Monat muss zweistellig sein, sonst sortiert jede Ansicht
-    /// 10, 11, 12, 1, 2 … statt der Reihe nach.
+    /// The month has to be two digits, or every view sorts
+    /// 10, 11, 12, 1, 2 … instead of in order.
     func testMonatIstZweistellig() {
         var parts = DateComponents()
         parts.year = 2026; parts.month = 3; parts.day = 1; parts.hour = 12
@@ -702,7 +702,7 @@ final class PairingCodeTests: XCTestCase {
         )
     }
 
-    /// Der ausgeschriebene Monat folgt der Sprache des Geräts.
+    /// The written-out month follows the language of the device.
     func testMonatsnameFolgtDerSprache() {
         XCTAssertEqual(PhotoLayout.monthName(5, locale: Locale(identifier: "de_DE")), "Mai")
         XCTAssertEqual(PhotoLayout.monthName(5, locale: Locale(identifier: "en_US")), "May")
@@ -717,10 +717,10 @@ final class PairingCodeTests: XCTestCase {
                            size: 100, remotePath: "/v/\(date.timeIntervalSince1970)")
     }
 
-    /// Fester Kalender und fester "jetzt": Tages-, Wochen- und
-    /// Monatsgrenzen lassen sich nur mit echten Daten prüfen, nicht durch
-    /// Abziehen von Stunden — sonst rutscht ein Fall über Mitternacht und
-    /// der Test misst den Zufall.
+    /// Fixed calendar and a fixed "now": day, week and month boundaries
+    /// can only be checked with real dates, not by subtracting hours —
+    /// otherwise a case slips over midnight and the test measures
+    /// coincidence.
     private var kalender: Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = TimeZone(identifier: "Europe/Berlin")!
@@ -746,7 +746,7 @@ final class PairingCodeTests: XCTestCase {
 
     private var jetzt: Date { tag(2026, 8, 13) }
 
-    /// Solange es Fassungen gibt, bleibt mindestens eine — auch bei einer
+    /// As long as there are versions, at least one stays — even with a
     /// einzigen uralten.
     func testDieJuengsteFassungBleibtImmer() {
         let alt = [version(4000, from: jetzt)]
@@ -757,23 +757,23 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertTrue(bleibt.contains(viele[0].id), "die jüngste wurde weggeräumt")
     }
 
-    /// Am ersten Tag wird nichts zusammengefasst — das ist das Zeitfenster
-    /// für "das war ich gerade, mach das rückgängig".
+    /// On the first day nothing is bucketed — that is the window for
+    /// "that was me just now, undo it".
     func testAmErstenTagBleibtJedeFassung() {
         let heute = (0..<12).map { version(0, Double($0) * 2, from: jetzt) }
         XCTAssertEqual(VersionRetention.expendable(heute, now: jetzt).count, 0)
     }
 
-    /// Nur ein Programm, das im Minutentakt speichert, wird gedeckelt.
+    /// Only a program that saves every minute runs into the cap.
     func testDauerspeichernWirdGedeckelt() {
         let sturm = (0..<80).map { version(0, Double($0) * 0.1, from: jetzt) }
         let weg = VersionRetention.expendable(sturm, now: jetzt)
         XCTAssertEqual(sturm.count - weg.count, VersionRetention.burstCap)
-        // Gedeckelt wird von hinten: die jüngsten überleben.
+        // The cap bites from the back: the newest survive.
         XCTAssertFalse(weg.contains { $0.id == sturm[0].id })
     }
 
-    /// Älter als ein Tag: eine pro Kalendertag — die jüngste des Tages.
+    /// Older than a day: one per calendar day — the newest of that day.
     func testAelteresWirdAufEinenProTagGeduennt() {
         let alle = [
             fassung(tag(2026, 8, 11, 22)), fassung(tag(2026, 8, 11, 9)),
@@ -787,17 +787,17 @@ final class PairingCodeTests: XCTestCase {
                        "die jüngste des Tages muss bleiben")
     }
 
-    /// Älter als ein Monat: eine pro Kalenderwoche.
+    /// Older than a month: one per calendar week.
     func testAelteresAlsEinMonatWirdWoechentlich() {
-        // 1.–3. Juni 2026 ist Mo–Mi derselben Woche, gut zwei Monate her.
+        // 1-3 June 2026 is Mon-Wed of the same week, two months back.
         let woche = [fassung(tag(2026, 6, 3)), fassung(tag(2026, 6, 2)),
                      fassung(tag(2026, 6, 1))]
         XCTAssertEqual(bleiben(woche, jetzt), 1)
-        // Eine Woche später ist ein eigenes Fach.
+        // A week later is a bucket of its own.
         XCTAssertEqual(bleiben(woche + [fassung(tag(2026, 6, 10))], jetzt), 2)
     }
 
-    /// Älter als ein Jahr: eine pro Kalendermonat.
+    /// Older than a year: one per calendar month.
     func testAelteresAlsEinJahrWirdMonatlich() {
         let monat = [fassung(tag(2024, 3, 20)), fassung(tag(2024, 3, 12)),
                      fassung(tag(2024, 3, 5))]
@@ -805,18 +805,18 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(bleiben(monat + [fassung(tag(2024, 4, 2))], jetzt), 2)
     }
 
-    /// Auch eine dünne Kette bekommt eine Obergrenze — bei großen Dateien
-    /// kostet jede Fassung eine volle Kopie.
+    /// Even a thin chain gets a ceiling — with large files every version
+    /// costs a full copy.
     func testObergrenzeGreiftUeberAlleStufen() {
-        // Je eine Fassung pro Woche über acht Jahre.
+        // One version per week across eight years.
         let jahre = (0..<400).map { version(40 + Double($0) * 7, from: jetzt) }
         let bleiben = jahre.count - VersionRetention.expendable(jahre, now: jetzt).count
         XCTAssertLessThanOrEqual(bleiben, VersionRetention.maxPerFile)
         XCTAssertGreaterThan(bleiben, 20, "so dünn sollte es dann doch nicht werden")
     }
 
-    /// Nichts darf doppelt in der Löschliste stehen — sonst scheitert das
-    /// zweite "rm" und der Lauf sieht kaputt aus.
+    /// Nothing may appear twice in the deletion list — otherwise the
+    /// second "rm" fails and the run looks broken.
     func testLoeschlisteIstUeberschneidungsfrei() {
         var alle = (0..<40).map { version(0, Double($0) * 0.5, from: jetzt) }
         alle += (0..<300).map { version(2 + Double($0) * 3, from: jetzt) }
@@ -825,7 +825,7 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(Set(alle.map(\.id)).count, alle.count, "Testdaten selbst eindeutig")
     }
 
-    /// Ein Zielordner mit Schrägstrichen, Leerzeichen oder Punkt davor darf
+    /// A target folder with slashes, spaces or a dot in front must not
     /// keinen kaputten Pfad ergeben.
     func testZielordnerWirdAufgeraeumt() {
         XCTAssertEqual(

@@ -15,13 +15,13 @@
 
 import XCTest
 
-/// E2E: Spind muss in der Dateien-App auftauchen und echte Inhalte von
-/// der Box auflisten. Voraussetzung: Spind ist installiert, konfiguriert
-/// (App-Gruppe enthält config.json + key) und einmal gestartet worden,
-/// damit die File-Provider-Domain registriert ist.
+/// E2E: Spind has to show up in the Files app and list real content
+/// from the box. Prerequisite: Spind is installed, configured (the app
+/// group holds config.json and key) and has been launched once, so that
+/// the file provider domain is registered.
 final class FilesIntegrationTests: XCTestCase {
     func testSpindListetBoxInhalteInDerDateienApp() throws {
-        // Erst die eigene App starten — registriert die Domain bei Start.
+        // Launch our own app first — it registers the domain on launch.
         let spind = XCUIApplication()
         spind.launch()
         sleep(2)
@@ -30,21 +30,21 @@ final class FilesIntegrationTests: XCTestCase {
         files.launch()
 
         // Tab "Durchsuchen"/"Browse" — zweimal antippen landet sicher auf
-        // der Wurzelliste mit den Speicherorten.
+        // the root list with the storage locations.
         let browseTab = files.tabBars.buttons.element(boundBy: 2)
         XCTAssertTrue(browseTab.waitForExistence(timeout: 10), "Tab-Leiste fehlt")
         browseTab.tap()
         sleep(1)
         browseTab.tap()
 
-        // Spind unter den Speicherorten.
+        // Spind among the storage locations.
         let spindCell = files.cells.staticTexts["Spind"].firstMatch
         XCTAssertTrue(spindCell.waitForExistence(timeout: 15),
                       "Spind fehlt in der Dateien-App – Domain nicht registriert?")
         spindCell.tap()
 
-        // Neue Anbieter startet iOS deaktiviert; beim ersten Antippen
-        // fragt die Dateien-App per Dialog — einmal bestätigen.
+        // iOS starts new providers switched off; on the first tap the
+        // Files app asks in a dialog — confirm once.
         let activate = files.alerts.buttons.matching(
             NSPredicate(format: "label IN %@", ["Aktivieren", "Enable"])
         ).firstMatch
@@ -56,7 +56,7 @@ final class FilesIntegrationTests: XCTestCase {
             }
         }
 
-        // Echte Inhalte von der Storage Box (Enumeration über die Extension).
+        // Real content from the storage box (enumerated by the extension).
         let marker = files.staticTexts["big64.bin"].firstMatch
         XCTAssertTrue(marker.waitForExistence(timeout: 45),
                       "Box-Inhalte erscheinen nicht – Enumeration fehlgeschlagen?")
