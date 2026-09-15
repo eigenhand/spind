@@ -12,3 +12,5 @@ Config.xcconfig
 dist/
 .sparkle-tools/
 __pycache__/
+.claude/
+xcuserdata/
