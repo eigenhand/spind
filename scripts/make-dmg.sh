@@ -1,5 +1,5 @@
 #!/bin/bash
-# Spind — Copyright (C) 2026 eigenhand
+# Spind — Copyright (C) 2026 Christoph Lindl-Guk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,21 +14,21 @@
 # You should have received a copy of the GNU Affero General Public
 # License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# Baut eine verteilbare Spind-DMG.
+# Builds a distributable Spind DMG.
 #
 #   scripts/make-dmg.sh
 #
-# Drei Ausbaustufen, je nachdem was eingerichtet ist:
+# Three levels, depending on what is set up:
 #
-#   1. Ohne „Developer ID Application"-Zertifikat: Entwickler-Signatur.
-#      Gut zum lokalen Testen — bei Downloads meckert Gatekeeper.
-#   2. Mit Zertifikat: signiert mit Hardened Runtime, verteilbar,
-#      aber Gatekeeper zeigt beim ersten Öffnen noch eine Warnung.
-#   3. Mit Zertifikat + Notary-Profil „spind-notary": notarisiert und
-#      gestapelt — öffnet überall ohne Warnung. Profil einmalig anlegen:
-#        xcrun notarytool store-credentials spind-notary \
-#          --apple-id <deine-apple-id> --team-id <deine-team-id>
-#      (fragt nach einem app-spezifischen Passwort von account.apple.com)
+#   1. Without a "Developer ID Application" certificate: a developer
+#      signature. Fine for testing locally — Gatekeeper complains about
+#      anything downloaded.
+#   2. With a certificate: signed with the hardened runtime and
+#      distributable, but Gatekeeper still warns on first open.
+#   3. With a certificate and the notary profile "spind-notary":
+#      notarised and stapled — opens anywhere without a warning.
+#      Create the profile once with xcrun notarytool store-credentials
+#      spind-notary (it asks for an app-specific password).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -47,7 +47,7 @@ VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$APP/C
 DMG="dist/Spind-$VERSION.dmg"
 mkdir -p dist
 
-# ── Signieren ────────────────────────────────────────────────────────────
+# ── Signing ──────────────────────────────────────────────────────────────
 DEV_ID=$(security find-identity -v -p codesigning 2>/dev/null \
     | grep -m1 "Developer ID Application" \
     | sed -E 's/^[^"]*"([^"]+)".*$/\1/' || true)
@@ -58,9 +58,9 @@ if [ -n "$DEV_ID" ]; then
     APP_GROUP=$(grep -m1 '^SPIND_APP_GROUP' Config.xcconfig | sed 's/.*= *//' \
         | sed "s/\$(SPIND_TEAM_ID)/$TEAM_ID/")
 
-    # Verteil-Entitlements: ohne keychain-access-groups (das war nur der
-    # Trick, um unter dem Gratis-Team Provisioning-Profile zu erzwingen —
-    # mit Developer ID scheitert die Signatur sonst am fehlenden Profil).
+    # Distribution entitlements: without keychain-access-groups (that was
+    # only the trick to force provisioning profiles under the free team —
+    # with a Developer ID the signature fails on the missing profile).
     ENT_DIR=$(mktemp -d)
     cat > "$ENT_DIR/app.entitlements" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -86,14 +86,14 @@ EOF
 </dict>
 </plist>
 EOF
-    # Eingebettete Dev-Profile raus — sie gehören nicht in eine Verteilung.
+    # Embedded development profiles out — they do not belong in a release.
     rm -f "$APP/Contents/embedded.provisionprofile" \
           "$APP"/Contents/PlugIns/*.appex/Contents/embedded.provisionprofile
-    # Von innen nach außen signieren — auch die von Xcode eingebetteten
-    # Swift-Laufzeitbibliotheken, sonst lehnt die Notarisierung ab
-    # ("binary is not signed with a valid Developer ID certificate").
-    # Sparkle bringt eigene XPC-Dienste und einen Updater mit; die müssen
-    # VOR ihrem Framework signiert werden.
+    # Sign from the inside out — including the Swift runtime libraries
+    # Xcode embeds, or notarisation refuses the package ("binary is not
+    # signed with a valid Developer ID certificate"). Sparkle brings its
+    # own XPC services and an updater; those have to be signed BEFORE
+    # their framework.
     find "$APP" \( -name "*.xpc" -o -name "Autoupdate" -o -name "Updater.app" \) -print0 \
         | while IFS= read -r -d '' nested; do
             codesign --force --options runtime --timestamp \
@@ -113,7 +113,7 @@ EOF
     codesign --verify --strict --deep "$APP"
     echo "✓ Signatur geprüft"
 
-    # ── Notarisieren (App zuerst, damit sie selbst gestapelt ist) ────────
+    # ── Notarise (the app first, so it is stapled itself) ────────────────
     if xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" >/dev/null 2>&1; then
         echo "▸ Notarisiere App (kann einige Minuten dauern) …"
         ZIP=$(mktemp -d)/Spind.zip
@@ -131,7 +131,7 @@ else
     echo "  Settings → Accounts → Team wählen → Manage Certificates → +"
 fi
 
-# ── DMG bauen ────────────────────────────────────────────────────────────
+# ── Build the DMG ────────────────────────────────────────────────────────
 echo "▸ Baue $DMG …"
 STAGE=$(mktemp -d)
 cp -R "$APP" "$STAGE/"
@@ -151,7 +151,7 @@ fi
 
 echo "✓ Fertig: $DMG ($(du -h "$DMG" | cut -f1))"
 
-# ── Appcast für automatische Updates ─────────────────────────────────────
+# ── Appcast for automatic updates ────────────────────────────────────────
 if [ -n "$DEV_ID" ]; then
     scripts/make-appcast.sh || echo "⚠ Appcast nicht erzeugt — später scripts/make-appcast.sh nachholen."
 fi

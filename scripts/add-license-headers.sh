@@ -1,11 +1,11 @@
 #!/bin/bash
-# Setzt den AGPL-Lizenzkopf an den Anfang aller Quelldateien.
-# Wiederholbar: Dateien, die den Kopf schon tragen, bleiben unverändert.
+# Puts the AGPL licence header at the top of every source file.
+# Repeatable: files that already carry it are left alone.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 read -r -d '' HEADER <<'EOF' || true
-Spind — Copyright (C) 2026 eigenhand
+Spind — Copyright (C) 2026 Christoph Lindl-Guk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -28,7 +28,7 @@ stamp() {
     perms=$(stat -f "%Lp" "$file")   # mv verliert sonst das Ausführbar-Bit
     tmp=$(mktemp)
     {
-        # Shebang muss die erste Zeile bleiben.
+        # The shebang has to stay on the first line.
         if head -1 "$file" | grep -q '^#!'; then
             head -1 "$file"
             echo "$HEADER" | sed "s|^|$prefix|;s| *$||"

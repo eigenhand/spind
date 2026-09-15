@@ -14,8 +14,8 @@ import AppKit
 
 // MARK: - Path helpers
 
-/// Rechteck mit stetig gekrümmten Ecken — gerade Kanten, Ecken als Viertel einer
-/// Superellipse. Nähert die Squircle-Form der macOS-Symbole an.
+/// A rectangle with continuously curved corners: straight edges, each
+/// corner a quarter superellipse — the squircle of the macOS icons.
 func squircle(in r: CGRect, radiusRatio: CGFloat = 0.27, exponent: CGFloat = 4.5) -> CGPath {
     let radius = min(r.width, r.height) * radiusRatio
     let e = 2 / exponent
@@ -24,8 +24,8 @@ func squircle(in r: CGRect, radiusRatio: CGFloat = 0.27, exponent: CGFloat = 4.5
     let up = CGVector(dx: 0, dy: -1), down = CGVector(dx: 0, dy: 1)
     let left = CGVector(dx: -1, dy: 0), right = CGVector(dx: 1, dy: 0)
 
-    // Je Ecke: Mittelpunkt des Eckquadrats sowie Anfangs- und Endrichtung. Die
-    // Kurve läuft im Uhrzeigersinn von einer Kante zur nächsten.
+    // Per corner: the centre of the corner square plus the entering and
+    // leaving direction. The curve runs clockwise from edge to edge.
     let corners: [(CGPoint, CGVector, CGVector)] = [
         (CGPoint(x: r.maxX - radius, y: r.minY + radius), up, right),  // oben rechts
         (CGPoint(x: r.maxX - radius, y: r.maxY - radius), right, down),  // unten rechts
@@ -236,7 +236,7 @@ guard FileManager.default.fileExists(atPath: macSet.path) else {
     fatalError("Bitte aus dem Projektstammverzeichnis aufrufen")
 }
 
-// Mehrere Dateinamen teilen sich dieselbe Pixelgröße (z. B. 16@2x und 32@1x).
+// Several filenames share one pixel size (16@2x and 32@1x, for instance).
 let macFiles: [(String, Int)] = [
     ("icon_16x16.png", 16),
     ("icon_16x16@2x.png", 32),

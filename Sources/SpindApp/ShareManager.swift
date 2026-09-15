@@ -1,4 +1,4 @@
-// Spind — Copyright (C) 2026 eigenhand
+// Spind — Copyright (C) 2026 Christoph Lindl-Guk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Affero General Public License as

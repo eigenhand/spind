@@ -11,3 +11,4 @@ Config.xcconfig
 .dmg-build/
 dist/
 .sparkle-tools/
+__pycache__/

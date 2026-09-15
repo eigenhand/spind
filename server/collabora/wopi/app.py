@@ -1,4 +1,4 @@
-# Spind — Copyright (C) 2026 eigenhand
+# Spind — Copyright (C) 2026 Christoph Lindl-Guk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -282,9 +282,9 @@ async def edit(
     if not urlsrc:
         raise HTTPException(status_code=415, detail=f"Dateityp .{extension} wird nicht unterstützt")
 
-    # Collabora baut die Discovery-URLs aus dem Host-Header der Anfrage —
-    # wir fragen containerintern, der Browser braucht aber die öffentliche
-    # Adresse.
+    # Collabora builds its discovery URLs from the Host header of the
+    # request — we ask from inside the container, but the browser needs
+    # the public address.
     parts = urllib.parse.urlsplit(urlsrc)
     base = f"{PUBLIC_URL}{parts.path}?"
     if parts.query:

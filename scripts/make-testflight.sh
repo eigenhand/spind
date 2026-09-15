@@ -1,5 +1,5 @@
 #!/bin/bash
-# Spind — Copyright (C) 2026 eigenhand
+# Spind — Copyright (C) 2026 Christoph Lindl-Guk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,26 +14,26 @@
 # You should have received a copy of the GNU Affero General Public
 # License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# Baut die iPhone-App als Archiv und lädt sie zu App Store Connect
-# (TestFlight) hoch.
+# Builds the iPhone app as an archive and uploads it to App Store
+# Connect (TestFlight).
 #
-#   scripts/make-testflight.sh            # Archiv bauen + hochladen
-#   scripts/make-testflight.sh --archive  # nur Archiv bauen
+#   scripts/make-testflight.sh            # build the archive and upload
+#   scripts/make-testflight.sh --archive  # build the archive only
 #
-# Einmalige Voraussetzungen (nur du kannst das):
-#   1. appstoreconnect.apple.com öffnen und die Vereinbarungen annehmen.
-#   2. Dort unter „Apps" → „+" eine neue App anlegen:
-#      Plattform iOS, Name Spind, Bundle-ID dev.eigenhand.spind.ios.
-#   3. Für den Lauf ohne Xcode-Fenster: einen API-Schlüssel anlegen
-#      (App Store Connect → Benutzer und Zugriff → Integrationen →
-#      App-Store-Connect-API → „+", Rolle App-Manager), die .p8-Datei
-#      nach ~/.appstoreconnect/private_keys/ legen und in Config.xcconfig
-#      eintragen:
+# One-time prerequisites (only you can do these):
+#   1. Open appstoreconnect.apple.com and accept the agreements.
+#   2. There, under "Apps" → "+", create a new app:
+#      platform iOS, name Spind, bundle ID dev.eigenhand.spind.ios.
+#   3. For a run without an Xcode window: create an API key (App Store
+#      Connect → Users and Access → Integrations → App Store Connect
+#      API → "+", role App Manager), put the .p8 file into
+#      ~/.appstoreconnect/private_keys/ and enter it in Config.xcconfig:
+#
 #        SPIND_ASC_KEY_ID = ABC123XYZ
 #        SPIND_ASC_ISSUER_ID = 12345678-…
-#      (xcodebuild kann die Apple-ID-Sitzung des Xcode-Fensters nicht
-#      nutzen — ohne API-Schlüssel stattdessen in Xcode archivieren:
-#      Scheme SpindMobile, Ziel „Any iOS Device", Product → Archive.)
+#      (xcodebuild cannot use the Apple ID session of the Xcode window —
+#      without an API key, archive in Xcode instead: scheme SpindMobile,
+#      destination "Any iOS Device", Product → Archive.)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

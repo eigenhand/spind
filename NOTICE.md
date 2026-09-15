@@ -1,6 +1,6 @@
 # Verwendete Open-Source-Komponenten
 
-Spind – Copyright (C) 2026 eigenhand – steht unter der GNU Affero General
+Spind – Copyright (C) 2026 Christoph Lindl-Guk – steht unter der GNU Affero General
 Public License v3 oder neuer (siehe `LICENSE`). Es verwendet die
 folgenden Bibliotheken und Dienste, deren Lizenzbedingungen fortgelten.
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Spind — Copyright (C) 2026 eigenhand
+# Spind — Copyright (C) 2026 Christoph Lindl-Guk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU Affero General Public
 # License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-# Erzeugt dist/appcast.xml mit signierten Einträgen für alle DMGs in dist/.
-# Der private EdDSA-Schlüssel liegt im Schlüsselbund (einmalig erzeugt mit
-# Sparkles generate_keys). Appcast + DMG gehören zusammen ins GitHub-Release;
-# die App findet beides über die SUFeedURL in ihrer Info.plist.
+# Builds dist/appcast.xml with signed entries for every DMG in dist/.
+# The private EdDSA key lives in the keychain (generated once with
+# Sparkle's generate_keys). Appcast and DMG belong together in the
+# GitHub release; the app finds both through the SUFeedURL in its plist.
 #
-# Beim ersten Lauf werden die Sparkle-Werkzeuge aus dem bereits aufgelösten
-# SPM-Checkout gebaut (dauert eine Minute, bleibt in .sparkle-tools/).
+# On the first run the Sparkle tools are built from the SPM checkout that
+# is already resolved (takes a minute, stays in .sparkle-tools/).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
