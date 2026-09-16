@@ -1,0 +1,237 @@
+{
+  "sourceLanguage": "de",
+  "strings": {
+    "\nWiederherstellen: spind restore <pfad> <fassung> — Fassungen zeigt »spind versions <pfad>«.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\nRestoring: spind restore <path> <version> — “spind versions <path>” lists the versions."
+          }
+        }
+      }
+    },
+    "  Binary: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "  Binary: %@"
+          }
+        }
+      }
+    },
+    "  Log:    ~/Library/Logs/spind.log": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "  Log:    ~/Library/Logs/spind.log"
+          }
+        }
+      }
+    },
+    "Fassung %@ nicht gefunden": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@ not found"
+          }
+        }
+      }
+    },
+    "Geplante Aktionen: %lld": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Planned actions: %lld"
+          }
+        }
+      }
+    },
+    "Keine früheren Fassungen für %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No earlier versions for %@"
+          }
+        }
+      }
+    },
+    "Keine gelöschten Dateien im Verlauf.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No deleted files in the history."
+          }
+        }
+      }
+    },
+    "Konfiguration gespeichert: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuration saved: %@"
+          }
+        }
+      }
+    },
+    "Schlüssel war bereits eingetragen – nichts zu tun.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The key was already entered — nothing to do."
+          }
+        }
+      }
+    },
+    "Verbinde zu %@@%@:%lld ...": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connecting to %@@%@:%lld ..."
+          }
+        }
+      }
+    },
+    "[%@] spind watch gestartet: %@ ⇄ %@@%@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[%@] spind watch started: %@ ⇄ %@@%@"
+          }
+        }
+      }
+    },
+    "[%@] ✓ %lld Aktionen": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[%@] ✓ %lld actions"
+          }
+        }
+      }
+    },
+    "[%@] ✗ Sync-Fehler: %@": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "[%@] ✗ sync error: %@"
+          }
+        }
+      }
+    },
+    "⚠ Server-Schlüssel nicht abrufbar – wird beim ersten Kontakt angepinnt.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⚠ The server key cannot be fetched — it will be pinned on first contact."
+          }
+        }
+      }
+    },
+    "✓ %@ auf Stand %@ zurückgesetzt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓ %@ rolled back to version %@"
+          }
+        }
+      }
+    },
+    "✓ Agent entfernt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓ Agent removed"
+          }
+        }
+      }
+    },
+    "✓ Agent installiert und gestartet (%@)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓ Agent installed and started (%@)"
+          }
+        }
+      }
+    },
+    "✓ Alles synchron.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓ Everything is in sync."
+          }
+        }
+      }
+    },
+    "✓ Sync abgeschlossen (%lld Aktionen).": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓ Sync finished (%lld actions)."
+          }
+        }
+      }
+    },
+    "✓ Verbunden. Wurzelverzeichnis enthält %lld Einträge.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✓ Connected. The root directory holds %lld entries."
+          }
+        }
+      }
+    },
+    "✗ launchctl bootstrap fehlgeschlagen (Code %d)": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✗ launchctl bootstrap failed (code %d)"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

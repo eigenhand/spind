@@ -3,6 +3,9 @@ import PackageDescription
 
 let package = Package(
     name: "Spind",
+    // Die Quellsprache des Pakets. Ohne sie nimmt SwiftPM keine Stringkataloge an,
+    // und `String(localized:)` bliebe im Kommandozeilenbefehl wirkungslos.
+    defaultLocalization: "de",
     platforms: [.macOS(.v14), .iOS(.v17)],
     products: [
         .library(name: "SpindCore", targets: ["SpindCore"]),
@@ -27,7 +30,8 @@ let package = Package(
             dependencies: [
                 "SpindCore",
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .executableTarget(
             name: "SpindApp",

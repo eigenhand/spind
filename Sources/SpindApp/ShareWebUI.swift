@@ -337,6 +337,86 @@ footer b { color:var(--muted); font-weight:600; }
 <div id="toasts"></div>
 
 <script>
+/* Die Sprache entscheidet der Browser des Empfängers und nicht die App des
+   Absenders. Diese Seite liegt als fertige Datei auf der Storage Box — es gibt
+   keinen Server, der `Accept-Language` lesen könnte, und der Empfänger spricht
+   ohnehin nicht zwangsläufig die Sprache dessen, der geteilt hat.
+   Deutsch ist die Quelle: Fehlt ein Schlüssel, steht der deutsche Satz da. */
+const DE = (navigator.language || "de").toLowerCase().startsWith("de");
+const T = {
+  "Wird geladen …": "Loading …",
+  "Name": "Name",
+  "Datum": "Date",
+  "Größe": "Size",
+  "Neu": "New",
+  "Hochladen": "Upload",
+  "Lade Inhalt …": "Loading the contents …",
+  "Bereitgestellt mit": "Served with",
+  "· Open-Source-Sync für die Hetzner Storage Box":
+    "· open-source sync for the Hetzner Storage Box",
+  "Ordner": "Folder",
+  "Textdokument": "Text document",
+  "Tabelle": "Spreadsheet",
+  "Präsentation": "Presentation",
+  "Abbrechen": "Cancel",
+  "Zum Hochladen ablegen": "Drop here to upload",
+  "Laden": "Download",
+  "Vorschau nicht möglich": "No preview possible",
+  "Keine Vorschau für": "No preview for",
+  "Im Editor öffnen": "Open in the editor",
+  "Herunterladen": "Download",
+  "Nichts gefunden": "Nothing found",
+  "Dieser Ordner ist leer": "This folder is empty",
+  "Dateien hierher ziehen zum Hochladen": "Drag files here to upload",
+  "Link kopieren": "Copy the link",
+  "Link kopiert": "Link copied",
+  "Kopieren nicht möglich": "Copying is not possible",
+  "Löschen": "Delete",
+  "Gelöscht": "Deleted",
+  "Neuer Ordner": "New folder",
+  "Name des Ordners:": "Name of the folder:",
+  "Ordner angelegt": "Folder created",
+  "Dokument angelegt": "Document created",
+  "Download fehlgeschlagen": "The download failed",
+  "Umbenennen fehlgeschlagen": "Renaming failed",
+  "Löschen fehlgeschlagen": "Deleting failed",
+  "Anlegen fehlgeschlagen": "Creating failed",
+  "Editor ist für diese Freigabe nicht eingerichtet":
+    "The editor is not set up for this share",
+  "Diese Freigabe ist schreibgeschützt": "This share is read-only",
+  "1 Ordner": "1 folder",
+  "%@ Ordner": "%@ folders",
+  "1 Datei": "1 file",
+  "%@ Dateien": "%@ files",
+  "gemeinsam bearbeitbar": "editable together",
+  "nur Lesen": "read-only",
+  "Vorschau": "Preview",
+  "Umbenennen": "Rename",
+  "Umbenannt": "Renamed",
+  "Freigabe": "Share",
+};
+function t(s) { return DE ? s : (T[s] || s); }
+
+/* Deutsch schreibt „3 Ordner" und „1 Ordner" gleich, Englisch nicht. Zwei
+   Schlüssel statt einem, und der deutsche steht in beiden Fällen schon richtig da. */
+function count(n, one, many) { return t(n === 1 ? one : many).replace("%@", n); }
+
+/* Der feste Text der Seite wird einmal beim Laden übersetzt. Ein Gang durch die
+   Textknoten statt Markierungen im Markup: So bleibt das HTML lesbar, und ein
+   neuer Satz fällt auf, weil er unübersetzt stehen bleibt. */
+function translatePage() {
+  if (DE) return;
+  document.documentElement.lang = "en";
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) {
+    const key = n.nodeValue.trim();
+    if (key && T[key]) n.nodeValue = n.nodeValue.replace(key, T[key]);
+  }
+  for (const el of document.querySelectorAll("[title]")) {
+    el.title = t(el.title);
+  }
+}
+
 const HIDDEN = [".spind-share.html", ".spind-share.json", ".spind-versions"];
 const EDITABLE = ["odt","ods","odp","odg","doc","docx","xls","xlsx","ppt","pptx","rtf","txt","csv"];
 const IMAGES = ["png","jpg","jpeg","gif","webp","svg","bmp"];
@@ -374,7 +454,7 @@ async function saveFile(path) {
     const a = document.createElement("a");
     a.href = href; a.download = path.split("/").pop();
     document.body.appendChild(a); a.click(); a.remove();
-  } catch (e) { toast("Download fehlgeschlagen (" + e.message + ")", "err"); }
+  } catch (e) { toast(t("Download fehlgeschlagen") + " (" + e.message + ")", "err"); }
 }
 
 /// Thumbnails and previews are fetched with auth, then swapped in.
@@ -399,7 +479,9 @@ const fmtSize = b => {
 };
 const fmtDate = ms => {
   const d = new Date(ms);
-  return isNaN(d) ? "" : d.toLocaleDateString("de-DE", { day:"2-digit", month:"short", year:"numeric" });
+  // `undefined` und nicht "de-DE": Das Datum gehört dem Leser. Ein Empfänger in
+  // London soll „16 Sep 2026" sehen und nicht „16. Sep. 2026".
+  return isNaN(d) ? "" : d.toLocaleDateString(undefined, { day:"2-digit", month:"short", year:"numeric" });
 };
 function kindOf(name) {
   const e = ext(name);
@@ -450,6 +532,9 @@ function ask(title, text, value, options) {
 // ---------------------------------------------------------------- loading
 
 async function boot() {
+  // Vor allem anderen: Was jetzt schon auf dem Schirm steht, soll nicht erst
+  // deutsch aufblitzen und dann umspringen.
+  translatePage();
   try {
     const res = await authFetch(location.origin + "/.spind-share.json?" + Date.now(),
       { cache:"no-store" });
@@ -502,10 +587,10 @@ async function load(target) {
   const total = files.reduce((s, e) => s + (e.s || 0), 0);
   const folders = entries.length - files.length;
   const parts = [];
-  if (folders) parts.push(folders + (folders === 1 ? " Ordner" : " Ordner"));
-  parts.push(files.length + (files.length === 1 ? " Datei" : " Dateien"));
+  if (folders) parts.push(count(folders, "1 Ordner", "%@ Ordner"));
+  parts.push(count(files.length, "1 Datei", "%@ Dateien"));
   if (total) parts.push(fmtSize(total));
-  parts.push(manifest?.canEdit ? "gemeinsam bearbeitbar" : "nur Lesen");
+  parts.push(t(manifest?.canEdit ? "gemeinsam bearbeitbar" : "nur Lesen"));
   document.getElementById("summary").textContent = parts.join(" · ");
 }
 
@@ -545,9 +630,9 @@ function render() {
   renderCrumbs();
   if (!items.length) {
     list.innerHTML = '<div class="state"><svg class="i"><use href="#i-inbox"/></svg><div>' +
-      (document.getElementById("search").value ? "Nichts gefunden" : "Dieser Ordner ist leer") +
+      (document.getElementById("search").value ? t("Nichts gefunden") : t("Dieser Ordner ist leer")) +
       "</div>" + (manifest?.canEdit ? '<div style="font-size:13px;margin-top:4px;color:var(--faint)">' +
-      "Dateien hierher ziehen zum Hochladen</div>" : "") + "</div>";
+      t("Dateien hierher ziehen zum Hochladen") + "</div>" : "") + "</div>";
     return;
   }
   list.innerHTML = view === "grid" ? renderGrid(items) : renderList(items);
@@ -561,7 +646,7 @@ function renderList(items) {
     if (e.d) {
       return `<a class="row" href="#" onclick="load('${esc(e.p)}');return false">
         <div class="ico">${iconMarkup(name, true)}</div>
-        <div class="info"><div class="name">${label}</div><div class="meta">Ordner</div></div>
+        <div class="info"><div class="name">${label}</div><div class="meta">${t("Ordner")}</div></div>
         ${rowActions(e)}</a>`;
     }
     const link = isEditable(name) ? editorLink(e.p) : null;
@@ -583,7 +668,7 @@ function renderGrid(items) {
     return `<div class="tile" onclick="${open}">
       <div class="thumb">${isImg ? `<img loading="lazy" data-src="${escHtml(e.p)}" alt="">` : iconMarkup(name, e.d)}</div>
       <div class="cap"><div class="name">${escHtml(name)}</div>
-        <div class="meta">${e.d ? "Ordner" : fmtSize(e.s)}</div></div></div>`;
+        <div class="meta">${e.d ? t("Ordner") : fmtSize(e.s)}</div></div></div>`;
   }).join("") + "</div>";
 }
 
@@ -596,13 +681,13 @@ function rowActions(e) {
   const name = escHtml(e.p.split("/").pop());
   let html = '<div class="acts">';
   if (!e.d) {
-    html += act("i-eye", "Vorschau", `openViewer('${esc(e.p)}')`);
-    html += act("i-download", "Herunterladen", `saveFile('${esc(e.p)}')`);
+    html += act("i-eye", t("Vorschau"), `openViewer('${esc(e.p)}')`);
+    html += act("i-download", t("Herunterladen"), `saveFile('${esc(e.p)}')`);
   }
-  html += act("i-link", "Link kopieren", `copyLink('${esc(e.p)}')`);
+  html += act("i-link", t("Link kopieren"), `copyLink('${esc(e.p)}')`);
   if (manifest?.canEdit) {
-    html += act("i-pencil", "Umbenennen", `rename('${esc(e.p)}')`);
-    html += act("i-trash", "Löschen", `remove('${esc(e.p)}',${e.d})`, true);
+    html += act("i-pencil", t("Umbenennen"), `rename('${esc(e.p)}')`);
+    html += act("i-trash", t("Löschen"), `remove('${esc(e.p)}',${e.d})`, true);
   }
   return html + "</div>";
 }
@@ -649,18 +734,18 @@ async function showPreview() {
         : VIDEO.includes(e) ? `<video src="${src}" controls autoplay></video>`
         : AUDIO.includes(e) ? `<audio src="${src}" controls autoplay style="width:min(560px,90vw)"></audio>`
         : `<iframe src="${src}"></iframe>`;
-    } catch (err) { body.innerHTML = '<div class="state">Vorschau nicht möglich</div>'; }
+    } catch (err) { body.innerHTML = '<div class="state">' + t("Vorschau nicht möglich") + '</div>'; }
   }
   else if (TEXT.includes(e)) {
     try {
       const res = await authFetch(url(item.p));
       body.innerHTML = `<pre>${escHtml((await res.text()).slice(0, 200000))}</pre>`;
-    } catch { body.innerHTML = '<div class="state">Vorschau nicht möglich</div>'; }
+    } catch { body.innerHTML = '<div class="state">' + t("Vorschau nicht möglich") + '</div>'; }
   } else {
     const link = isEditable(name) ? editorLink(item.p) : null;
-    body.innerHTML = `<div class="state" style="color:#c9d3e0">Keine Vorschau für .${escHtml(e)}<br><br>` +
-      (link ? `<a class="btn primary" href="${link}" target="_blank">Im Editor öffnen</a> ` : "") +
-      `<button class="btn" onclick="saveFile('${esc(item.p)}')">Herunterladen</button></div>`;
+    body.innerHTML = `<div class="state" style="color:#c9d3e0">${t("Keine Vorschau für")} .${escHtml(e)}<br><br>` +
+      (link ? `<a class="btn primary" href="${link}" target="_blank">${t("Im Editor öffnen")}</a> ` : "") +
+      `<button class="btn" onclick="saveFile('${esc(item.p)}')">${t("Herunterladen")}</button></div>`;
   }
 }
 
@@ -673,8 +758,8 @@ function closeViewer() {
 // ---------------------------------------------------------------- actions
 
 async function copyLink(path) {
-  try { await navigator.clipboard.writeText(url(path)); toast("Link kopiert", "ok"); }
-  catch { toast("Kopieren nicht möglich", "err"); }
+  try { await navigator.clipboard.writeText(url(path)); toast(t("Link kopiert"), "ok"); }
+  catch { toast(t("Kopieren nicht möglich"), "err"); }
 }
 
 async function dav(method, path, headers) {
@@ -689,30 +774,30 @@ async function rename(path) {
   if (!next || next === old) return;
   try {
     await dav("MOVE", path, { Destination: url((dir ? dir + "/" : "") + next), Overwrite: "F" });
-    toast("Umbenannt", "ok"); load();
-  } catch (e) { toast("Umbenennen fehlgeschlagen (" + e.message + ")", "err"); }
+    toast(t("Umbenannt"), "ok"); load();
+  } catch (e) { toast(t("Umbenennen fehlgeschlagen") + " (" + e.message + ")", "err"); }
 }
 
 async function remove(path, isDir) {
   const name = path.split("/").pop();
   const ok = await ask("Löschen", `„${name}" wirklich löschen? Das lässt sich hier nicht rückgängig machen.`, "", false);
   if (!ok) return;
-  try { await dav("DELETE", path + (isDir ? "/" : "")); toast("Gelöscht", "ok"); load(); }
-  catch (e) { toast("Löschen fehlgeschlagen (" + e.message + ")", "err"); }
+  try { await dav("DELETE", path + (isDir ? "/" : "")); toast(t("Gelöscht"), "ok"); load(); }
+  catch (e) { toast(t("Löschen fehlgeschlagen") + " (" + e.message + ")", "err"); }
 }
 
 async function newFolder() {
-  const name = await ask("Neuer Ordner", "Name des Ordners:", "Neuer Ordner");
+  const name = await ask(t("Neuer Ordner"), t("Name des Ordners:"), t("Neuer Ordner"));
   if (!name) return;
-  try { await dav("MKCOL", (dir ? dir + "/" : "") + name + "/"); toast("Ordner angelegt", "ok"); load(); }
-  catch (e) { toast("Anlegen fehlgeschlagen (" + e.message + ")", "err"); }
+  try { await dav("MKCOL", (dir ? dir + "/" : "") + name + "/"); toast(t("Ordner angelegt"), "ok"); load(); }
+  catch (e) { toast(t("Anlegen fehlgeschlagen") + " (" + e.message + ")", "err"); }
 }
 
 async function newDocument(kind) {
   if (!manifest?.shareToken || !manifest?.editBase) {
-    toast("Editor ist für diese Freigabe nicht eingerichtet", "err"); return;
+    toast(t("Editor ist für diese Freigabe nicht eingerichtet"), "err"); return;
   }
-  const labels = { odt:"Textdokument", ods:"Tabelle", odp:"Präsentation" };
+  const labels = { odt:t("Textdokument"), ods:t("Tabelle"), odp:t("Präsentation") };
   const name = await ask(`Neue${kind === "ods" ? "" : "s"} ${labels[kind]}`, "Dateiname:",
     `${labels[kind]}.${kind}`);
   if (!name) return;
@@ -723,13 +808,13 @@ async function newDocument(kind) {
     const data = await res.json();
     if (!res.ok) throw new Error(data.detail || res.status);
     window.open(data.editUrl, "_blank");
-    toast("Dokument angelegt", "ok");
+    toast(t("Dokument angelegt"), "ok");
     setTimeout(load, 700);
-  } catch (e) { toast("Anlegen fehlgeschlagen (" + e.message + ")", "err"); }
+  } catch (e) { toast(t("Anlegen fehlgeschlagen") + " (" + e.message + ")", "err"); }
 }
 
 function uploadFiles(files) {
-  if (!manifest?.canEdit) { toast("Diese Freigabe ist schreibgeschützt", "err"); return; }
+  if (!manifest?.canEdit) { toast(t("Diese Freigabe ist schreibgeschützt"), "err"); return; }
   const queue = [...files];
   const total = queue.length;
   let done = 0;

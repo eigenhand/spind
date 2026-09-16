@@ -20,6 +20,10 @@ for path in sorted(pathlib.Path(".").rglob("*.xcstrings")):
         unit = loc.get("en", {}).get("stringUnit", {})
         if source == "en":
             continue
+        # Ein leerer Schluessel braucht keine Uebersetzung. Xcode traegt ihn ein,
+        # wenn irgendwo ein Text("") steht — ein Platzhalter, kein Satz.
+        if not key:
+            continue
         if unit.get("state") != "translated" or not unit.get("value", "").strip():
             gaps.append(key)
     print(f"{path}: {len(cat.get('strings', {}))} Strings, {len(gaps)} ohne Englisch")

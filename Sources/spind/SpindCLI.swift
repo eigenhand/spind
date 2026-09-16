@@ -17,6 +17,17 @@ import ArgumentParser
 import Foundation
 import SpindCore
 
+/// Ein Satz für den Menschen am Terminal.
+///
+/// `bundle: .module`, weil der Katalog beim Ziel liegt und nicht im Hauptbündel.
+/// Fehlt er — ein nackt kopiertes Binary hat ihn nicht —, steht der deutsche
+/// Schlüssel da. Das ist kein Notbehelf, sondern der Grund, warum die Schlüssel
+/// die deutschen Sätze selbst sind.
+func say(_ key: String.LocalizationValue) -> String {
+    String(localized: key, bundle: .module)
+}
+
+
 @main
 struct SpindCLI: AsyncParsableCommand {
     static let configuration = CommandConfiguration(
@@ -60,10 +71,10 @@ struct Setup: AsyncParsableCommand {
         //
         config.hostPublicKey = try? await HostKey.scan(host: host, port: config.port)
         if config.hostPublicKey == nil {
-            print("⚠ Server-Schlüssel nicht abrufbar – wird beim ersten Kontakt angepinnt.")
+            print(say("⚠ Server-Schlüssel nicht abrufbar – wird beim ersten Kontakt angepinnt."))
         }
         try config.save()
-        print("Konfiguration gespeichert: \(SpindConfig.defaultConfigURL.path)")
+        print(say("Konfiguration gespeichert: \(SpindConfig.defaultConfigURL.path)"))
     }
 }
 
@@ -73,10 +84,10 @@ struct Check: AsyncParsableCommand {
     func run() async throws {
         let config = try SpindConfig.load()
         let client = StorageBoxClient(config: config)
-        print("Verbinde zu \(config.username)@\(config.host):\(config.port) ...")
+        print(say("Verbinde zu \(config.username)@\(config.host):\(config.port) ..."))
         try await client.connect()
         let items = try await client.listDirectory(".")
-        print("✓ Verbunden. Wurzelverzeichnis enthält \(items.count) Einträge.")
+        print(say("✓ Verbunden. Wurzelverzeichnis enthält \(items.count) Einträge."))
         await client.disconnect()
     }
 }
@@ -123,7 +134,7 @@ struct Versions: AsyncParsableCommand {
         )
         await client.disconnect()
         if versions.isEmpty {
-            print("Keine früheren Fassungen für \(path)")
+            print(say("Keine früheren Fassungen für \(path)"))
             return
         }
         let formatter = DateFormatter()
@@ -149,7 +160,7 @@ struct Deleted: AsyncParsableCommand {
         let deleted = await VersionStore.listDeleted(client: client, config: config)
         await client.disconnect()
         if deleted.isEmpty {
-            print("Keine gelöschten Dateien im Verlauf.")
+            print(say("Keine gelöschten Dateien im Verlauf."))
             return
         }
         let formatter = DateFormatter()
@@ -161,7 +172,7 @@ struct Deleted: AsyncParsableCommand {
             let count = file.versionCount > 1 ? " (\(file.versionCount) Fassungen)" : ""
             print("\(formatter.string(from: file.latest.date))  \(size)\t\(file.relativePath)\(count)")
         }
-        print("\nWiederherstellen: spind restore <pfad> <fassung> — Fassungen zeigt »spind versions <pfad>«.")
+        print(say("\nWiederherstellen: spind restore <pfad> <fassung> — Fassungen zeigt »spind versions <pfad>«."))
     }
 }
 
@@ -185,7 +196,7 @@ struct Restore: AsyncParsableCommand {
             relativePath: path, client: client, config: config
         )
         guard let target = versions.first(where: { $0.id == version }) else {
-            print("Fassung \(version) nicht gefunden")
+            print(say("Fassung \(version) nicht gefunden"))
             throw ExitCode(1)
         }
         var root = config.remoteRoot
@@ -195,7 +206,7 @@ struct Restore: AsyncParsableCommand {
             version: target, relativePath: path,
             remotePath: remotePath, client: client, config: config
         )
-        print("✓ \(path) auf Stand \(version) zurückgesetzt")
+        print(say("✓ \(path) auf Stand \(version) zurückgesetzt"))
     }
 }
 
@@ -234,11 +245,11 @@ struct Watch: AsyncParsableCommand {
                 engine.onEvent = { print("[\(timestamp())] \($0)") }
                 let actions = try await engine.sync()
                 if !actions.isEmpty {
-                    print("[\(timestamp())] ✓ \(actions.count) Aktionen")
+                    print(say("[\(timestamp())] ✓ \(actions.count) Aktionen"))
                 }
                 await client.disconnect()
             } catch {
-                print("[\(timestamp())] ✗ Sync-Fehler: \(error)")
+                print(say("[\(timestamp())] ✗ Sync-Fehler: \(String(describing: error))"))
             }
         }
 
@@ -255,7 +266,7 @@ struct Watch: AsyncParsableCommand {
         }
         defer { poller.cancel(); watcher.stop() }
 
-        print("[\(timestamp())] spind watch gestartet: \(localRoot) ⇄ \(config.username)@\(config.host)")
+        print(say("[\(timestamp())] spind watch gestartet: \(localRoot) ⇄ \(config.username)@\(config.host)"))
         await runOnce()
         for await _ in events {
             // Debounce: let a burst of file events settle before syncing.
@@ -316,12 +327,12 @@ struct InstallAgent: AsyncParsableCommand {
         _ = shell("launchctl", "bootout", "gui/\(uid)", Self.plistURL.path)
         let result = shell("launchctl", "bootstrap", "gui/\(uid)", Self.plistURL.path)
         if result != 0 {
-            print("✗ launchctl bootstrap fehlgeschlagen (Code \(result))")
+            print(say("✗ launchctl bootstrap fehlgeschlagen (Code \(result))"))
             throw ExitCode(1)
         }
-        print("✓ Agent installiert und gestartet (\(Self.label))")
-        print("  Binary: \(target.path)")
-        print("  Log:    ~/Library/Logs/spind.log")
+        print(say("✓ Agent installiert und gestartet (\(Self.label))"))
+        print(say("  Binary: \(target.path)"))
+        print(say("  Log:    ~/Library/Logs/spind.log"))
     }
 }
 
@@ -334,7 +345,7 @@ struct UninstallAgent: AsyncParsableCommand {
     func run() async throws {
         _ = shell("launchctl", "bootout", "gui/\(getuid())", InstallAgent.plistURL.path)
         try? FileManager.default.removeItem(at: InstallAgent.plistURL)
-        print("✓ Agent entfernt")
+        print(say("✓ Agent entfernt"))
     }
 }
 
@@ -369,12 +380,12 @@ struct Sync: AsyncParsableCommand {
         engine.onEvent = { print($0) }
         let actions = try await engine.sync(dryRun: dryRun)
         if dryRun {
-            print("Geplante Aktionen: \(actions.count)")
+            print(say("Geplante Aktionen: \(actions.count)"))
             for action in actions { print("  \(action)") }
         } else if actions.isEmpty {
-            print("✓ Alles synchron.")
+            print(say("✓ Alles synchron."))
         } else {
-            print("✓ Sync abgeschlossen (\(actions.count) Aktionen).")
+            print(say("✓ Sync abgeschlossen (\(actions.count) Aktionen)."))
         }
         await client.disconnect()
     }
@@ -400,7 +411,7 @@ struct Enroll: AsyncParsableCommand {
             print("✓ Eingetragen. Das Gerät verbindet sich mit: "
                   + "\(config.username)@\(config.host), Port \(config.port).")
         } else {
-            print("Schlüssel war bereits eingetragen – nichts zu tun.")
+            print(say("Schlüssel war bereits eingetragen – nichts zu tun."))
         }
     }
 }
