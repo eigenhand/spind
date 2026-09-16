@@ -25,7 +25,7 @@ stamp() {
     local file=$1 prefix=$2
     grep -q "GNU Affero" "$file" && return 0
     local tmp perms
-    perms=$(stat -f "%Lp" "$file")   # mv verliert sonst das Ausführbar-Bit
+    perms=$(stat -f "%Lp" "$file")   # mv would otherwise lose the executable bit
     tmp=$(mktemp)
     {
         # The shebang has to stay on the first line.

@@ -1,25 +1,25 @@
-// Signierung und App-Gruppe.
+// Signing and app group.
 //
 //   cp Config.example.xcconfig Config.xcconfig
 //
-// und dort die eigene Team-ID eintragen. Sie steht in Xcode unter
-// Settings → Accounts → Manage Certificates, oder im Zertifikat selbst
-// im Feld "OU" (nicht die Zeichenfolge in Klammern hinter dem Namen —
-// das ist eine andere).
+// and put your own team ID in there. You will find it in Xcode under
+// Settings → Accounts → Manage Certificates, or in the certificate itself
+// in the "OU" field (not the string in brackets after the name — that is a
+// different one).
 //
-// Die App-Gruppe verbindet App und Finder-Erweiterung. Sie muss mit der
-// Team-ID beginnen; den hinteren Teil kannst du frei wählen, solange er
-// überall gleich bleibt.
+// The app group connects the app and the Finder extension. It has to begin
+// with the team ID; the rest is yours to choose, as long as it stays the
+// same everywhere.
 
 SPIND_TEAM_ID = ABCDE12345
 SPIND_APP_GROUP = $(SPIND_TEAM_ID).dev.eigenhand.spind
 SPIND_BUNDLE_ID = dev.eigenhand.spind.app
 
-// Öffentlicher Sparkle-Schlüssel (nur fürs Bauen eigener Update-Feeds nötig;
-// leer lassen deaktiviert die Signaturprüfung nicht, Updates kommen dann
-// schlicht vom offiziellen Feed).
+// Sparkle public key (only needed for building your own update feeds;
+// leaving it empty does not disable signature checking, updates then simply
+// come from the official feed).
 SPIND_SPARKLE_PUBLIC_KEY = 4rSfaLQ48ke0661BWsNyho5Qp67cCvNLl7C63CdafRw=
 
-// iOS (optional, nur fürs Bauen der iPhone-App)
+// iOS (optional, only for building the iPhone app)
 SPIND_IOS_BUNDLE_ID = dev.eigenhand.spind.ios
 SPIND_IOS_APP_GROUP = group.dev.eigenhand.spind

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Jeder deutsche Satz in der Oberflaeche braucht einen englischen.
+"""Every German sentence in the interface needs an English one.
 
-Xcode traegt neue Strings beim Bauen von selbst in den Katalog ein — ohne
-Uebersetzung. Das faellt niemandem auf, solange das Geraet auf Deutsch steht:
-Die App laeuft, die Tests laufen, und die englische Fassung hat still eine
-deutsche Zeile mehr. Dieser Lauf macht daraus einen Fehlschlag.
+Xcode enters new strings into the catalogue by itself while building —
+untranslated. Nobody notices as long as the device is set to German: the app
+runs, the tests run, and the English version has quietly gained one more German
+line. This run turns that into a failure.
 """
 import json, pathlib, sys
 
@@ -20,18 +20,18 @@ for path in sorted(pathlib.Path(".").rglob("*.xcstrings")):
         unit = loc.get("en", {}).get("stringUnit", {})
         if source == "en":
             continue
-        # Ein leerer Schluessel braucht keine Uebersetzung. Xcode traegt ihn ein,
-        # wenn irgendwo ein Text("") steht — ein Platzhalter, kein Satz.
+        # An empty key needs no translation. Xcode enters it whenever a Text("")
+        # stands somewhere — a placeholder, not a sentence.
         if not key:
             continue
         if unit.get("state") != "translated" or not unit.get("value", "").strip():
             gaps.append(key)
-    print(f"{path}: {len(cat.get('strings', {}))} Strings, {len(gaps)} ohne Englisch")
+    print(f"{path}: {len(cat.get('strings', {}))} Strings, {len(gaps)} without English")
     for key in gaps:
-        print(f"    fehlt: {key[:90]}")
+        print(f"    missing: {key[:90]}")
     fail += len(gaps)
 
 if fail:
-    print(f"\n{fail} Strings ohne englische Fassung.", file=sys.stderr)
+    print(f"\n{fail} strings without an English version.", file=sys.stderr)
     sys.exit(1)
-print("\nVollstaendig.")
+print("\nComplete.")

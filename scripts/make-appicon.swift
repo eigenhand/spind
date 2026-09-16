@@ -224,7 +224,7 @@ func renderPNG(size: Int, platform: Platform, theme: Theme = .light) -> Data {
     let data = NSMutableData()
     let dest = CGImageDestinationCreateWithData(data, "public.png" as CFString, 1, nil)!
     CGImageDestinationAddImage(dest, ctx.makeImage()!, nil)
-    guard CGImageDestinationFinalize(dest) else { fatalError("PNG konnte nicht geschrieben werden") }
+    guard CGImageDestinationFinalize(dest) else { fatalError("could not write PNG") }
     return data as Data
 }
 

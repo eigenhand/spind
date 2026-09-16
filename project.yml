@@ -50,7 +50,7 @@ targets:
         LSUIElement: true
         LSMinimumSystemVersion: "14.0"
         # Automatische Updates (Sparkle): Appcast liegt beim jeweils
-        # neuesten GitHub-Release, signiert mit dem EdDSA-Schlüssel.
+        # latest GitHub release, signed with the EdDSA key.
         SUFeedURL: https://github.com/eigenhand/spind/releases/latest/download/appcast.xml
         SUPublicEDKey: $(SPIND_SPARKLE_PUBLIC_KEY)
         SUEnableAutomaticChecks: true
@@ -73,9 +73,9 @@ targets:
     sources:
       - Sources/SpindMobile
       - Resources/AssetsMobile.xcassets
-      # Derselbe Katalog wie am Mac, und mit Absicht: Beide Apps sprechen ueber
-      # dieselben Dinge, und ein zweiter Katalog haette dieselben Saetze noch
-      # einmal — einmal uebersetzt und einmal vergessen.
+      # The same catalogue as on the Mac, and deliberately so: both apps talk
+      # about the same things, and a second catalogue would hold the same
+      # sentences twice — translated once and forgotten once.
       - Resources/Localizable.xcstrings
     dependencies:
       - package: SpindPackage
@@ -95,9 +95,9 @@ targets:
           zu sichern. Spind liest nur und löscht nichts vom iPhone.
         NSFaceIDUsageDescription: Um die App beim Öffnen zu entsperren.
         ITSAppUsesNonExemptEncryption: false
-        # SFTP kann nicht von sich aus Bescheid geben, dass anderswo etwas
-        # gelöscht wurde. iOS weckt die App gelegentlich auf, damit sie die
-        # Dateien-App zum Nachsehen anstößt.
+        # SFTP cannot report of its own accord that something was deleted
+        # elsewhere. iOS wakes the app occasionally so that it can nudge the
+        # Files app into taking a look.
         UIBackgroundModes:
           - fetch
         SpindRefreshTaskID: $(SPIND_IOS_BUNDLE_ID).refresh
@@ -142,9 +142,9 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(SPIND_IOS_BUNDLE_ID).fileprovider
-        # Xcode 27 lagert Debug-Code in eine Neben-Dylib aus; ExtensionKit
-        # findet die Principal-Klasse dann nicht mehr (leerer 37-KB-Stub,
-        # Extension startet nie). Für Extensions deshalb abschalten.
+        # Xcode 27 moves debug code out into a side dylib; ExtensionKit then
+        # no longer finds the principal class (an empty 37 KB stub, the
+        # extension never starts). Switched off for extensions for that reason.
         ENABLE_DEBUG_DYLIB: NO
   SpindMobileUITests:
     type: bundle.ui-testing
@@ -186,9 +186,9 @@ targets:
             - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.share
               NSExtensionFileProviderActionName: Ordner teilen (Zugang kopieren)
               NSExtensionFileProviderActionActivationRule: TRUEPREDICATE
-            # Bewusst TRUEPREDICATE: ein fehlerhaft ausgewertetes Prädikat
-            # lässt die Aktion im Finder komplett verschwinden. Nicht
-            # unterstützte Dateitypen meldet die App verständlich zurück.
+            # Deliberately TRUEPREDICATE: a predicate that evaluates wrongly
+            # makes the action disappear from the Finder entirely. The app
+            # reports unsupported file types back in plain words.
             - NSExtensionFileProviderActionIdentifier: dev.eigenhand.spind.edit
               NSExtensionFileProviderActionName: Im Browser gemeinsam bearbeiten
               NSExtensionFileProviderActionActivationRule: TRUEPREDICATE

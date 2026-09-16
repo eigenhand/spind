@@ -43,10 +43,10 @@ xcodegen generate >/dev/null
 if [ -z "${DEVELOPER_DIR:-}" ] && [[ "$(xcode-select -p)" == *[Bb]eta* ]]; then
     if [ -d /Applications/Xcode.app/Contents/Developer ]; then
         export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
-        echo "▸ Aktives Xcode ist eine Beta — baue mit dem Release-Xcode."
+        echo "▸ The active Xcode is a beta — building with the release Xcode."
     else
-        echo "✕ Nur eine Xcode-Beta installiert. Eine Ausgabe damit zu bauen"
-        echo "  hieße, Beta-Laufzeitbibliotheken an Nutzer zu verteilen."
+        echo "✕ Only an Xcode beta is installed. Building a release with it"
+        echo "  would mean shipping beta runtime libraries to users."
         exit 1
     fi
 fi
@@ -130,7 +130,7 @@ EOF
         --entitlements "$ENT_DIR/app.entitlements" --sign "$DEV_ID" \
         "$APP"
     codesign --verify --strict --deep "$APP"
-    echo "✓ Signatur geprüft"
+    echo "✓ Signature verified"
 
     # ── Notarise (the app first, so it is stapled itself) ────────────────
     if xcrun notarytool history --keychain-profile "$NOTARY_PROFILE" >/dev/null 2>&1; then
@@ -140,14 +140,14 @@ EOF
         xcrun notarytool submit "$ZIP" --keychain-profile "$NOTARY_PROFILE" --wait
         xcrun stapler staple "$APP"
     else
-        echo "⚠ Kein Notary-Profil »$NOTARY_PROFILE« — DMG wird signiert,"
-        echo "  aber nicht notarisiert (Gatekeeper warnt beim ersten Öffnen)."
+        echo "⚠ No notary profile \"$NOTARY_PROFILE\" — the DMG will be signed"
+        echo "  but not notarised (Gatekeeper warns on first opening)."
     fi
 else
     echo "⚠ Kein »Developer ID Application«-Zertifikat gefunden."
-    echo "  Die DMG trägt nur die Entwickler-Signatur — gut zum lokalen"
-    echo "  Testen, nicht zum Verteilen. Zertifikat anlegen: Xcode →"
-    echo "  Settings → Accounts → Team wählen → Manage Certificates → +"
+    echo "  The DMG carries only the developer signature — fine for local"
+    echo "  testing, not for distribution. To create a certificate: Xcode →"
+    echo "  Settings → Accounts → pick the team → Manage Certificates → +"
 fi
 
 # ── Build the DMG ────────────────────────────────────────────────────────
@@ -164,7 +164,7 @@ if [ -n "$DEV_ID" ]; then
         echo "▸ Notarisiere DMG …"
         xcrun notarytool submit "$DMG" --keychain-profile "$NOTARY_PROFILE" --wait
         xcrun stapler staple "$DMG"
-        echo "✓ Notarisiert und gestapelt — öffnet überall ohne Warnung."
+        echo "✓ Notarised and stapled — opens anywhere without a warning."
     fi
 fi
 
@@ -172,5 +172,5 @@ echo "✓ Fertig: $DMG ($(du -h "$DMG" | cut -f1))"
 
 # ── Appcast for automatic updates ────────────────────────────────────────
 if [ -n "$DEV_ID" ]; then
-    scripts/make-appcast.sh || echo "⚠ Appcast nicht erzeugt — später scripts/make-appcast.sh nachholen."
+    scripts/make-appcast.sh || echo "⚠ Appcast not generated — run scripts/make-appcast.sh later."
 fi

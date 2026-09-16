@@ -45,10 +45,10 @@ if [ -z "${DEVELOPER_DIR:-}" ] && [[ "$(xcode-select -p)" == *[Bb]eta* ]]; then
     RELEASE_XCODE=/Applications/Xcode.app/Contents/Developer
     if [ -d "$RELEASE_XCODE" ]; then
         export DEVELOPER_DIR="$RELEASE_XCODE"
-        echo "▸ Aktives Xcode ist eine Beta — TestFlight nimmt das nicht."
+        echo "▸ The active Xcode is a beta — TestFlight will not take that."
         echo "  Baue mit $(defaults read /Applications/Xcode.app/Contents/Info CFBundleShortVersionString 2>/dev/null || echo Xcode.app)"
     else
-        echo "✕ Aktives Xcode ist eine Beta und daneben liegt kein Release-Xcode."
+        echo "✕ The active Xcode is a beta and there is no release Xcode beside it."
         echo "  App Store Connect lehnt Beta-Builds ab — Xcode aus dem App Store"
         echo "  installieren oder DEVELOPER_DIR auf ein Release-Xcode setzen."
         exit 1
@@ -67,7 +67,7 @@ if [ -n "$KEY_ID" ] && [ -n "$ISSUER_ID" ]; then
     AUTH_ARGS=(-authenticationKeyPath "$KEY_FILE"
                -authenticationKeyID "$KEY_ID"
                -authenticationKeyIssuerID "$ISSUER_ID")
-    echo "▸ Anmeldung über App-Store-Connect-API-Schlüssel $KEY_ID"
+    echo "▸ Signing in with App Store Connect API key $KEY_ID"
 fi
 
 # The build number is a timestamp, the way the other apps do it. Hand
@@ -75,7 +75,7 @@ fi
 # App Store Connect then rejects the second — this always grows.
 BUILD=$(date +%Y%m%d%H%M)
 
-echo "▸ Baue Archiv (Gerät), Build $BUILD …"
+echo "▸ Building archive (device), build $BUILD …"
 xcodegen generate >/dev/null
 xcodebuild archive \
     -project Spind.xcodeproj -scheme SpindMobile \

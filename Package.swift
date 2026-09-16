@@ -3,8 +3,8 @@ import PackageDescription
 
 let package = Package(
     name: "Spind",
-    // Die Quellsprache des Pakets. Ohne sie nimmt SwiftPM keine Stringkataloge an,
-    // und `String(localized:)` bliebe im Kommandozeilenbefehl wirkungslos.
+    // The package's source language. Without it SwiftPM accepts no string catalogues,
+    // and `String(localized:)` would have no effect in the command-line tool.
     defaultLocalization: "de",
     platforms: [.macOS(.v14), .iOS(.v17)],
     products: [

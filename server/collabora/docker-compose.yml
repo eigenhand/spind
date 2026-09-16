@@ -1,10 +1,10 @@
-# Collabora Online + Spind-WOPI-Brücke
+# Collabora Online + the Spind WOPI bridge
 #
 #   docker compose -p spind-collabora up -d --build
 #
-# Collabora rendert nur — die Dokumente liefert die WOPI-Brücke, die per
-# WebDAV auf die Hetzner Storage Box zugreift. Beide Dienste lauschen nur
-# auf 127.0.0.1; nach außen geht ausschließlich der Caddy-Gateway
+# Collabora only renders — the documents come from the WOPI bridge, which
+# reaches the Hetzner Storage Box over WebDAV. Both services listen on
+# 127.0.0.1 only; the Caddy gateway is the sole way out
 # (doc.example.de).
 
 name: spind-collabora
@@ -17,7 +17,7 @@ services:
     ports:
       - "127.0.0.1:9980:9980"
     environment:
-      # Erlaubte WOPI-Hosts (die Brücke). Regex, Punkte escapen.
+      # Permitted WOPI hosts (the bridge). A regex; escape the dots.
       aliasgroup1: "https://doc\\.example\\.de:443"
       DONT_GEN_SSL_CERT: "true"
       extra_params: >-
@@ -28,10 +28,10 @@ services:
         --o:home_mode.enable=true
         --o:security.seccomp=true
         --o:admin_console.enable=false
-    # Collabora sperrt jedes Dokument in ein eigenes Jail — dafür braucht es
-    # Mount-Namespaces (SYS_ADMIN) und seinen setuid-Helfer coolmount.
-    # no-new-privileges würde genau den blockieren ("Operation not
-    # permitted" beim Fork der Kind-Prozesse).
+    # Collabora locks every document into a jail of its own — for which it
+    # needs mount namespaces (SYS_ADMIN) and its setuid helper coolmount.
+    # no-new-privileges would block precisely that ("Operation not
+    # permitted" when forking the child processes).
     cap_add:
       - MKNOD
       - SYS_ADMIN
@@ -57,8 +57,8 @@ services:
     env_file:
       - wopi.env
     environment:
-      # Containerinterner Weg zu Collabora (Discovery); der Browser sieht
-      # nur PUBLIC_URL.
+      # The container-internal route to Collabora (discovery); the browser
+      # only ever sees PUBLIC_URL.
       COLLABORA_URL: http://collabora:9980
       PUBLIC_URL: https://doc.example.de
     depends_on:

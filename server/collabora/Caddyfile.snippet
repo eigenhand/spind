@@ -1,5 +1,5 @@
-# --- doc.example.de: Collabora Online + Spind-WOPI-Brücke ---------------
-# In deploy/gateway/Caddyfile einfügen (eigener Site-Block), danach
+# --- doc.example.de: Collabora Online + the Spind WOPI bridge -----------
+# Paste into deploy/gateway/Caddyfile (its own site block), then
 #   docker compose -p lifeos-gateway -f deploy/gateway/docker-compose.yml \
 #     exec gateway caddy reload --config /etc/caddy/Caddyfile
 
@@ -32,9 +32,9 @@ Disallow: /
 " 200
 	}
 
-	# WOPI-Brücke: liefert Dokumente von der Storage Box und speichert sie
-	# (/new legt neue Dokumente an — wird von Freigabe-Seiten cross-origin
-	# aufgerufen, deshalb muss auch OPTIONS hier landen)
+	# The WOPI bridge: serves documents from the Storage Box and saves them
+	# (/new creates new documents — called cross-origin from share pages,
+	# which is why OPTIONS has to land here too)
 	@bridge path /wopi/* /edit /edit/* /new /health
 	handle @bridge {
 		reverse_proxy 127.0.0.1:9981 {
