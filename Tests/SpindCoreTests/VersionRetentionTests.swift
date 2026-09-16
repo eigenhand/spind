@@ -16,27 +16,26 @@
 import XCTest
 @testable import SpindCore
 
-/// Welche Fassungen bleiben und welche gehen.
+/// Which versions stay and which may go.
 ///
-/// Diese Rechnung entscheidet, was geloescht wird. Ein Fehler darin ist nicht ein
-/// falscher Knopf oder eine haessliche Zeile, sondern die Fassung, die jemand gerade
-/// gebraucht haette — und sie ist dann weg. Von allen ungeprueften Stellen in Spind
-/// war das die teuerste.
+/// This arithmetic decides what gets deleted. A mistake in it is not a wrong button or
+/// an ugly line, but the version somebody needed a moment ago — and it is gone. Of all
+/// the untested places in Spind, this was the most expensive one.
 ///
-/// Die Zeitzone steht fest. `Calendar.current` haengt an der des Rechners, und die
-/// Grenze zwischen zwei Tagen liegt dann woanders als der Test denkt: derselbe Lauf
-/// in Berlin und in Honolulu kaeme zu verschiedenen Ergebnissen, und einer von beiden
-/// waere rot.
+/// The time zone is fixed. `Calendar.current` hangs on the machine's own, and the
+/// boundary between two days then lies somewhere other than the test thinks: the same
+/// run in Berlin and in Honolulu would come to different results, and one of the two
+/// would be red.
 final class VersionRetentionTests: XCTestCase {
 
-    private let now = Date(timeIntervalSince1970: 1_800_000_000)   // Mitte Januar 2027
+    private let now = Date(timeIntervalSince1970: 1_800_000_000)   // mid-January 2027
     private var utc: Calendar = {
         var c = Calendar(identifier: .gregorian)
         c.timeZone = TimeZone(identifier: "UTC")!
         return c
     }()
 
-    /// Eine Fassung, `ago` Sekunden alt.
+    /// A version `ago` seconds old.
     private func version(_ ago: TimeInterval, id: String? = nil) -> FileVersion {
         let date = now.addingTimeInterval(-ago)
         return FileVersion(id: id ?? ISO8601DateFormatter().string(from: date),
@@ -50,17 +49,17 @@ final class VersionRetentionTests: XCTestCase {
     private let hour: TimeInterval = 3_600
     private let day: TimeInterval = 86_400
 
-    // MARK: Das Versprechen
+    // MARK: The promise
 
-    /// Steht so in der Dokumentation: solange es ueberhaupt eine Fassung gibt, bleibt
-    /// eine. Der Test dafuer ist der wichtigste in dieser Datei.
+    /// It says so in the function's documentation: as long as there is any version at
+    /// all, one is kept. The test for that is the most important one in this file.
     func testTheNewestVersionIsNeverExpendable() {
         for ages in [[0.0], [0, hour], [0, hour, 2 * hour],
                      [400 * day, 401 * day, 402 * day]] {
             let versions = ages.map { version($0) }
             let drop = expendable(versions)
             XCTAssertFalse(drop.contains { $0.id == versions[0].id },
-                           "Die neueste Fassung darf nie weg — Alter: \(ages)")
+                           "The newest version must never go — ages: \(ages)")
         }
     }
 
@@ -70,108 +69,108 @@ final class VersionRetentionTests: XCTestCase {
         XCTAssertTrue(expendable([]).isEmpty)
     }
 
-    /// Nichts darf verschwinden und nichts doppelt gezaehlt werden. Faellt dieser
-    /// Test, stimmt die Buchfuehrung nicht — und das ist die Art Fehler, bei der eine
-    /// Fassung zweimal geloescht oder gar nicht betrachtet wird.
+    /// Nothing may disappear and nothing may be counted twice. If this test falls, the
+    /// bookkeeping is wrong — and that is the kind of mistake where a version is deleted
+    /// twice or never looked at.
     func testEveryVersionIsEitherKeptOrDroppedExactlyOnce() {
         let versions = (0..<80).map { version(Double($0) * 6 * hour) }
         let drop = expendable(versions)
 
         let droppedIDs = drop.map(\.id)
-        XCTAssertEqual(Set(droppedIDs).count, droppedIDs.count, "Eine Fassung zweimal in der Liste.")
+        XCTAssertEqual(Set(droppedIDs).count, droppedIDs.count, "A version twice in the list.")
         XCTAssertTrue(Set(droppedIDs).isSubset(of: Set(versions.map(\.id))))
     }
 
-    // MARK: Heute bleibt alles
+    // MARK: Today everything stays
 
-    /// Das Fenster, in dem jemand denkt „das war ich gerade, zurueck damit".
+    /// The window in which somebody thinks “that was me just now, undo it”.
     func testEverythingFromTodayStays() {
         let versions = (0..<10).map { version(Double($0) * hour) }
         XCTAssertTrue(expendable(versions).isEmpty)
     }
 
-    /// Nur ein Programm, das im Minutentakt speichert, laeuft in die Obergrenze — und
-    /// dann faellt das Aelteste weg, nicht das Neueste.
+    /// Only a program that saves every minute runs into the cap — and then the oldest
+    /// one goes, not the newest.
     func testBeyondTheBurstCapTheOldestOfTodayGoes() {
         let count = VersionRetention.burstCap + 10
-        // Alle innerhalb eines Tages, absteigend.
+        // All within one day, descending.
         let versions = (0..<count).map { version(Double($0) * 40 * 60) }
         let drop = expendable(versions)
 
         XCTAssertEqual(drop.count, 10)
         let keptIDs = Set(versions.map(\.id)).subtracting(drop.map(\.id))
         XCTAssertEqual(keptIDs.count, VersionRetention.burstCap)
-        // Die zehn aeltesten sind gegangen.
+        // The ten oldest are gone.
         for old in versions.suffix(10) {
-            XCTAssertTrue(drop.contains { $0.id == old.id }, "Die aelteste muss gehen.")
+            XCTAssertTrue(drop.contains { $0.id == old.id }, "The oldest must go.")
         }
         XCTAssertTrue(keptIDs.contains(versions[0].id))
     }
 
-    // MARK: Das Raster wird gröber
+    // MARK: The grid grows coarser
 
-    /// Im Monatsfenster bleibt eine je Tag, und zwar die neueste dieses Tages.
+    /// Within the month one per day survives, and it is the newest of that day.
     func testWithinTheMonthOnePerDaySurvivesAndItIsTheNewestOfThatDay() {
-        // Drei Fassungen am selben Tag, fuenf Tage her — also im Tagesraster.
+        // Three versions on the same day, five days ago — so inside the daily grid.
         //
-        // Die Abstaende sind klein gewaehlt, und das ist kein Zufall: mein erster
-        // Anlauf nahm 1, 10 und 20 Stunden, und damit lagen zwei davon schon auf dem
-        // Vortag. Der Test fiel durch, der Code hatte recht. Ein Tagesraster prueft
-        // man nicht mit Abstaenden, die einen Tag ueberspringen.
-        let early = version(5 * day + 5 * hour, id: "frueh")
-        let middle = version(5 * day + 3 * hour, id: "mitte")
-        let late = version(5 * day + 1 * hour, id: "spaet")
-        let newest = version(0, id: "neueste")
+        // The gaps are chosen small, and that is no accident: my first attempt took
+        // 1, 10 and 20 hours, and two of them already fell on the previous day. The
+        // test failed, the code was right. You do not test a daily grid with gaps that
+        // skip a day.
+        let early = version(5 * day + 5 * hour, id: "early")
+        let middle = version(5 * day + 3 * hour, id: "middle")
+        let late = version(5 * day + 1 * hour, id: "late")
+        let newest = version(0, id: "newest")
 
         let drop = expendable([newest, late, middle, early]).map(\.id)
-        XCTAssertEqual(Set(drop), ["frueh", "mitte"],
-                       "Von einem Tag bleibt die neueste Fassung.")
+        XCTAssertEqual(Set(drop), ["early", "middle"],
+                       "Of one day the newest version stays.")
     }
 
-    /// Jenseits des Monats wird das Raster eine Woche breit.
+    /// Beyond the month the grid becomes a week wide.
     func testBeyondAMonthOnePerWeekSurvives() {
-        // Zwei Fassungen in derselben Woche, gut vierzig Tage her.
+        // Two versions in the same week, a good forty days ago.
         //
-        // 42 und 43 Tage und nicht 40 und 42: der Kalender hier beginnt die Woche am
-        // **Sonntag**, und zwischen dem 40. und dem 42. Tag vor `now` liegt genau
-        // diese Grenze. Mein erster Anlauf hat sie uebersprungen und dem Code einen
-        // Fehler vorgeworfen, den er nicht hatte. Nachgerechnet statt geraten.
-        let a = version(42 * day, id: "a")   // Freitag
-        let b = version(43 * day, id: "b")   // Donnerstag derselben Woche
-        let drop = expendable([version(0, id: "neu"), a, b]).map(\.id)
-        XCTAssertEqual(drop, ["b"], "Von einer Woche bleibt die neuere.")
+        // 42 and 43 days and not 40 and 42: the calendar here starts the week on
+        // **Sunday**, and exactly that boundary lies between the 40th and the 42nd day
+        // before `now`. My first attempt jumped over it and accused the code of a
+        // mistake it did not have. Worked out, not guessed.
+        let a = version(42 * day, id: "a")   // Friday
+        let b = version(43 * day, id: "b")   // Thursday of the same week
+        let drop = expendable([version(0, id: "new"), a, b]).map(\.id)
+        XCTAssertEqual(drop, ["b"], "Of one week the newer one stays.")
     }
 
-    /// Jenseits des Jahres eine je Monat.
+    /// Beyond the year one per month.
     func testBeyondAYearOnePerMonthSurvives() {
         let a = version(400 * day, id: "a")
-        let b = version(405 * day, id: "b")     // selber Monat wie a
-        let c = version(500 * day, id: "c")     // anderer Monat
-        let drop = expendable([version(0, id: "neu"), a, b, c]).map(\.id)
-        XCTAssertEqual(drop, ["b"], "Ein anderer Monat bleibt, der doppelte nicht.")
+        let b = version(405 * day, id: "b")     // same month as a
+        let c = version(500 * day, id: "c")     // a different month
+        let drop = expendable([version(0, id: "new"), a, b, c]).map(\.id)
+        XCTAssertEqual(drop, ["b"], "A different month stays, the duplicate does not.")
     }
 
-    /// Ein Tag, eine Woche, ein Monat, ein Jahr — durch alle Raster auf einmal.
+    /// A day, a week, a month, a year — through every grid at once.
     func testAllTiersTogether() {
         let versions = [
-            version(0),                 // heute
-            version(2 * hour),          // heute
-            version(3 * day),           // Tagesraster
-            version(3 * day + hour),    // derselbe Tag
-            version(45 * day),          // Wochenraster
-            version(400 * day),         // Monatsraster
+            version(0),                 // today
+            version(2 * hour),          // today
+            version(3 * day),           // daily grid
+            version(3 * day + hour),    // the same day
+            version(45 * day),          // weekly grid
+            version(400 * day),         // monthly grid
         ]
         let drop = expendable(versions)
-        XCTAssertEqual(drop.count, 1, "Nur der doppelte Tag faellt weg.")
+        XCTAssertEqual(drop.count, 1, "Only the duplicate day falls away.")
         XCTAssertEqual(drop[0].id, versions[3].id)
     }
 
-    // MARK: Die letzte Schranke
+    // MARK: The last barrier
 
-    /// Auch ein duennes Raster kostet bei einer 2-GB-Datei Platz. Was ueber die
-    /// Obergrenze hinausgeht, faellt hinten ab — vorne stehen die, die jemand sucht.
+    /// Even a thin grid costs space with a 2 GB file. What goes beyond the ceiling falls
+    /// off the back — at the front stand the ones somebody is looking for.
     func testTheCeilingDropsTheOldestOnes() {
-        // Je ein Monat, weit in der Vergangenheit: jede hat ihren eigenen Eimer.
+        // One per month, far in the past: each has a bucket of its own.
         let versions = (0..<(VersionRetention.maxPerFile + 12)).map {
             version(400 * day + Double($0) * 31 * day, id: "m\($0)")
         }
@@ -179,28 +178,28 @@ final class VersionRetentionTests: XCTestCase {
         let keptIDs = Set(versions.map(\.id)).subtracting(drop.map(\.id))
 
         XCTAssertEqual(keptIDs.count, VersionRetention.maxPerFile)
-        XCTAssertTrue(keptIDs.contains("m0"), "Die neueste bleibt auch hier.")
+        XCTAssertTrue(keptIDs.contains("m0"), "The newest stays here too.")
         XCTAssertFalse(keptIDs.contains("m\(VersionRetention.maxPerFile + 11)"),
-                       "Die aelteste faellt ab.")
+                       "The oldest falls off.")
     }
 
-    // MARK: Unordnung
+    // MARK: Disorder
 
-    /// Die Reihenfolge der Eingabe darf nichts entscheiden — die Funktion sortiert
-    /// selbst, und wer sich darauf verlaesst, soll es nachlesen koennen.
+    /// The order of the input must decide nothing — the function sorts for itself, and
+    /// whoever relies on that should be able to read it here.
     func testTheOrderOfTheInputDoesNotMatter() {
-        let versions = [version(3 * day, id: "a"), version(0, id: "neu"),
+        let versions = [version(3 * day, id: "a"), version(0, id: "new"),
                         version(3 * day + hour, id: "b")]
         XCTAssertEqual(expendable(versions).map(\.id), ["b"])
         XCTAssertEqual(expendable(versions.reversed()).map(\.id), ["b"])
         XCTAssertEqual(expendable(versions.shuffled()).map(\.id), ["b"])
     }
 
-    /// Eine Fassung mit einem Datum in der Zukunft — eine schiefe Uhr auf einem
-    /// zweiten Rechner reicht dafuer. Sie darf nichts umwerfen.
+    /// A version with a date in the future — a skewed clock on a second machine is
+    /// enough for that. It must not upset anything.
     func testAVersionFromTheFutureDoesNotBreakAnything() {
-        let versions = [version(-2 * hour, id: "zukunft"), version(0, id: "jetzt"),
-                        version(3 * day, id: "alt")]
+        let versions = [version(-2 * hour, id: "future"), version(0, id: "now"),
+                        version(3 * day, id: "old")]
         XCTAssertTrue(expendable(versions).isEmpty)
     }
 }

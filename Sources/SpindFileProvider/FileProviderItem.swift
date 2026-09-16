@@ -87,7 +87,7 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
 
     #if os(macOS)
     /// Files on demand: content may be dropped locally and re-fetched —
-    /// unless the user chose "Auf dem Computer behalten".
+    /// unless the user chose "Keep on this computer".
     /// iOS manages downloads itself — there is no contentPolicy there.
     var contentPolicy: NSFileProviderContentPolicy {
         keepDownloaded ? .downloadEagerlyAndKeepDownloaded : .downloadLazily

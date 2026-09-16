@@ -18,11 +18,11 @@ import SwiftUI
 import AppKit
 #endif
 
-/// Hell oder dunkel.
+/// Light or dark.
 ///
-/// Die Vorgabe folgt dem System, und das ist mehr als Bequemlichkeit: macOS und iOS
-/// schalten zur Daemmerung um, und wer das eingestellt hat, will es ueberall. Die
-/// beiden festen Werte sind fuer die Faelle, in denen jemand es besser weiss.
+/// The default follows the system, and that is more than convenience: macOS and iOS
+/// switch at dusk, and whoever set that up wants it everywhere. The two fixed values are
+/// for the cases where somebody knows better.
 public enum AppAppearance: String, Codable, CaseIterable, Identifiable, Sendable {
     case system
     case light
@@ -30,7 +30,7 @@ public enum AppAppearance: String, Codable, CaseIterable, Identifiable, Sendable
 
     public var id: String { rawValue }
 
-    /// `nil` heisst: das System entscheidet.
+    /// `nil` means: the system decides.
     public var scheme: ColorScheme? {
         switch self {
         case .system: return nil
@@ -48,10 +48,10 @@ public enum AppAppearance: String, Codable, CaseIterable, Identifiable, Sendable
     }
 
     #if os(macOS)
-    /// Am Mac reicht `.preferredColorScheme` nicht: Das Menueleisten-Fenster und die
-    /// Panels haengen an der Erscheinung der Anwendung, nicht an einer einzelnen
-    /// Ansicht. `NSApp.appearance` faerbt alles auf einmal — und `nil` gibt es an
-    /// das System zurueck.
+    /// On the Mac `.preferredColorScheme` is not enough: the menu bar window and the
+    /// panels hang on the appearance of the application, not on a single view.
+    /// `NSApp.appearance` colours everything at once — and `nil` hands it back to the
+    /// system.
     @MainActor
     public func apply() {
         NSApp.appearance = switch self {

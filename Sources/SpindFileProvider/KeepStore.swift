@@ -30,7 +30,7 @@ enum SharedFolders {
     }
 }
 
-/// Paths the user marked "Auf dem Computer behalten". Stored as JSON in
+/// Paths the user marked "Keep on this computer". Stored as JSON in
 /// the group container so both the extension (content policy, actions)
 /// and the app (storage optimizer skip list) can read it.
 actor KeepStore {

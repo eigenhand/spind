@@ -337,11 +337,11 @@ footer b { color:var(--muted); font-weight:600; }
 <div id="toasts"></div>
 
 <script>
-/* Die Sprache entscheidet der Browser des Empfängers und nicht die App des
-   Absenders. Diese Seite liegt als fertige Datei auf der Storage Box — es gibt
-   keinen Server, der `Accept-Language` lesen könnte, und der Empfänger spricht
-   ohnehin nicht zwangsläufig die Sprache dessen, der geteilt hat.
-   Deutsch ist die Quelle: Fehlt ein Schlüssel, steht der deutsche Satz da. */
+/* The recipient's browser picks the language, not the sender's app. This page lies
+   on the Storage Box as a finished file — there is no server that could read
+   `Accept-Language`, and the recipient does not necessarily speak the language of
+   whoever shared it anyway.
+   German is the source: if a key is missing, the German sentence stands there. */
 const DE = (navigator.language || "de").toLowerCase().startsWith("de");
 const T = {
   "Wird geladen …": "Loading …",
@@ -397,13 +397,13 @@ const T = {
 };
 function t(s) { return DE ? s : (T[s] || s); }
 
-/* Deutsch schreibt „3 Ordner" und „1 Ordner" gleich, Englisch nicht. Zwei
-   Schlüssel statt einem, und der deutsche steht in beiden Fällen schon richtig da. */
+/* German writes “3 Ordner” and “1 Ordner” the same way, English does not. Two keys
+   instead of one, and the German one already reads correctly in both cases. */
 function count(n, one, many) { return t(n === 1 ? one : many).replace("%@", n); }
 
-/* Der feste Text der Seite wird einmal beim Laden übersetzt. Ein Gang durch die
-   Textknoten statt Markierungen im Markup: So bleibt das HTML lesbar, und ein
-   neuer Satz fällt auf, weil er unübersetzt stehen bleibt. */
+/* The page's fixed text is translated once on load. A walk through the text nodes
+   rather than markers in the markup: that keeps the HTML readable, and a new
+   sentence stands out because it stays untranslated. */
 function translatePage() {
   if (DE) return;
   document.documentElement.lang = "en";
@@ -479,8 +479,8 @@ const fmtSize = b => {
 };
 const fmtDate = ms => {
   const d = new Date(ms);
-  // `undefined` und nicht "de-DE": Das Datum gehört dem Leser. Ein Empfänger in
-  // London soll „16 Sep 2026" sehen und nicht „16. Sep. 2026".
+  // `undefined` and not "de-DE": the date belongs to the reader. A recipient in
+  // London should see “16 Sep 2026” and not “16. Sep. 2026”.
   return isNaN(d) ? "" : d.toLocaleDateString(undefined, { day:"2-digit", month:"short", year:"numeric" });
 };
 function kindOf(name) {
@@ -532,8 +532,8 @@ function ask(title, text, value, options) {
 // ---------------------------------------------------------------- loading
 
 async function boot() {
-  // Vor allem anderen: Was jetzt schon auf dem Schirm steht, soll nicht erst
-  // deutsch aufblitzen und dann umspringen.
+  // Before anything else: what is already on screen should not flash up in German
+  // and then jump.
   translatePage();
   try {
     const res = await authFetch(location.origin + "/.spind-share.json?" + Date.now(),

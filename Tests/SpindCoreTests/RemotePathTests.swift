@@ -16,17 +16,17 @@
 import XCTest
 @testable import SpindCore
 
-/// Namen, die vom Server kommen.
+/// Names that come from the server.
 ///
-/// Der Server ist nicht immer unserer: eine geteilte Box traegt fremde Ordner, und
-/// Spind spricht mit jedem SFTP-Host. Aus so einem Namen wird ein lokaler Pfad, und
-/// ein ".." darin laeuft geradewegs aus dem Sync-Ordner heraus.
+/// The server is not always ours: a shared box carries other people's folders, and
+/// Spind talks to any SFTP host. Such a name becomes a local path, and a ".." in it
+/// walks straight out of the sync folder.
 ///
-/// Sechs Zeilen Code an zwei Stellen — dem Sync-Motor und der File-Provider-
-/// Erweiterung. Bis hierher war keine davon geprueft.
+/// Six lines of code in two places — the sync engine and the file provider extension.
+/// Until now neither of them was checked.
 final class RemotePathTests: XCTestCase {
 
-    // MARK: Was durchkommt
+    // MARK: What gets through
 
     func testOrdinaryNamesPass() {
         XCTAssertTrue(RemotePath.isSafe("Rechnung.pdf"))
@@ -36,33 +36,31 @@ final class RemotePathTests: XCTestCase {
         XCTAssertTrue(RemotePath.isSafe("a"))
     }
 
-    /// Nur eine **ganze** Komponente zaehlt. Ein Name, der zufaellig zwei Punkte
-    /// enthaelt, ist ein gewoehnlicher Name — und wer ihn sperrt, macht die Datei
-    /// unerreichbar, ohne irgendetwas sicherer zu machen.
+    /// Only a **whole** component counts. A name that happens to contain two dots is an
+    /// ordinary name — and blocking it makes the file unreachable without making
+    /// anything safer.
     func testDotsInsideANameAreOrdinary() {
-        XCTAssertTrue(RemotePath.isSafe("..versteckt"))
-        XCTAssertTrue(RemotePath.isSafe("Datei..txt"))
-        XCTAssertTrue(RemotePath.isSafe("endet.mit.."))
-        XCTAssertTrue(RemotePath.isSafe("Ordner/..name/Datei"))
-        XCTAssertTrue(RemotePath.isSafe("."), "Ein einzelner Punkt fuehrt nirgendwohin.")
+        XCTAssertTrue(RemotePath.isSafe("..hidden"))
+        XCTAssertTrue(RemotePath.isSafe("file..txt"))
+        XCTAssertTrue(RemotePath.isSafe("endswith.."))
+        XCTAssertTrue(RemotePath.isSafe("folder/..name/file"))
+        XCTAssertTrue(RemotePath.isSafe("."), "A single dot leads nowhere.")
     }
 
-    // MARK: Was nicht durchkommt
+    // MARK: What does not get through
 
-    /// Der Fall, um den es geht: an "~/Spind" ein "../../evil.txt" angehaengt landet
-    /// in "/Users".
+    /// The case this is about: "../../evil.txt" appended to "~/Spind" lands in "/Users".
     func testAParentComponentIsRefusedWhereverItStands() {
         XCTAssertFalse(RemotePath.isSafe(".."))
         XCTAssertFalse(RemotePath.isSafe("../evil.txt"))
         XCTAssertFalse(RemotePath.isSafe("../../evil.txt"))
-        XCTAssertFalse(RemotePath.isSafe("Ordner/../../evil.txt"))
-        XCTAssertFalse(RemotePath.isSafe("Ordner/.."))
+        XCTAssertFalse(RemotePath.isSafe("folder/../../evil.txt"))
+        XCTAssertFalse(RemotePath.isSafe("folder/.."))
         XCTAssertFalse(RemotePath.isSafe("a/b/../c"))
     }
 
-    /// Doppelte Schraegstriche duerfen die Pruefung nicht aushebeln: "a//../b" hat
-    /// eine leere Komponente in der Mitte, und ein naiver Vergleich ueber alle
-    /// Teilstuecke koennte darueber stolpern.
+    /// Double slashes must not defeat the check: "a//../b" has an empty component in the
+    /// middle, and a naive comparison across all pieces could stumble over it.
     func testEmptyComponentsDoNotHideAParent() {
         XCTAssertFalse(RemotePath.isSafe("a//../b"))
         XCTAssertFalse(RemotePath.isSafe("//../"))
@@ -70,17 +68,16 @@ final class RemotePathTests: XCTestCase {
 
     func testTheEmptyNameAndEmbeddedNullAreRefused() {
         XCTAssertFalse(RemotePath.isSafe(""))
-        XCTAssertFalse(RemotePath.isSafe("Datei\0.txt"))
+        XCTAssertFalse(RemotePath.isSafe("file\0.txt"))
         XCTAssertFalse(RemotePath.isSafe("\0"))
     }
 
-    // MARK: Was die Pruefung *nicht* tut
+    // MARK: What the check does *not* do
 
-    /// Ein fuehrender Schraegstrich kommt durch, und das ist kein Versehen: beide
-    /// Aufrufer haengen den Namen an einen Wurzelpfad, und dabei bleibt er innerhalb.
-    /// Der Test steht hier, damit die Entscheidung sichtbar ist — wer die Pruefung
-    /// spaeter woanders benutzt, wo ein absoluter Pfad absolut bliebe, liest hier,
-    /// dass sie ihn nicht abfaengt.
+    /// A leading slash gets through, and that is no oversight: both callers append the
+    /// name to a root path, and in doing so it stays inside. The test stands here so
+    /// that the decision is visible — whoever uses the check somewhere else later,
+    /// where an absolute path would stay absolute, reads here that it does not catch it.
     func testAnAbsoluteLookingNameIsNotRefusedHere() {
         XCTAssertTrue(RemotePath.isSafe("/etc/passwd"))
     }

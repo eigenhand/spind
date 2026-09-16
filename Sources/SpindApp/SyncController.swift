@@ -517,8 +517,8 @@ final class SyncController: ObservableObject {
         pathMonitor = monitor
     }
 
-    /// Downloads placeholders the extension asked for ("Auf dem Computer
-    /// behalten"): reading a dataless file forces full materialization.
+    /// Downloads placeholders the extension asked for ("Keep on this
+    /// computer"): reading a dataless file forces full materialization.
     private func processMaterializeRequests() {
         guard let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID

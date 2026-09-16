@@ -16,11 +16,11 @@
 import XCTest
 @testable import SpindCore
 
-/// Der Vergleich zweier Verzeichnislisten.
+/// Comparing two directory listings.
 ///
-/// SFTP hat keinen Kanal fuer Aenderungen — wer wissen will, was anderswo passiert
-/// ist, muss nachsehen und mit dem letzten bekannten Stand vergleichen. Diese sieben
-/// Zeilen entscheiden daraufhin, was heruntergeladen und was **geloescht** wird.
+/// SFTP has no channel for changes — whoever wants to know what happened elsewhere has
+/// to look and compare against the last known state. These seven lines then decide what
+/// gets downloaded and what gets **deleted**.
 final class RemoteListingDiffTests: XCTestCase {
 
     private func file(_ size: Int64, _ modified: Double = 1_000) -> RemoteEntry {
@@ -36,26 +36,26 @@ final class RemoteListingDiffTests: XCTestCase {
     func testANewFileCountsAsUpdated() {
         let change = RemoteListingDiff.compare(
             previous: ["a.txt": file(10)],
-            current: ["a.txt": file(10), "neu.txt": file(5)])
-        XCTAssertEqual(change.updated, ["neu.txt"])
+            current: ["a.txt": file(10), "new.txt": file(5)])
+        XCTAssertEqual(change.updated, ["new.txt"])
         XCTAssertTrue(change.deleted.isEmpty)
     }
 
-    /// Jede Eigenschaft zaehlt. Eine Datei, die gleich gross bleibt, sich aber
-    /// geaendert hat, ist der haeufige Fall bei Textdateien — bliebe sie unbemerkt,
-    /// stuende auf dem anderen Rechner stillschweigend die alte Fassung.
+    /// Every property counts. A file that stays the same size but has changed is the
+    /// common case with text files — if it went unnoticed, the old version would
+    /// silently stand on the other machine.
     func testEveryPropertyIsPartOfTheComparison() {
         let before = ["a.txt": file(10, 1_000)]
         XCTAssertEqual(RemoteListingDiff.compare(previous: before,
                                                  current: ["a.txt": file(11, 1_000)]).updated,
-                       ["a.txt"], "Andere Groesse.")
+                       ["a.txt"], "A different size.")
         XCTAssertEqual(RemoteListingDiff.compare(previous: before,
                                                  current: ["a.txt": file(10, 2_000)]).updated,
-                       ["a.txt"], "Anderer Zeitstempel bei gleicher Groesse.")
+                       ["a.txt"], "A different timestamp at the same size.")
         XCTAssertEqual(RemoteListingDiff.compare(
             previous: before,
             current: ["a.txt": RemoteEntry(isDirectory: true, size: 10, modified: 1_000)]).updated,
-                       ["a.txt"], "Aus der Datei wurde ein Ordner.")
+                       ["a.txt"], "The file became a folder.")
     }
 
     func testWhatIsGoneCountsAsDeleted() {
@@ -66,31 +66,31 @@ final class RemoteListingDiffTests: XCTestCase {
         XCTAssertTrue(change.updated.isEmpty)
     }
 
-    /// Beide Listen sind sortiert. Ohne feste Reihenfolge waere jeder Vergleich in
-    /// einem Test zufaellig — Dictionaries geben ihre Schluessel nicht zweimal gleich
-    /// heraus.
+    /// Both lists are sorted. Without a fixed order every comparison in a test would be
+    /// a matter of chance — dictionaries do not hand out their keys the same way twice.
     func testBothListsComeOutSorted() {
         let change = RemoteListingDiff.compare(
             previous: ["z.txt": file(1), "a.txt": file(1), "m.txt": file(1)],
-            current: ["neu-z.txt": file(2), "neu-a.txt": file(2)])
-        XCTAssertEqual(change.updated, ["neu-a.txt", "neu-z.txt"])
+            current: ["new-z.txt": file(2), "new-a.txt": file(2)])
+        XCTAssertEqual(change.updated, ["new-a.txt", "new-z.txt"])
         XCTAssertEqual(change.deleted, ["a.txt", "m.txt", "z.txt"])
     }
 
-    /// **Der gefaehrliche Fall**, und er steht als Warnung in der Dokumentation der
-    /// Funktion: Was in `current` fehlt, gilt als geloescht. Eine leere Liste nach
-    /// einem Verbindungsfehler erklaert damit den ganzen Ordner fuer verschwunden.
+    /// **The dangerous case**, and it stands as a warning in the function's
+    /// documentation: what is missing from `current` counts as deleted. An empty listing
+    /// after a connection failure therefore declares the whole folder gone.
     ///
-    /// Der Test aendert daran nichts — die Funktion *soll* das tun, sie bekommt nur
-    /// niemals eine Liste aus einem fehlgeschlagenen Aufruf. Er haelt den Vertrag
-    /// fest, damit niemand ihn beim naechsten Umbau versehentlich bricht.
+    /// The test changes nothing about that — the function is *supposed* to do it, it
+    /// simply never receives a listing from a failed call. It holds the contract down so
+    /// that nobody breaks it by accident in the next rebuild.
     func testAnEmptyCurrentListingDeclaresEverythingDeleted() {
         let change = RemoteListingDiff.compare(
             previous: ["a.txt": file(1), "b.txt": file(2)], current: [:])
         XCTAssertEqual(change.deleted, ["a.txt", "b.txt"])
     }
 
-    /// Andersherum der harmlose Fall: der erste Lauf kennt nichts und findet alles.
+    /// The harmless case the other way round: the first run knows nothing and finds
+    /// everything.
     func testAnEmptyPreviousStateMakesEverythingNew() {
         let change = RemoteListingDiff.compare(
             previous: [:], current: ["a.txt": file(1), "b.txt": file(2)])

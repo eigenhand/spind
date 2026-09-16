@@ -22,11 +22,10 @@ struct SpindApp: App {
     @StateObject private var controller = SyncController.shared
 
     init() {
-        // Vor allem anderen: Was danach gezeichnet wird, soll schon in der
-        // gewaehlten Sprache entstehen. Das Menueleisten-Fenster baut sich bei
-        // jedem Oeffnen neu, deshalb genuegt hier der Start und am Waehler der
-        // Wechsel — ein Wurzelbild, an dem eine Aenderung haengen koennte, hat
-        // eine Menueleisten-App nicht.
+        // Before anything else: whatever is drawn afterwards should come into being
+        // in the chosen language already. The menu bar window rebuilds itself every
+        // time it opens, so the start here and the change at the picker are enough —
+        // a menu bar app has no root view for a change to hang on.
         AppLanguage.apply(UserDefaults.standard.string(forKey: "uiLanguage")
             .flatMap(AppLanguage.init(rawValue:)) ?? .system)
         (UserDefaults.standard.string(forKey: "uiAppearance")

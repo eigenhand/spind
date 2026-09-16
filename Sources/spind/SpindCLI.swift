@@ -17,12 +17,12 @@ import ArgumentParser
 import Foundation
 import SpindCore
 
-/// Ein Satz für den Menschen am Terminal.
+/// A sentence for the human at the terminal.
 ///
-/// `bundle: .module`, weil der Katalog beim Ziel liegt und nicht im Hauptbündel.
-/// Fehlt er — ein nackt kopiertes Binary hat ihn nicht —, steht der deutsche
-/// Schlüssel da. Das ist kein Notbehelf, sondern der Grund, warum die Schlüssel
-/// die deutschen Sätze selbst sind.
+/// `bundle: .module`, because the catalogue lies with the target and not in the main
+/// bundle. If it is missing — a binary copied somewhere on its own does not have it —
+/// the German key stands there. That is not a stopgap but the reason the keys are the
+/// German sentences themselves.
 func say(_ key: String.LocalizationValue) -> String {
     String(localized: key, bundle: .module)
 }

@@ -110,7 +110,7 @@ struct StorageOptimizer {
 
             let relative = url.path
                 .replacingOccurrences(of: root.path + "/", with: "")
-            // "Auf dem Computer behalten" wins, including whole folders.
+            // "Keep on this computer" wins, including whole folders.
             if keepList.contains(relative)
                 || keepList.contains(where: { relative.hasPrefix($0 + "/") }) {
                 continue
@@ -135,7 +135,7 @@ struct StorageOptimizer {
         }
     }
 
-    /// Paths marked "Auf dem Computer behalten" via the Finder context
+    /// Paths marked "Keep on this computer" via the Finder context
     /// menu action (written by the extension into the group container).
     private static func loadKeepList() -> Set<String> {
         guard let url = FileManager.default.containerURL(

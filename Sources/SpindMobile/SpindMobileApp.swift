@@ -130,16 +130,14 @@ struct SpindMobileApp: App {
                 // sheet that could be swiped away.
                 if lock.locked { LockView() }
             }
-            // `apply` leitet das Nachschlagen auf die gewaehlte Sprache um — das
-            // ist die Umstellung selbst. Die Locale darunter macht Zahlen und
-            // Daten passend und ist zugleich der Anstoss, auf den SwiftUI die
-            // Ansichten neu baut.
+            // `apply` redirects the lookup to the chosen language — that is the
+            // switch itself. The locale below it makes numbers and dates fit and is
+            // at the same time the nudge on which SwiftUI rebuilds the views.
             .onChange(of: language, initial: true) { _, chosen in
                 AppLanguage.apply(chosen)
             }
             .environment(\.locale, language.locale ?? .autoupdatingCurrent)
-            // `nil` heisst: das Geraet entscheidet — und wechselt zur Daemmerung
-            // von selbst mit.
+            // `nil` means: the device decides — and switches at dusk by itself.
             .preferredColorScheme(appearance.scheme)
         }
         .onChange(of: scenePhase) { _, phase in
@@ -395,11 +393,11 @@ struct StatusView: View {
     // Sections one by one: as a single expression the layout is too big
     // and the compiler gives up type-checking it.
 
-    /// Sprache und Erscheinungsbild.
+    /// Language and appearance.
     ///
-    /// Dieselben Schluessel wie am Mac (`uiLanguage`, `uiAppearance`), aber die
-    /// Einstellung gehoert trotzdem hierher: Die beiden Apps teilen keinen Speicher,
-    /// und wer nur das iPhone hat, kaeme sonst nicht daran.
+    /// The same keys as on the Mac (`uiLanguage`, `uiAppearance`), but the setting
+    /// belongs here all the same: the two apps share no storage, and whoever has only
+    /// the iPhone would otherwise never reach it.
     private var interfaceSection: some View {
         Section {
             Picker("Sprache", selection: $language) {
