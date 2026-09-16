@@ -47,6 +47,12 @@ jobs:
 
       # The sync planner, the version retention and the pairing code are
       # covered here. No network: the tests run against dictionaries.
+      # Laeuft vor den Tests, weil er in einer Sekunde sagt, was der Testlauf
+      # nicht sieht: Xcode traegt neue Strings beim Bauen von selbst in den
+      # Katalog ein — ohne Uebersetzung, und ohne dass irgendetwas rot wird.
+      - name: Uebersetzungen vollstaendig
+        run: ./check-localizations.py
+
       - name: Test
         run: swift test
 

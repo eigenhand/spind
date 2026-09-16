@@ -14,6 +14,7 @@
 // License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import SwiftUI
+import SpindCore
 import AppKit
 
 @main
@@ -21,6 +22,14 @@ struct SpindApp: App {
     @StateObject private var controller = SyncController.shared
 
     init() {
+        // Vor allem anderen: Was danach gezeichnet wird, soll schon in der
+        // gewaehlten Sprache entstehen. Das Menueleisten-Fenster baut sich bei
+        // jedem Oeffnen neu, deshalb genuegt hier der Start und am Waehler der
+        // Wechsel — ein Wurzelbild, an dem eine Aenderung haengen koennte, hat
+        // eine Menueleisten-App nicht.
+        AppLanguage.apply(UserDefaults.standard.string(forKey: "uiLanguage")
+            .flatMap(AppLanguage.init(rawValue:)) ?? .system)
+
         let isPreview = ProcessInfo.processInfo.environment["SPIND_PREVIEW"] != nil
         NSApplication.shared.setActivationPolicy(isPreview ? .regular : .accessory)
         if isPreview {

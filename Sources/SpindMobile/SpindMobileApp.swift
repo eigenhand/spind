@@ -106,6 +106,7 @@ struct SpindMobileApp: App {
     @Environment(\.scenePhase) private var scenePhase
     @ObservedObject private var lock = AppLock.shared
     @State private var config = MobileStore.loadConfig()
+    @AppStorage("uiLanguage") private var language: AppLanguage = .system
 
     var body: some Scene {
         WindowGroup {
@@ -128,6 +129,14 @@ struct SpindMobileApp: App {
                 // sheet that could be swiped away.
                 if lock.locked { LockView() }
             }
+            // `apply` leitet das Nachschlagen auf die gewaehlte Sprache um — das
+            // ist die Umstellung selbst. Die Locale darunter macht Zahlen und
+            // Daten passend und ist zugleich der Anstoss, auf den SwiftUI die
+            // Ansichten neu baut.
+            .onChange(of: language, initial: true) { _, chosen in
+                AppLanguage.apply(chosen)
+            }
+            .environment(\.locale, language.locale ?? .autoupdatingCurrent)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {

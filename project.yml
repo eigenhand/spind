@@ -73,6 +73,10 @@ targets:
     sources:
       - Sources/SpindMobile
       - Resources/AssetsMobile.xcassets
+      # Derselbe Katalog wie am Mac, und mit Absicht: Beide Apps sprechen ueber
+      # dieselben Dinge, und ein zweiter Katalog haette dieselben Saetze noch
+      # einmal — einmal uebersetzt und einmal vergessen.
+      - Resources/Localizable.xcstrings
     dependencies:
       - package: SpindPackage
         product: SpindCore

@@ -840,9 +840,26 @@ struct GeneralSettings: View {
     @State private var confirmRebuild = false
     @State private var freeing = false
     @State private var freeResult: String?
+    @AppStorage("uiLanguage") private var language: AppLanguage = .system
 
     var body: some View {
         Form {
+            Section {
+                Picker("Sprache", selection: $language) {
+                    ForEach(AppLanguage.allCases) { choice in
+                        Text(choice.label).tag(choice)
+                    }
+                }
+                .accessibilityIdentifier("language-picker")
+                .onChange(of: language) { _, chosen in AppLanguage.apply(chosen) }
+            } header: {
+                Text("Oberfläche")
+            } footer: {
+                Text("Gilt für Spind selbst. Der Finder, die Freigabe-Seite im Browser und die Meldungen des Systems folgen weiterhin der Sprache des Rechners.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
             Section {
                 Toggle("Alle Dateien zusätzlich auf diesem Mac halten",
                        isOn: $controller.folderSyncEnabled)

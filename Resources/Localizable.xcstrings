@@ -1,1824 +1,2523 @@
 {
-  "sourceLanguage" : "de",
-  "strings" : {
-    ". (= alles)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : ". (= everything)"
+  "sourceLanguage": "de",
+  "strings": {
+    "%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
           }
         }
       }
     },
-    "»%@« wiederherstellen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restore “%@”?"
-          }
-        }
-      }
-    },
-    "**Rechtsklick** auf Dateien und Ordner im Spind-Laufwerk: Ordner teilen, Versionsverlauf, auf dem Computer behalten, Platz freigeben." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**Right-click** files and folders in the Spind drive: share a folder, version history, keep on this Mac, free up space."
-          }
-        }
-      }
-    },
-    "%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        }
-      }
-    },
-    "%@ · %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ · %2$@"
+    "%@ von %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ von %2$@"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ · %2$@"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ of %2$@"
           }
         }
       }
     },
-    "%@ von %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ von %2$@"
+    "%@ · %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$@ · %2$@"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ of %2$@"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ · %2$@"
           }
         }
       }
     },
-    "%lld frühere Fassungen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld previous versions"
+    "%lld Löschungen bestätigen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Confirm %lld deletions"
           }
         }
       }
     },
-    "%lld Löschungen bestätigen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confirm %lld deletions"
+    "%lld Löschungen wirklich übertragen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Really sync %lld deletions?"
           }
         }
       }
     },
-    "%lld Löschungen wirklich übertragen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Really sync %lld deletions?"
+    "%lld frühere Fassungen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld previous versions"
           }
         }
       }
     },
-    "%lld wiederherstellbar" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%lld recoverable"
-          }
-        }
-      }
-    },
-    "7 Tagen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "7 days"
-          }
-        }
-      }
-    },
-    "14 Tagen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "14 days"
-          }
-        }
-      }
-    },
-    "30 Tagen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "30 days"
-          }
-        }
-      }
-    },
-    "90 Tagen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "90 days"
-          }
-        }
-      }
-    },
-    "Abbrechen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Cancel"
-          }
-        }
-      }
-    },
-    "Adresse" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Address"
-          }
-        }
-      }
-    },
-    "Aktive Freigaben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Active shares"
-          }
-        }
-      }
-    },
-    "Aktivität" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Activity"
-          }
-        }
-      }
-    },
-    "Aktualisieren" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Refresh"
-          }
-        }
-      }
-    },
-    "alle 5 Minuten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "every 5 minutes"
-          }
-        }
-      }
-    },
-    "alle 15 Sekunden" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "every 15 seconds"
-          }
-        }
-      }
-    },
-    "alle 30 Sekunden" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "every 30 seconds"
-          }
-        }
-      }
-    },
-    "Alle Fassungen …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All versions …"
-          }
-        }
-      }
-    },
-    "Alles kopieren (mit Anleitung)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copy everything (with instructions)"
-          }
-        }
-      }
-    },
-    "Alles synchron" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Everything in sync"
-          }
-        }
-      }
-    },
-    "Allgemein" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "General"
-          }
-        }
-      }
-    },
-    "Änderungen werden automatisch übertragen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changes are synced automatically."
-          }
-        }
-      }
-    },
-    "Änderungen werden gesammelt, aber nicht übertragen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Changes are collected but not synced."
-          }
-        }
-      }
-    },
-    "Ansehen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "View"
-          }
-        }
-      }
-    },
-    "Auf der Box gelöscht" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deleted on the box"
-          }
-        }
-      }
-    },
-    "Authentifizierung" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Authentication"
-          }
-        }
-      }
-    },
-    "Beenden" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quit"
-          }
-        }
-      }
-    },
-    "Bei Anmeldung starten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Start at login"
-          }
-        }
-      }
-    },
-    "Benutzer" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "User"
-          }
-        }
-      }
-    },
-    "Benutzername" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Username"
-          }
-        }
-      }
-    },
-    "bereit" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ready"
-          }
-        }
-      }
-    },
-    "Bereit" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ready"
-          }
-        }
-      }
-    },
-    "Collabora-Server" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Collabora server"
-          }
-        }
-      }
-    },
-    "Der Freigabe-Server wird eingerichtet – das kann bis zu zwei Minuten dauern. Der Link erscheint, sobald er wirklich erreichbar ist." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Setting up the share server — this can take up to two minutes. The link appears once it is actually reachable."
-          }
-        }
-      }
-    },
-    "Der Port muss zwischen 1 und 65535 liegen – Storage Boxen nutzen 23." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The port must be between 1 and 65535 — Storage Boxes use 23."
-          }
-        }
-      }
-    },
-    "Diese Fassung wiederherstellen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restore this version?"
-          }
-        }
-      }
-    },
-    "Dieser Ordner ist bereits geteilt. Das Passwort wurde auf diesem Gerät nicht gespeichert – erzeuge einen neuen Zugangslink, um ihn erneut weiterzugeben." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This folder is already shared. The password was not saved on this device — generate a new access link to pass it on again."
-          }
-        }
-      }
-    },
-    "Durchsuche den Verlauf …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Searching the history …"
-          }
-        }
-      }
-    },
-    "Eingerichtet – Spind läuft" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All set — Spind is running"
-          }
-        }
-      }
-    },
-    "Einstellungen öffnen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Settings"
-          }
-        }
-      }
-    },
-    "Empfänger können Dateien ansehen und herunterladen – über den Link im Browser oder als eingebundenes Laufwerk." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recipients can view and download files — via the link in a browser or as a mounted drive."
-          }
-        }
-      }
-    },
-    "Empfänger können Dateien auch ändern und hochladen. Bearbeiten funktioniert über die Laufwerk-Einbindung (Finder: ⌘K / Windows-Explorer); die Web-Ansicht bleibt lesend." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Recipients can also change and upload files. Editing works through the mounted drive (Finder: ⌘K / Windows Explorer); the web view stays read-only."
-          }
-        }
-      }
-    },
-    "Entlädt lange ungenutzte Dateien aus dem Finder-Volume; sie bleiben in der Cloud verfügbar." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Evicts long-unused files from the Finder volume; they stay available in the cloud."
-          }
-        }
-      }
-    },
-    "Erneut versuchen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Try again"
-          }
-        }
-      }
-    },
-    "Erstelle Freigabe …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Creating share …"
-          }
-        }
-      }
-    },
-    "Fehler: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error: %@"
-          }
-        }
-      }
-    },
-    "Fertig" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Done"
-          }
-        }
-      }
-    },
-    "Finder-Laufwerk" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Finder drive"
-          }
-        }
-      }
-    },
-    "Finder-Laufwerk neu aufbauen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rebuild the Finder drive?"
-          }
-        }
-      }
-    },
-    "Freigabe erstellen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Create share"
-          }
-        }
-      }
-    },
-    "Freigabe erstellt – Zugang im Clipboard" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share created — credentials on the clipboard"
-          }
-        }
-      }
-    },
-    "Freigabe widerrufen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Revoke share"
-          }
-        }
-      }
-    },
-    "Freigabe widerrufen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Revoke share?"
-          }
-        }
-      }
-    },
-    "Freigeben, wenn ungenutzt seit" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Free up when unused for"
-          }
-        }
-      }
-    },
-    "Gelöschte Dateien" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deleted files"
-          }
-        }
-      }
-    },
-    "Gemeinsam bearbeiten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Collaborative editing"
-          }
-        }
-      }
-    },
-    "Geteilt · Lesen & Schreiben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shared · read & write"
-          }
-        }
-      }
-    },
-    "Geteilt · nur Lesen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Shared · read-only"
-          }
-        }
-      }
-    },
-    "Heruntergeladen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Downloaded"
-          }
-        }
-      }
-    },
-    "Hetzner Console öffnen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Open Hetzner Console"
-          }
-        }
-      }
-    },
-    "Hetzner-API" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hetzner API"
-          }
-        }
-      }
-    },
-    "Hetzner-API-Token" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hetzner API token"
-          }
-        }
-      }
-    },
-    "Hinzufügen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add"
-          }
-        }
-      }
-    },
-    "Hochgeladen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Uploaded"
-          }
-        }
-      }
-    },
-    "Host" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Host"
-          }
-        }
-      }
-    },
-    "https://doc.example.de" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "https://doc.example.com"
-          }
-        }
-      }
-    },
-    "Im Browser geöffnet – Link im Clipboard" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Opened in browser — link on the clipboard"
-          }
-        }
-      }
-    },
-    "Im Finder erscheint das Laufwerk **Spind** in der Seitenleiste – beim ersten Mal kann das eine Minute dauern. Dateien dort belegen erst Platz, wenn du sie öffnest." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The **Spind** drive appears in the Finder sidebar — the first time can take a minute. Files there only take up space once you open them."
-          }
-        }
-      }
-    },
-    "In vier Schritten eingerichtet – Schlüssel erzeuge ich für dich." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up in four steps — I’ll create the key for you."
-          }
-        }
-      }
-    },
-    "jede Minute" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "every minute"
-          }
-        }
-      }
-    },
-    "Jetzt einrichten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up now"
-          }
-        }
-      }
-    },
-    "Jetzt nach Updates suchen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check for updates now"
-          }
-        }
-      }
-    },
-    "Jetzt Speicher freigeben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Free up space now"
-          }
-        }
-      }
-    },
-    "Keine aktiven Freigaben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No active shares"
-          }
-        }
-      }
-    },
-    "Keine Verbindung" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No connection"
-          }
-        }
-      }
-    },
-    "Konflikt – beide Versionen behalten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Conflict — kept both versions"
-          }
-        }
-      }
-    },
-    "Kopieren" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copy"
-          }
-        }
-      }
-    },
-    "Kopiert!" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copied!"
-          }
-        }
-      }
-    },
-    "Lade Verlauf …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Loading history …"
-          }
-        }
-      }
-    },
-    "Lange ungenutzte Dateien werden lokal entfernt und bleiben als Cloud-Platzhalter im Finder sichtbar – beim Öffnen lädt Spind sie automatisch wieder. Dateien mit »Geladen behalten« (Rechtsklick im Finder) und nicht hochgeladene Änderungen sind ausgenommen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Long-unused files are removed locally and stay visible in Finder as cloud placeholders — opening one downloads it again automatically. Files marked “Keep downloaded” (right-click in Finder) and changes not yet uploaded are exempt."
-          }
-        }
-      }
-    },
-    "Lesen & Schreiben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Read & write"
-          }
-        }
-      }
-    },
-    "Lokal gelöscht" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Deleted locally"
-          }
-        }
-      }
-    },
-    "Lokaler Sync-Ordner" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Local sync folder"
-          }
-        }
-      }
-    },
-    "Löschungen übertragen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync deletions"
-          }
-        }
-      }
-    },
-    "Meldet den aktuellen Sync-Status." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reports the current sync status."
-          }
-        }
-      }
-    },
-    "Nach Änderungen auf der Box suchen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Check the box for changes"
-          }
-        }
-      }
-    },
-    "Neu aufbauen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rebuild"
-          }
-        }
-      }
-    },
-    "Neu aufbauen …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rebuild …"
-          }
-        }
-      }
-    },
-    "Neu erzeugen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Regenerate"
-          }
-        }
-      }
-    },
-    "Neue Freigabe: Rechtsklick auf einen Ordner im Spind-Volume → »Ordner teilen«. Die Zugangsdaten landen im Clipboard." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "New share: right-click a folder in the Spind volume → “Share Folder”. The credentials land on the clipboard."
-          }
-        }
-      }
-    },
-    "Neuen Zugangslink erzeugen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generate new access link"
-          }
-        }
-      }
-    },
-    "Neuen Zugangslink erzeugen?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generate a new access link?"
-          }
-        }
-      }
-    },
-    "Nicht geteilt" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not shared"
-          }
-        }
-      }
-    },
-    "Nicht konfiguriert" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Not set up"
-          }
-        }
-      }
-    },
-    "Nichts zu retten – alles an seinem Platz" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nothing to rescue — everything in its place"
-          }
-        }
-      }
-    },
-    "Noch keine früheren Fassungen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No previous versions yet"
-          }
-        }
-      }
-    },
-    "Nur das Finder-Laufwerk ist aktiv. Dein Ordner %@ wird nicht abgeglichen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Only the Finder drive is active. Your folder %@ is not being synced."
-          }
-        }
-      }
-    },
-    "Nur Lesen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Read-only"
-          }
-        }
-      }
-    },
-    "Oben in der **Menüleiste** wohnt Spind ab jetzt – ein Klick zeigt Status, Übertragungen und Aktivität." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spind now lives in the **menu bar** — one click shows status, transfers, and activity."
-          }
-        }
-      }
-    },
-    "Öffentlicher Schlüssel" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Public key"
-          }
-        }
-      }
-    },
-    "Offline – wartet auf Netzwerk" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Offline — waiting for network"
-          }
-        }
-      }
-    },
-    "Optional. Mit einem eigenen Collabora-Server bekommen Office-Dokumente in Freigaben einen »Bearbeiten«-Knopf und lassen sich gleichzeitig von mehreren Personen bearbeiten. Die Einrichtung steht in server/collabora/README.md — ohne Server bleibt der Rest von Spind vollständig nutzbar." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Optional. With your own Collabora server, Office documents in shares get an “Edit” button and can be edited by several people at once. Setup lives in server/collabora/README.md — without a server, the rest of Spind stays fully usable."
-          }
-        }
-      }
-    },
-    "Ordner" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Folder"
-          }
-        }
-      }
-    },
-    "Ordner angelegt" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Folder created"
-          }
-        }
-      }
-    },
-    "Ordner ausschließen (z. B. Downloads)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exclude folder (e.g. Downloads)"
-          }
-        }
-      }
-    },
-    "Ordner-Sync (%@)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Folder sync (%@)"
-          }
-        }
-      }
-    },
-    "Ordner-Sync ist aus" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Folder sync is off"
-          }
-        }
-      }
-    },
-    "Pausiert" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paused"
-          }
-        }
-      }
-    },
-    "Pfade relativ zum Sync-Ordner. Wählst du deinen kompletten Benutzerordner, sind »Library« und »Applications« immer ausgeschlossen und »Downloads« wird automatisch vorgeschlagen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Paths relative to the sync folder. If you pick your entire home folder, “Library” and “Applications” are always excluded and “Downloads” is suggested automatically."
-          }
-        }
-      }
-    },
-    "Platz automatisch freigeben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Free up space automatically"
-          }
-        }
-      }
-    },
-    "Port" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Port"
-          }
-        }
-      }
-    },
-    "Privater Schlüssel" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Private key"
-          }
-        }
-      }
-    },
-    "Prüfe Freigabe-Status …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Checking share status …"
-          }
-        }
-      }
-    },
-    "Schließen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
-          }
-        }
-      }
-    },
-    "Schlüssel" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Key"
-          }
-        }
-      }
-    },
-    "Schlüssel fehlt im Schlüsselbund" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Key missing from keychain"
-          }
-        }
-      }
-    },
-    "Schlüssel kopieren" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Copy key"
-          }
-        }
-      }
-    },
-    "Schlüssel liegt bereit" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Key is ready"
-          }
-        }
-      }
-    },
-    "Schlüsselpaar jetzt erzeugen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Generate key pair now"
-          }
-        }
-      }
-    },
-    "Schritt %lld von %lld · %@" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Schritt %1$lld von %2$lld · %3$@"
+    "%lld von %lld": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "%1$lld von %2$lld"
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Step %1$lld of %2$lld · %3$@"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld of %lld"
           }
         }
       }
     },
-    "Sicherheitsnetz" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Safety net"
+    "%lld wiederherstellbar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld recoverable"
           }
         }
       }
     },
-    "Solange Spind nicht läuft, werden keine Änderungen übertragen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "While Spind isn’t running, no changes are synced."
+    "%lld übersprungen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld skipped"
           }
         }
       }
     },
-    "Später" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Later"
+    "**Rechtsklick** auf Dateien und Ordner im Spind-Laufwerk: Ordner teilen, Versionsverlauf, auf dem Computer behalten, Platz freigeben.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "**Right-click** files and folders in the Spind drive: share a folder, version history, keep on this Mac, free up space."
           }
         }
       }
     },
-    "Speicher (Finder-Volume)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Storage (Finder volume)"
+    ". (= alles)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": ". (= everything)"
           }
         }
       }
     },
-    "Speicher freigeben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Free up space"
+    "1 · Schlüssel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 · Key"
           }
         }
       }
     },
-    "Speicher optimiert" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Storage optimized"
+    "14 Tagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "14 days"
           }
         }
       }
     },
-    "Speichern" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save"
+    "2 · Verbindung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "2 · Connection"
           }
         }
       }
     },
-    "Speichern & Prüfen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Save & verify"
+    "30 Tagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 days"
           }
         }
       }
     },
-    "Spind" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spind"
+    "7 Tagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "7 days"
           }
         }
       }
     },
-    "Spind beenden?" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Quit Spind?"
+    "90 Tagen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "90 days"
           }
         }
       }
     },
-    "Spind einrichten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Set up Spind"
+    "Abbrechen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
           }
         }
       }
     },
-    "Spind legt ab jetzt bei jeder Änderung automatisch eine Fassung an." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "From now on, Spind automatically keeps a version on every change."
+    "Adresse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Address"
           }
         }
       }
     },
-    "Spind macht weiter, sobald das Netzwerk zurück ist." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spind continues as soon as the network is back."
+    "Aktive Freigaben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active shares"
           }
         }
       }
     },
-    "Spind startet ab jetzt **automatisch bei der Anmeldung** – abstellbar in den Einstellungen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spind now starts **automatically at login** — can be turned off in Settings."
+    "Aktivität": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Activity"
           }
         }
       }
     },
-    "Spind synchronisieren" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync Spind"
+    "Aktualisieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refresh"
           }
         }
       }
     },
-    "Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Hinterlege den öffentlichen Schlüssel in der Hetzner Console bei deiner Storage Box (SSH-Support aktivieren)." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spind connects exclusively via SSH key — a password is never stored. Add the public key to your storage box in the Hetzner Console (enable SSH support)."
+    "Alle Dateien zusätzlich auf diesem Mac halten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Also keep every file on this Mac"
           }
         }
       }
     },
-    "Spind-Speicher freigeben" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Free up Spind storage"
+    "Alle Fassungen …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All versions …"
           }
         }
       }
     },
-    "Spind-Status" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Spind status"
+    "Alle sichern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up all"
           }
         }
       }
     },
-    "Status" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Status"
+    "Alles kopieren (mit Anleitung)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy everything (with instructions)"
           }
         }
       }
     },
-    "Storage Box" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Storage Box"
+    "Alles synchron": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything in sync"
           }
         }
       }
     },
-    "Stößt sofort eine Synchronisierung mit der Storage Box an." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Immediately starts a sync with the storage box."
+    "Allgemein": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
           }
         }
       }
     },
-    "Sync angehalten" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync stopped"
+    "Anhalten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause"
           }
         }
       }
     },
-    "Synchron – Stand %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "In sync — as of %@"
+    "Anna": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anna"
           }
         }
       }
     },
-    "Synchronisiere …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Syncing …"
+    "Ansehen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View"
           }
         }
       }
     },
-    "Synchronisieren" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync"
+    "Auch die vorhandenen Aufnahmen mitnehmen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Take the existing photos along as well?"
           }
         }
       }
     },
-    "Synchronisierung" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync"
+    "Auf dem neuen Gerät Spind öffnen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Spind on the new device"
           }
         }
       }
     },
-    "Synchronisierung gestartet." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync started."
+    "Auf der Box gelöscht": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted on the box"
           }
         }
       }
     },
-    "System" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "System"
+    "Aufteilung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Split"
           }
         }
       }
     },
-    "Teilen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sharing"
+    "Authentifizierung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Authentication"
           }
         }
       }
     },
-    "u123456" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "u123456"
+    "Beenden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit"
           }
         }
       }
     },
-    "u123456 oder u123456-sub1" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "u123456 or u123456-sub1"
+    "Bei Anmeldung starten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start at login"
           }
         }
       }
     },
-    "u123456.your-storagebox.de" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "u123456.your-storagebox.de"
+    "Beispiel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Example"
           }
         }
       }
     },
-    "u123456.your-storagebox.de oder sftp.example.org" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "u123456.your-storagebox.de or sftp.example.org"
+    "Benutzer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "User"
           }
         }
       }
     },
-    "Übernehmen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Apply"
+    "Benutzername": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Username"
           }
         }
       }
     },
-    "Übertragungen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Transfers"
+    "Bereit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready"
           }
         }
       }
     },
-    "Updates" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Updates"
+    "Bereit zum Scannen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ready to scan"
           }
         }
       }
     },
-    "Verbindung" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Connection"
+    "Bilder": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Images"
           }
         }
       }
     },
-    "Verbindung testen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Test connection"
+    "Collabora-Server": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collabora server"
           }
         }
       }
     },
-    "Verschoben – ohne Neuübertragung" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Moved — nothing re-transferred"
+    "Darf nur lesen, nicht ändern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "May only read, not change"
           }
         }
       }
     },
-    "Verzeichnis auf der Box" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Directory on the box"
+    "Dateien-App-Eintrag neu anlegen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recreate the Files app entry"
           }
         }
       }
     },
-    "Vom Sync ausgeschlossen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Excluded from sync"
+    "Deine Dateien findest du in der **Dateien-App** unter »Durchsuchen« → **Spind**. Sie laden erst beim Öffnen und belegen sonst keinen Platz.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You will find your files in the **Files app** under “Browse” → **Spind**. They download when you open them and take up no space otherwise."
           }
         }
       }
     },
-    "Vor jedem Überschreiben oder Löschen sichert Spind die aktuelle Fassung auf der Box (bis zu %lld je Datei). Gelöschtes lässt sich hier mit einem Klick zurückholen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Before every overwrite or delete, Spind saves the current version on the box (up to %lld per file). Deleted files can be brought back here with one click."
+    "Der Freigabe-Server wird eingerichtet – das kann bis zu zwei Minuten dauern. Der Link erscheint, sobald er wirklich erreichbar ist.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setting up the share server — this can take up to two minutes. The link appears once it is actually reachable."
           }
         }
       }
     },
-    "Wählen …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Choose …"
+    "Der Port muss zwischen 1 und 65535 liegen – Storage Boxen nutzen 23.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The port must be between 1 and 65535 — Storage Boxes use 23."
           }
         }
       }
     },
-    "Was du brauchst:" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "What you need:"
+    "Diese Fassung wiederherstellen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore this version?"
           }
         }
       }
     },
-    "Widerrufe Freigabe …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Revoking share …"
+    "Diesen Code scannen – fertig": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan this code — done"
           }
         }
       }
     },
-    "Widerrufen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Revoke"
+    "Dieser Ordner ist bereits geteilt. Das Passwort wurde auf diesem Gerät nicht gespeichert – erzeuge einen neuen Zugangslink, um ihn erneut weiterzugeben.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This folder is already shared. The password was not saved on this device — generate a new access link to pass it on again."
           }
         }
       }
     },
-    "Wiederherstellen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restore"
+    "Dieser Ordner ist leer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This folder is empty"
           }
         }
       }
     },
-    "Wiederherstellen …" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Restore …"
+    "Durchsuche den Verlauf …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Searching the history …"
           }
         }
       }
     },
-    "Willkommen" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome"
+    "Eingerichtet – Spind läuft": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All set — Spind is running"
           }
         }
       }
     },
-    "Willkommen bei Spind" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome to Spind"
+    "Einrichtung zurücksetzen …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset the setup …"
           }
         }
       }
     },
-    "wird abgelegt unter %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "will be stored at %@"
+    "Einrichtung zurücksetzen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset the setup?"
           }
         }
       }
     },
-    "Zugriff" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Access"
+    "Einstellungen öffnen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Settings"
           }
         }
       }
     },
-    "Zum **Teilen** brauchst du einmalig einen Hetzner-API-Token – der Weg dorthin steht in Einstellungen → Teilen." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "For **sharing** you need a Hetzner API token once — Settings → Sharing shows the way."
+    "Eintragen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter"
           }
         }
       }
     },
-    "Zum Teilen legt Spind schreibgeschützte WebDAV-Unterzugänge für einzelne Ordner an. Dafür wird ein API-Token benötigt: Hetzner Console → Projekt → Sicherheit → API-Tokens → „Lesen & Schreiben“. Der Token wird ausschließlich im macOS-Schlüsselbund gespeichert." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "For sharing, Spind creates read-only WebDAV sub-accounts for individual folders. This needs an API token: Hetzner Console → project → Security → API tokens → “Read & Write”. The token is stored exclusively in the macOS keychain."
+    "Empfänger können Dateien ansehen und herunterladen – über den Link im Browser oder als eingebundenes Laufwerk.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recipients can view and download files — via the link in a browser or as a mounted drive."
           }
         }
       }
     },
-    "Zurück" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Back"
+    "Empfänger können Dateien auch ändern und hochladen. Bearbeiten funktioniert über die Laufwerk-Einbindung (Finder: ⌘K / Windows-Explorer); die Web-Ansicht bleibt lesend.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recipients can also change and upload files. Editing works through the mounted drive (Finder: ⌘K / Windows Explorer); the web view stays read-only."
+          }
+        }
+      }
+    },
+    "Entlädt lange ungenutzte Dateien aus dem Finder-Volume; sie bleiben in der Cloud verfügbar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Evicts long-unused files from the Finder volume; they stay available in the cloud."
+          }
+        }
+      }
+    },
+    "Erneut versuchen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Try again"
+          }
+        }
+      }
+    },
+    "Erstelle Freigabe …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Creating share …"
+          }
+        }
+      }
+    },
+    "Fehler: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error: %@"
+          }
+        }
+      }
+    },
+    "Fertig": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        }
+      }
+    },
+    "Fertig – in der Dateien-App aktivieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done — now switch it on in the Files app"
+          }
+        }
+      }
+    },
+    "Finder-Laufwerk": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Finder drive"
+          }
+        }
+      }
+    },
+    "Finder-Laufwerk neu aufbauen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild the Finder drive?"
+          }
+        }
+      }
+    },
+    "Fotos": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Photos"
+          }
+        }
+      }
+    },
+    "Fotos sichern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up photos"
+          }
+        }
+      }
+    },
+    "Freigabe erstellen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create share"
+          }
+        }
+      }
+    },
+    "Freigabe erstellt – Zugang im Clipboard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Share created — credentials on the clipboard"
+          }
+        }
+      }
+    },
+    "Freigabe widerrufen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke share"
+          }
+        }
+      }
+    },
+    "Freigabe widerrufen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke share?"
+          }
+        }
+      }
+    },
+    "Freigeben, wenn ungenutzt seit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free up when unused for"
+          }
+        }
+      }
+    },
+    "Gelöschte Dateien": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted files"
+          }
+        }
+      }
+    },
+    "Gemeinsam bearbeiten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Collaborative editing"
+          }
+        }
+      }
+    },
+    "Gerät verbinden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect a device"
+          }
+        }
+      }
+    },
+    "Gerät verbinden …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect a device …"
+          }
+        }
+      }
+    },
+    "Geteilt · Lesen & Schreiben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shared · read & write"
+          }
+        }
+      }
+    },
+    "Geteilt · nur Lesen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shared · read-only"
+          }
+        }
+      }
+    },
+    "Gilt für Spind selbst. Der Finder, die Freigabe-Seite im Browser und die Meldungen des Systems folgen weiterhin der Sprache des Rechners.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applies to Spind itself. The Finder, the share page in the browser and the system's own messages still follow the language of this Mac."
+          }
+        }
+      }
+    },
+    "Heruntergeladen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Downloaded"
+          }
+        }
+      }
+    },
+    "Hetzner Console öffnen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Hetzner Console"
+          }
+        }
+      }
+    },
+    "Hetzner-API": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hetzner API"
+          }
+        }
+      }
+    },
+    "Hetzner-API-Token": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hetzner API token"
+          }
+        }
+      }
+    },
+    "Hinzufügen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add"
+          }
+        }
+      }
+    },
+    "Hochgeladen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Uploaded"
+          }
+        }
+      }
+    },
+    "Host": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Host"
+          }
+        }
+      }
+    },
+    "Ich habe schon einen Schlüssel zum Eintragen …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I already have a key to enter …"
+          }
+        }
+      }
+    },
+    "Im Browser geöffnet – Link im Clipboard": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Opened in browser — link on the clipboard"
+          }
+        }
+      }
+    },
+    "Im Finder erscheint das Laufwerk **Spind** in der Seitenleiste – beim ersten Mal kann das eine Minute dauern. Dateien dort belegen erst Platz, wenn du sie öffnest.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The **Spind** drive appears in the Finder sidebar — the first time can take a minute. Files there only take up space once you open them."
+          }
+        }
+      }
+    },
+    "In vier Schritten eingerichtet – Schlüssel erzeuge ich für dich.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up in four steps — I’ll create the key for you."
+          }
+        }
+      }
+    },
+    "Jetzt Speicher freigeben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free up space now"
+          }
+        }
+      }
+    },
+    "Jetzt einrichten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up now"
+          }
+        }
+      }
+    },
+    "Jetzt nach Updates suchen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for updates now"
+          }
+        }
+      }
+    },
+    "Jetzt nach Änderungen sehen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check for changes now"
+          }
+        }
+      }
+    },
+    "Jetzt sichern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back up now"
+          }
+        }
+      }
+    },
+    "Keine Verbindung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection"
+          }
+        }
+      }
+    },
+    "Keine aktiven Freigaben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No active shares"
+          }
+        }
+      }
+    },
+    "Konflikt – beide Versionen behalten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conflict — kept both versions"
+          }
+        }
+      }
+    },
+    "Kopieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy"
+          }
+        }
+      }
+    },
+    "Kopiert!": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copied!"
+          }
+        }
+      }
+    },
+    "Lade Verlauf …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loading history …"
+          }
+        }
+      }
+    },
+    "Lange ungenutzte Dateien werden lokal entfernt und bleiben als Cloud-Platzhalter im Finder sichtbar – beim Öffnen lädt Spind sie automatisch wieder. Dateien mit »Geladen behalten« (Rechtsklick im Finder) und nicht hochgeladene Änderungen sind ausgenommen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Long-unused files are removed locally and stay visible in Finder as cloud placeholders — opening one downloads it again automatically. Files marked “Keep downloaded” (right-click in Finder) and changes not yet uploaded are exempt."
+          }
+        }
+      }
+    },
+    "Lesen & Schreiben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read & write"
+          }
+        }
+      }
+    },
+    "Lokal gelöscht": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Deleted locally"
+          }
+        }
+      }
+    },
+    "Lokaler Sync-Ordner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Local sync folder"
+          }
+        }
+      }
+    },
+    "Läuft": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running"
+          }
+        }
+      }
+    },
+    "Löschungen übertragen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync deletions"
+          }
+        }
+      }
+    },
+    "Meldet den aktuellen Sync-Status.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reports the current sync status."
+          }
+        }
+      }
+    },
+    "Mit %@ entsperren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock with %@"
+          }
+        }
+      }
+    },
+    "Mit %@ öffnen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open with %@"
+          }
+        }
+      }
+    },
+    "Nach Änderungen auf der Box suchen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check the box for changes"
+          }
+        }
+      }
+    },
+    "Name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Name"
+          }
+        }
+      }
+    },
+    "Neu aufbauen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild"
+          }
+        }
+      }
+    },
+    "Neu aufbauen …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebuild …"
+          }
+        }
+      }
+    },
+    "Neu erzeugen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regenerate"
+          }
+        }
+      }
+    },
+    "Neue Freigabe: Rechtsklick auf einen Ordner im Spind-Volume → »Ordner teilen«. Die Zugangsdaten landen im Clipboard.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New share: right-click a folder in the Spind volume → “Share Folder”. The credentials land on the clipboard."
+          }
+        }
+      }
+    },
+    "Neuen Zugangslink erzeugen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate new access link"
+          }
+        }
+      }
+    },
+    "Neuen Zugangslink erzeugen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate a new access link?"
+          }
+        }
+      }
+    },
+    "Nicht geteilt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not shared"
+          }
+        }
+      }
+    },
+    "Nicht konfiguriert": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not set up"
+          }
+        }
+      }
+    },
+    "Nichts zu retten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to recover"
+          }
+        }
+      }
+    },
+    "Nichts zu retten – alles an seinem Platz": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing to rescue — everything in its place"
+          }
+        }
+      }
+    },
+    "Noch keine früheren Fassungen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No previous versions yet"
+          }
+        }
+      }
+    },
+    "Normalerweise liegen deine Dateien nur auf der Box und im Finder unter »Spind«; Platz belegen sie erst beim Öffnen. Ist der Schalter an, legt Spind zusätzlich eine vollständige Kopie im Ordner ab – praktisch für Offline-Arbeit und Backups, aber alles zählt dann doppelt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normally your files live only on the box and in the Finder under “Spind”; they take up space only when you open them. With this switch on, Spind also keeps a complete copy in the folder — handy for offline work and backups, but everything then counts twice."
+          }
+        }
+      }
+    },
+    "Nur Lesen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Read-only"
+          }
+        }
+      }
+    },
+    "Nur das Finder-Laufwerk ist aktiv. Dein Ordner %@ wird nicht abgeglichen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only the Finder drive is active. Your folder %@ is not being synced."
+          }
+        }
+      }
+    },
+    "Nur im WLAN": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only on Wi-Fi"
+          }
+        }
+      }
+    },
+    "Nur neue ab jetzt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only new ones from now on"
+          }
+        }
+      }
+    },
+    "Oben in der **Menüleiste** wohnt Spind ab jetzt – ein Klick zeigt Status, Übertragungen und Aktivität.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind now lives in the **menu bar** — one click shows status, transfers, and activity."
+          }
+        }
+      }
+    },
+    "Oberfläche": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interface"
+          }
+        }
+      }
+    },
+    "Offline – wartet auf Netzwerk": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Offline — waiting for network"
+          }
+        }
+      }
+    },
+    "Optional. Mit einem eigenen Collabora-Server bekommen Office-Dokumente in Freigaben einen »Bearbeiten«-Knopf und lassen sich gleichzeitig von mehreren Personen bearbeiten. Die Einrichtung steht in server/collabora/README.md — ohne Server bleibt der Rest von Spind vollständig nutzbar.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Optional. With your own Collabora server, Office documents in shares get an “Edit” button and can be edited by several people at once. Setup lives in server/collabora/README.md — without a server, the rest of Spind stays fully usable."
+          }
+        }
+      }
+    },
+    "Ordner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder"
+          }
+        }
+      }
+    },
+    "Ordner angelegt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder created"
+          }
+        }
+      }
+    },
+    "Ordner ausschließen (z. B. Downloads)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exclude folder (e.g. Downloads)"
+          }
+        }
+      }
+    },
+    "Ordner-Sync (%@)": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder sync (%@)"
+          }
+        }
+      }
+    },
+    "Ordner-Sync ist aus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder sync is off"
+          }
+        }
+      }
+    },
+    "Papierkorb": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trash"
+          }
+        }
+      }
+    },
+    "Pausiert": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paused"
+          }
+        }
+      }
+    },
+    "Per QR-Code vom Mac verbinden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect from the Mac by QR code"
+          }
+        }
+      }
+    },
+    "Pfade relativ zum Sync-Ordner. Wählst du deinen kompletten Benutzerordner, sind »Library« und »Applications« immer ausgeschlossen und »Downloads« wird automatisch vorgeschlagen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paths relative to the sync folder. If you pick your entire home folder, “Library” and “Applications” are always excluded and “Downloads” is suggested automatically."
+          }
+        }
+      }
+    },
+    "Platz automatisch freigeben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free up space automatically"
+          }
+        }
+      }
+    },
+    "Port": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Port"
+          }
+        }
+      }
+    },
+    "Privater Schlüssel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Private key"
+          }
+        }
+      }
+    },
+    "Projekte/Anna": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Projects/Anna"
+          }
+        }
+      }
+    },
+    "Prüfe Freigabe-Status …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Checking share status …"
+          }
+        }
+      }
+    },
+    "Schließen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        }
+      }
+    },
+    "Schlüssel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key"
+          }
+        }
+      }
+    },
+    "Schlüssel eintragen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enter a key"
+          }
+        }
+      }
+    },
+    "Schlüssel fehlt im Schlüsselbund": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key missing from keychain"
+          }
+        }
+      }
+    },
+    "Schlüssel kopieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy key"
+          }
+        }
+      }
+    },
+    "Schlüssel liegt bereit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Key is ready"
+          }
+        }
+      }
+    },
+    "Schlüsselpaar erzeugen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate a key pair"
+          }
+        }
+      }
+    },
+    "Schlüsselpaar jetzt erzeugen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate key pair now"
+          }
+        }
+      }
+    },
+    "Schritt %lld von %lld · %@": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Schritt %1$lld von %2$lld · %3$@"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %1$lld of %2$lld · %3$@"
+          }
+        }
+      }
+    },
+    "Screenshot aus Fotos wählen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a screenshot from Photos"
+          }
+        }
+      }
+    },
+    "Server": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Server"
+          }
+        }
+      }
+    },
+    "Sicherheitsnetz": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Safety net"
+          }
+        }
+      }
+    },
+    "Solange Spind nicht läuft, werden keine Änderungen übertragen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While Spind isn’t running, no changes are synced."
+          }
+        }
+      }
+    },
+    "Speicher (Finder-Volume)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage (Finder volume)"
+          }
+        }
+      }
+    },
+    "Speicher freigeben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free up space"
+          }
+        }
+      }
+    },
+    "Speicher optimiert": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage optimized"
+          }
+        }
+      }
+    },
+    "Speichern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save"
+          }
+        }
+      }
+    },
+    "Speichern & Prüfen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Save & verify"
+          }
+        }
+      }
+    },
+    "Spind": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind"
+          }
+        }
+      }
+    },
+    "Spind beenden?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit Spind?"
+          }
+        }
+      }
+    },
+    "Spind einrichten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Set up Spind"
+          }
+        }
+      }
+    },
+    "Spind ist gesperrt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind is locked"
+          }
+        }
+      }
+    },
+    "Spind legt ab jetzt bei jeder Änderung automatisch eine Fassung an.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "From now on, Spind automatically keeps a version on every change."
+          }
+        }
+      }
+    },
+    "Spind macht weiter, sobald das Netzwerk zurück ist.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind continues as soon as the network is back."
+          }
+        }
+      }
+    },
+    "Spind startet ab jetzt **automatisch bei der Anmeldung** – abstellbar in den Einstellungen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind now starts **automatically at login** — can be turned off in Settings."
+          }
+        }
+      }
+    },
+    "Spind synchronisieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync Spind"
+          }
+        }
+      }
+    },
+    "Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Hinterlege den öffentlichen Schlüssel in der Hetzner Console bei deiner Storage Box (SSH-Support aktivieren).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind connects exclusively via SSH key — a password is never stored. Add the public key to your storage box in the Hetzner Console (enable SSH support)."
+          }
+        }
+      }
+    },
+    "Spind-Speicher freigeben": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free up Spind storage"
+          }
+        }
+      }
+    },
+    "Spind-Status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind status"
+          }
+        }
+      }
+    },
+    "Sprache": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        }
+      }
+    },
+    "Sprache des Geräts": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Device language"
+          }
+        }
+      }
+    },
+    "Später": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        }
+      }
+    },
+    "Status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        }
+      }
+    },
+    "Storage Box": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storage Box"
+          }
+        }
+      }
+    },
+    "Stößt sofort eine Synchronisierung mit der Storage Box an.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immediately starts a sync with the storage box."
+          }
+        }
+      }
+    },
+    "Sync angehalten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync stopped"
+          }
+        }
+      }
+    },
+    "Synchron – Stand %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In sync — as of %@"
+          }
+        }
+      }
+    },
+    "Synchronisiere …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Syncing …"
+          }
+        }
+      }
+    },
+    "Synchronisieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync"
+          }
+        }
+      }
+    },
+    "Synchronisierung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync"
+          }
+        }
+      }
+    },
+    "Synchronisierung gestartet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync started."
+          }
+        }
+      }
+    },
+    "System": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "System"
+          }
+        }
+      }
+    },
+    "Teilen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sharing"
+          }
+        }
+      }
+    },
+    "Updates": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Updates"
+          }
+        }
+      }
+    },
+    "Verbindet z. B. dein iPhone: Dort in Spind den öffentlichen Schlüssel kopieren (wandert per Zwischenablage automatisch hierher), hier einfügen – fertig. Kein Console-Umweg, keine zweite Box.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connects your iPhone, for instance: copy the public key there in Spind (the clipboard carries it here by itself), paste it here — done. No detour through the Console, no second box."
+          }
+        }
+      }
+    },
+    "Verbindung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection"
+          }
+        }
+      }
+    },
+    "Verbindung testen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Test connection"
+          }
+        }
+      }
+    },
+    "Verschoben – ohne Neuübertragung": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moved — nothing re-transferred"
+          }
+        }
+      }
+    },
+    "Versionsverlauf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version history"
+          }
+        }
+      }
+    },
+    "Verzeichnis auf der Box": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Directory on the box"
+          }
+        }
+      }
+    },
+    "Videos mitnehmen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Include videos"
+          }
+        }
+      }
+    },
+    "Vom Sync ausgeschlossen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excluded from sync"
+          }
+        }
+      }
+    },
+    "Vor jedem Überschreiben oder Löschen sichert Spind die aktuelle Fassung auf der Box (bis zu %lld je Datei). Gelöschtes lässt sich hier mit einem Klick zurückholen.": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before every overwrite or delete, Spind saves the current version on the box (up to %lld per file). Deleted files can be brought back here with one click."
+          }
+        }
+      }
+    },
+    "Vor jedem Überschreiben oder Löschen sichert Spind die aktuelle Fassung auf der Box. Der Verlauf wird mit der Zeit ausgedünnt: heute jede Fassung, diesen Monat eine pro Tag, dieses Jahr eine pro Woche, davor eine pro Monat. Gelöschtes lässt sich hier mit einem Klick zurückholen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before every overwrite and every deletion, Spind keeps the current version on the box. The history is thinned out over time: today every version, this month one per day, this year one per week, before that one per month. Anything deleted can be brought back here with one click."
+          }
+        }
+      }
+    },
+    "Wartet": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting"
+          }
+        }
+      }
+    },
+    "Was du brauchst:": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What you need:"
+          }
+        }
+      }
+    },
+    "Weitere Geräte": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "More devices"
+          }
+        }
+      }
+    },
+    "Wen möchtest du verbinden?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Who would you like to connect?"
+          }
+        }
+      }
+    },
+    "Widerrufe Freigabe …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoking share …"
+          }
+        }
+      }
+    },
+    "Widerrufen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revoke"
+          }
+        }
+      }
+    },
+    "Wiederherstellen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore"
+          }
+        }
+      }
+    },
+    "Wiederherstellen …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore …"
+          }
+        }
+      }
+    },
+    "Willkommen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome"
+          }
+        }
+      }
+    },
+    "Willkommen bei Spind": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to Spind"
+          }
+        }
+      }
+    },
+    "Wird vorbereitet …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Preparing …"
+          }
+        }
+      }
+    },
+    "Wählen …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose …"
+          }
+        }
+      }
+    },
+    "Zielordner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Target folder"
+          }
+        }
+      }
+    },
+    "Zugang anlegen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Create access"
+          }
+        }
+      }
+    },
+    "Zugang für eine andere Person": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Access for someone else"
+          }
+        }
+      }
+    },
+    "Zugang für »%@« ist bereit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Access for “%@” is ready"
+          }
+        }
+      }
+    },
+    "Zugriff": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Access"
+          }
+        }
+      }
+    },
+    "Zuletzt gesichert": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Last backed up"
+          }
+        }
+      }
+    },
+    "Zum **Teilen** brauchst du einmalig einen Hetzner-API-Token – der Weg dorthin steht in Einstellungen → Teilen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For **sharing** you need a Hetzner API token once — Settings → Sharing shows the way."
+          }
+        }
+      }
+    },
+    "Zum Teilen legt Spind schreibgeschützte WebDAV-Unterzugänge für einzelne Ordner an. Dafür wird ein API-Token benötigt: Hetzner Console → Projekt → Sicherheit → API-Tokens → „Lesen & Schreiben“. Der Token wird ausschließlich im macOS-Schlüsselbund gespeichert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For sharing, Spind creates read-only WebDAV sub-accounts for individual folders. This needs an API token: Hetzner Console → project → Security → API tokens → “Read & Write”. The token is stored exclusively in the macOS keychain."
+          }
+        }
+      }
+    },
+    "Zurück": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        }
+      }
+    },
+    "Zurückholen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bring back"
+          }
+        }
+      }
+    },
+    "Zurücksetzen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reset"
+          }
+        }
+      }
+    },
+    "alle 15 Sekunden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "every 15 seconds"
+          }
+        }
+      }
+    },
+    "alle 30 Sekunden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "every 30 seconds"
+          }
+        }
+      }
+    },
+    "alle 5 Minuten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "every 5 minutes"
+          }
+        }
+      }
+    },
+    "bereit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ready"
+          }
+        }
+      }
+    },
+    "https://doc.example.de": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "https://doc.example.com"
+          }
+        }
+      }
+    },
+    "jede Minute": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "every minute"
+          }
+        }
+      }
+    },
+    "u123456": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "u123456"
+          }
+        }
+      }
+    },
+    "u123456 oder u123456-sub1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "u123456 or u123456-sub1"
+          }
+        }
+      }
+    },
+    "u123456.your-storagebox.de": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "u123456.your-storagebox.de"
+          }
+        }
+      }
+    },
+    "u123456.your-storagebox.de oder sftp.example.org": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "u123456.your-storagebox.de or sftp.example.org"
+          }
+        }
+      }
+    },
+    "wird abgelegt unter %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "will be stored at %@"
+          }
+        }
+      }
+    },
+    "zuletzt: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "last: %@"
+          }
+        }
+      }
+    },
+    "»%@« wiederherstellen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore “%@”?"
+          }
+        }
+      }
+    },
+    "»%@« zurückholen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bring “%@” back?"
+          }
+        }
+      }
+    },
+    "»Per QR-Code verbinden« antippen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap “Connect by QR code”"
+          }
+        }
+      }
+    },
+    "Änderungen werden automatisch übertragen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes are synced automatically."
+          }
+        }
+      }
+    },
+    "Änderungen werden gesammelt, aber nicht übertragen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes are collected but not synced."
+          }
+        }
+      }
+    },
+    "Öffentlichen Schlüssel kopieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy the public key"
+          }
+        }
+      }
+    },
+    "Öffentlicher Schlüssel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Public key"
+          }
+        }
+      }
+    },
+    "Übernehmen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apply"
+          }
+        }
+      }
+    },
+    "Übertragungen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Transfers"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }

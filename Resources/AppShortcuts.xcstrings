@@ -1,63 +1,63 @@
 {
-  "sourceLanguage" : "de",
-  "strings" : {
-    "Gib Speicher in ${applicationName} frei" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "de" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+  "sourceLanguage": "de",
+  "strings": {
+    "Gib Speicher in ${applicationName} frei": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Gib Speicher in ${applicationName} frei"
             ]
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Free up space in ${applicationName}"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Free up space in ${applicationName}"
           }
         }
       }
     },
-    "Synchronisiere ${applicationName}" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "de" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Synchronisiere ${applicationName}": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Synchronisiere ${applicationName}"
             ]
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "Sync ${applicationName}"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sync ${applicationName}"
           }
         }
       }
     },
-    "Wie ist der ${applicationName} Status" : {
-      "extractionState" : "extracted_with_value",
-      "localizations" : {
-        "de" : {
-          "stringSet" : {
-            "state" : "new",
-            "values" : [
+    "Wie ist der ${applicationName} Status": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "de": {
+          "stringSet": {
+            "state": "new",
+            "values": [
               "Wie ist der ${applicationName} Status"
             ]
           }
         },
-        "en" : {
-          "stringUnit" : {
-            "state" : "needs_review",
-            "value" : "What’s the ${applicationName} status"
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What is the ${applicationName} status"
           }
         }
       }
     }
   },
-  "version" : "1.0"
+  "version": "1.0"
 }
