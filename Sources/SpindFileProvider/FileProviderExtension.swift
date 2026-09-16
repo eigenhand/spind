@@ -153,6 +153,12 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
                 let relative = directoryRelative.isEmpty
                     ? entry.name
                     : directoryRelative + "/" + entry.name
+                // The same guard as in the sync engine: a ".." from a
+                // listing would let an enumeration climb out of the root.
+                guard RemotePath.isSafe(relative) else {
+                    extLog("Übersprungen — unsicherer Name: \(entry.name)")
+                    continue
+                }
                 items.append(FileProviderItem(
                     relativePath: relative,
                     isDirectory: entry.isDirectory,

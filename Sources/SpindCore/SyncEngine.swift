@@ -249,6 +249,10 @@ public final class SyncEngine {
                 continue
             }
             let key = relativeRemotePath(entry.path).canonicalPathKey
+            guard RemotePath.isSafe(key) else {
+                emit("Übersprungen — unsicherer Name vom Server: \(entry.name)")
+                continue
+            }
             if isExcluded(key) { continue }
             items[key] = entry
             if entry.isDirectory {

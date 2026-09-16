@@ -645,6 +645,48 @@ final class PairingCodeTests: XCTestCase {
         XCTAssertEqual(change.deleted, [])
     }
 
+    // MARK: - Names from the server
+
+    /// A listing is not ours to trust: a shared box carries other people's
+    /// folders, and Spind talks to any SFTP host. ".." in a name would walk
+    /// a download out of the sync folder.
+    func testUnsichereNamenVomServerWerdenAbgelehnt() {
+        for bad in ["..", "../x", "a/../../b", "../../evil.txt", "a/..", "", "a\0b"] {
+            XCTAssertFalse(RemotePath.isSafe(bad), "muss abgelehnt werden: \(bad)")
+        }
+    }
+
+    /// Two dots inside a name are ordinary. Rejecting them would break
+    /// real files, which is its own kind of damage.
+    func testHarmloseNamenMitPunktenBleibenErlaubt() {
+        for good in ["..foo", "foo..", "file..txt", "a/b/c.txt", "Größe Straße.txt",
+                     "a/./b", "…", "-rf"] {
+            XCTAssertTrue(RemotePath.isSafe(good), "muss erlaubt bleiben: \(good)")
+        }
+    }
+
+    /// Every remote command interpolates a path into a shell. The escape is
+    /// checked against a real shell rather than against an expectation:
+    /// whatever goes in has to come back out as exactly one argument.
+    func testQuotingUeberstehtEineEchteShell() throws {
+        let payloads = ["simple.txt", "with space.txt", "it's here.txt",
+                        "a\"b\"c", "$HOME", "`id`", "$(id)", "; rm -rf /",
+                        "&& echo broken", "new\nline", "Größe.txt", "*", "?", "~",
+                        "\\backslash", "ümlaut ' mix"]
+        for raw in payloads {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/sh")
+            process.arguments = ["-c", "printf %s " + StorageBoxClient.quote(raw)]
+            let pipe = Pipe()
+            process.standardOutput = pipe
+            try process.run()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            XCTAssertEqual(String(data: data, encoding: .utf8), raw,
+                           "die Shell hat »\(raw)« anders verstanden")
+        }
+    }
+
     // MARK: - Filing photos
 
     private var august: Date {
