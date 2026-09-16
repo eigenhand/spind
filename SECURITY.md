@@ -1,66 +1,67 @@
-# Sicherheit
+# Security
 
-## Lücken melden
+*English · [Deutsch](SECURITY.de.md)*
 
-Sicherheitsprobleme bitte **nicht** als öffentliches Issue, sondern per
-E-Mail an <christoph.lindl-guk@pm.me>. Ich antworte, so schnell ich kann –
-dies ist ein Freizeitprojekt ohne zugesagte Reaktionszeiten.
+## Reporting a vulnerability
 
-## Wie Spind mit Zugangsdaten umgeht
+Please do **not** open a public issue for security problems — send an email to
+<christoph.lindl-guk@pm.me> instead. I answer as fast as I can; this is a
+spare-time project without a promised response time.
 
-* **Zur Storage Box** verbindet sich Spind ausschließlich per
-  **SSH-Schlüssel**. Ein Box-Passwort wird nirgends gespeichert oder
-  abgefragt.
-* **Hetzner-API-Token**, **Freigabe-Passwörter** und der **Collabora-Schlüssel**
-  liegen im **macOS-Schlüsselbund**, nicht in Konfigurationsdateien.
-* Die Konfiguration (`~/.config/spind/config.json`) enthält nur Host,
-  Benutzername, Pfade und den Ort des Schlüssels.
-* Die File-Provider-Erweiterung braucht Zugriff auf den Schlüssel und bekommt
-  dafür eine Kopie im App-Gruppen-Container (Rechte 0600).
+## How Spind handles credentials
 
-## Bewusste Kompromisse
+* **To the storage box** Spind connects exclusively with an **SSH key**. A box
+  password is never stored and never asked for.
+* The **Hetzner API token**, **share passwords** and the **Collabora secret**
+  live in the **macOS keychain**, not in configuration files.
+* The configuration (`~/.config/spind/config.json`) holds only host, user
+  name, paths and the location of the key.
+* The File Provider extension needs the key and gets a copy in the app group
+  container for it (mode 0600).
 
-Diese Punkte sind keine Versehen, sondern Abwägungen. Wer sie nicht mittragen
-will, sollte die betroffene Funktion nicht nutzen.
+## Deliberate trade-offs
 
-**Freigabe-Links enthalten Zugangsdaten.** Ein Link der Form
-`https://benutzer:passwort@host/…` funktioniert per Klick, ohne dass der
-Empfänger etwas einrichten muss – das ist der Sinn der Sache. Folge: Wer den
-Link hat, hat Zugriff. Er landet in Mail-Postfächern, Chat-Verläufen und
-Browser-Historien. Abgesichert ist das dadurch, dass jede Freigabe ein
-eigenes, zufälliges Passwort hat, nur auf **einen Ordner** beschränkt ist und
-jederzeit widerrufen werden kann. Für besonders schützenswerte Daten ist
-dieser Weg trotzdem ungeeignet.
+These are not oversights but decisions. Whoever cannot live with one of them
+should not use the feature it belongs to.
 
-**Die Freigabe-Seite trägt die Zugangsdaten im Quelltext.** Browser reichen
-die Anmeldung aus einem `benutzer:passwort@host`-Link nicht an nachgeladene
-Inhalte weiter (Dateiliste, Bilder, Downloads scheitern mit 401). Die Seite
-sendet die Anmeldung deshalb selbst. Zusätzliche Preisgabe entsteht dadurch
-nicht: Die Seite ist ohnehin nur mit genau diesen Zugangsdaten abrufbar.
+**Share links carry credentials.** A link of the form
+`https://user:password@host/…` works on a click, without the recipient having
+to set anything up — that is the point of it. The consequence: whoever has the
+link has access. It ends up in mailboxes, chat logs and browser histories.
+What limits the damage is that every share gets its own random password, is
+confined to **one folder**, and can be revoked at any time. For genuinely
+sensitive data this route is still the wrong one.
 
-**Editor-Token sind Schlüssel.** Für Collabora erzeugt Spind verschlüsselte
-Token (AES-GCM), die Freigabe-Zugang, Dateipfad, Schreibrecht und Ablaufdatum
-enthalten. Wer ein Token hat, kann genau die darin benannte Datei öffnen.
-Token stehen in URLs – sie werden deshalb serverseitig **nicht protokolliert**
-und laufen nach spätestens 30 Tagen ab.
+**The share page carries the credentials in its source.** Browsers do not pass
+the credentials from a `user:password@host` link on to content loaded
+afterwards (the file list, images and downloads fail with 401), so the page
+sends them itself. Nothing is exposed that was not already: the page is only
+reachable with exactly those credentials in the first place.
 
-**Keine Verschlüsselung im Ruhezustand.** Dateien liegen auf der Storage Box
-so, wie sie sind. Wer das nicht möchte, verschlüsselt vor dem Ablegen selbst.
+**Editor tokens are keys.** For Collabora, Spind mints encrypted tokens
+(AES-GCM) holding the share access, the file path, the write permission and an
+expiry. Whoever holds a token can open exactly the file named in it. Tokens
+appear in URLs, so they are **not logged** on the server side and expire after
+30 days at the latest.
 
-**Der Versionsverlauf konserviert gelöschte Daten.** Bis zu 25 frühere
-Fassungen jeder Datei bleiben unter `.spind-versions` liegen, auch nach dem
-Löschen. Wer Daten endgültig entfernen muss, muss auch dort aufräumen – und
-zusätzlich an die Snapshots der Box denken.
+**No encryption at rest.** Files sit on the storage box as they are. Whoever
+does not want that encrypts them before putting them there.
 
-**Kein Drei-Wege-Abgleich im Finder-Laufwerk.** Schreibvorgänge im Laufwerk
-gehen direkt zur Box; bei gleichzeitiger Änderung gewinnt der letzte
-Schreiber. Der Spiegelordner dagegen erkennt Konflikte und behält beide
-Fassungen. Für Ordner, an denen mehrere Leute arbeiten, ist der Spiegelordner
-oder Collabora der sicherere Weg.
+**The version history preserves deleted data — for years.** Earlier versions
+of every file stay under `.spind-versions`, including after a deletion, and
+the history is only thinned with age, not ended: every version from today, one
+per day this month, one per week this year, one per month before that (at most
+50 per file). Whoever has to remove data for good has to clear that out too —
+and to think of the box's own snapshots.
 
-## Was Spind nicht tut
+**No three-way merge in the Finder volume.** Writes through the volume go
+straight to the box; on a simultaneous change the last writer wins. The mirror
+folder does detect conflicts and keeps both versions. For folders several
+people work in, the mirror folder or Collabora is the safer route.
 
-* Keine Telemetrie, keine Absturzberichte, keine Analyse – die App spricht
-  ausschließlich mit deiner Storage Box, der Hetzner-API (nur beim Teilen) und
-  dem Collabora-Server, den du selbst einträgst.
-* Keine Zwischenserver: Dateien laufen direkt zwischen Mac und Box.
+## What Spind does not do
+
+* No telemetry, no crash reports, no analytics — the app talks to your storage
+  box, to the Hetzner API (only when sharing) and to the Collabora server you
+  entered yourself, and to nothing else.
+* No servers in between: files travel directly between the Mac and the box.

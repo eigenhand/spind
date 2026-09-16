@@ -86,7 +86,7 @@ swift run spind sync
 Die Verbindung zur Box läuft ausschließlich über SSH-Schlüssel mit angepinntem
 Server-Schlüssel; Passwörter speichert Spind nie. Freigabe-Links enthalten
 absichtlich Zugangsdaten – wer den Link hat, hat Zugriff. Details und bewusste
-Kompromisse: [SECURITY.md](SECURITY.md).
+Kompromisse: [SECURITY.de.md](SECURITY.de.md).
 
 ## Lizenz
 
