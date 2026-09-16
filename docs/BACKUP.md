@@ -1,21 +1,20 @@
-# Sicherungen der Storage Box
+# Backups of the Storage Box
 
-Spind synchronisiert — es sichert nicht. Ein gelöschte Datei ist auf
-beiden Seiten weg, und ein Sync-Bug kann Daten beschädigen. Das
-Sicherheitsnetz sind die ZFS-Snapshots der Storage Box.
+*English · [Deutsch](BACKUP.de.md)*
 
-## Aktuelle Einstellung (Box <BOX-ID>, bx11)
+Spind syncs — it does not back up. A deleted file is gone on both sides, and a sync bug
+can damage data. The safety net is the Storage Box's ZFS snapshots.
 
-* **Automatisch:** täglich um **03:30 Uhr**, Aufbewahrung **7 Snapshots**
-  (eine Woche Historie)
-* **Manuell:** „Spind Basis vor Weiterentwicklung" als Ausgangspunkt
-* Tarif-Limit: **10 Snapshots gesamt** — die 3 freien Plätze bleiben
-  bewusst für manuelle Sicherungen vor riskanten Aktionen
+## Current setting (box <BOX-ID>, bx11)
 
-Snapshots sind Copy-on-Write: Sie kosten anfangs nichts und wachsen nur
-mit den Änderungen.
+* **Automatic:** daily at **03:30**, retention **7 snapshots** (one week of history)
+* **Manual:** “Spind base before further development” as a starting point
+* Plan limit: **10 snapshots in total** — the 3 free slots are deliberately kept for
+  manual backups before risky operations
 
-## Plan ändern
+Snapshots are copy-on-write: they cost nothing at first and grow only with the changes.
+
+## Changing the plan
 
 ```bash
 TOKEN=$(security find-generic-password -w -s dev.eigenhand.spind.app -a hetzner-api-token)
@@ -24,29 +23,27 @@ curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/jso
   https://api.hetzner.com/v1/storage_boxes/<BOX-ID>/actions/enable_snapshot_plan
 ```
 
-Manuellen Snapshot anlegen (z. B. vor einer riskanten Änderung):
+Creating a manual snapshot (before a risky change, for instance):
 
 ```bash
 curl -X POST -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d '{"description":"vor Umbau XY"}' \
+  -d '{"description":"before rebuilding XY"}' \
   https://api.hetzner.com/v1/storage_boxes/<BOX-ID>/snapshots
 ```
 
-## Wiederherstellen — wichtig
+## Restoring — important
 
-Getestet: **Der Spind-Sub-Account kommt an die Snapshots nicht heran.**
-Weder `/.zfs/snapshot` noch `/home/.zfs/snapshot` sind aus einem
-Sub-Account sichtbar (die API erlaubt auch keinen Sub-Account auf
-Box-Ebene), und die API kennt keinen Rollback-Endpunkt.
+Tested: **the Spind sub-account cannot reach the snapshots.** Neither `/.zfs/snapshot`
+nor `/home/.zfs/snapshot` is visible from a sub-account (nor does the API allow a
+sub-account at box level), and the API knows no rollback endpoint.
 
-Zwei Wege bleiben, beide brauchen den **Hauptzugang** der Box:
+Two routes remain, and both need the box's **main access**:
 
-1. **Einzelne Dateien:** per SFTP/SSH als Hauptbenutzer `uXXXXXX` auf
-   Port 23 anmelden, dann liegen die Snapshots unter
-   `/home/.zfs/snapshot/<snapshot-name>/…` — von dort ganz normal
-   herunterladen. Das Verzeichnis ist schreibgeschützt.
-2. **Komplett zurückrollen:** Hetzner Console → Storage Box →
-   Snapshots → gewünschten Snapshot wiederherstellen.
+1. **Individual files:** sign in over SFTP/SSH as the main user `uXXXXXX` on port 23;
+   the snapshots then lie under `/home/.zfs/snapshot/<snapshot-name>/…` — download from
+   there as usual. The directory is read-only.
+2. **Rolling back completely:** Hetzner Console → Storage Box → Snapshots → restore the
+   snapshot you want.
 
-Für den Ernstfall heißt das: Das Passwort des Hauptzugangs griffbereit
-haben (Passwortmanager), es wird für die Wiederherstellung gebraucht.
+For the real emergency that means: keep the password of the main access to hand (in a
+password manager), it is needed for the restore.

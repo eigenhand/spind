@@ -1,31 +1,32 @@
-# Verwendete Open-Source-Komponenten
+# Open-source components used
 
-Spind – Copyright (C) 2026 Christoph Lindl-Guk – steht unter der GNU Affero General
-Public License v3 oder neuer (siehe `LICENSE`). Es verwendet die
-folgenden Bibliotheken und Dienste, deren Lizenzbedingungen fortgelten.
+*English · [Deutsch](NOTICE.de.md)*
 
-## Swift-Abhängigkeiten (in der App enthalten)
+Spind – Copyright (C) 2026 Christoph Lindl-Guk – is licensed under the GNU Affero
+General Public License v3 or later (see `LICENSE`). It uses the following libraries and
+services, whose licence terms continue to apply.
 
-| Projekt | Lizenz | Copyright |
+## Swift dependencies (contained in the app)
+
+| Project | Licence | Copyright |
 | --- | --- | --- |
 | [Citadel](https://github.com/orlandos-nl/Citadel) | MIT | Joannis Orlandos |
 | [GRDB.swift](https://github.com/groue/GRDB.swift) | MIT | Gwendal Roué |
 | [BigInt](https://github.com/attaswift/BigInt) | MIT | Károly Lőrentey |
-| [swift-nio](https://github.com/apple/swift-nio) | Apache 2.0 | Apple Inc. und Mitwirkende |
-| [swift-nio-ssh](https://github.com/apple/swift-nio-ssh) | Apache 2.0 | Apple Inc. und Mitwirkende |
-| [swift-crypto](https://github.com/apple/swift-crypto) | Apache 2.0 | Apple Inc. und Mitwirkende |
-| [swift-argument-parser](https://github.com/apple/swift-argument-parser) | Apache 2.0 | Apple Inc. und Mitwirkende |
-| [swift-collections](https://github.com/apple/swift-collections) | Apache 2.0 | Apple Inc. und Mitwirkende |
+| [swift-nio](https://github.com/apple/swift-nio) | Apache 2.0 | Apple Inc. and contributors |
+| [swift-nio-ssh](https://github.com/apple/swift-nio-ssh) | Apache 2.0 | Apple Inc. and contributors |
+| [swift-crypto](https://github.com/apple/swift-crypto) | Apache 2.0 | Apple Inc. and contributors |
+| [swift-argument-parser](https://github.com/apple/swift-argument-parser) | Apache 2.0 | Apple Inc. and contributors |
+| [swift-collections](https://github.com/apple/swift-collections) | Apache 2.0 | Apple Inc. and contributors |
 
-Die Apache-2.0-lizenzierten Komponenten werden unverändert verwendet. Eine
-Kopie der Apache License 2.0 findet sich unter
-<https://www.apache.org/licenses/LICENSE-2.0>.
+The Apache-2.0-licensed components are used unmodified. A copy of the Apache License
+2.0 can be found at <https://www.apache.org/licenses/LICENSE-2.0>.
 
-## Optionale Serverkomponenten (nicht in der App enthalten)
+## Optional server components (not contained in the app)
 
-Wer gemeinsames Bearbeiten nutzen möchte, betreibt diese Dienste selbst:
+Anyone who wants to use collaborative editing runs these services themselves:
 
-| Projekt | Lizenz |
+| Project | Licence |
 | --- | --- |
 | [Collabora Online Development Edition](https://www.collaboraonline.com) | MPL-2.0 |
 | [FastAPI](https://fastapi.tiangolo.com) | MIT |
@@ -34,11 +35,10 @@ Wer gemeinsames Bearbeiten nutzen möchte, betreibt diese Dienste selbst:
 | [cryptography](https://cryptography.io) | Apache 2.0 / BSD-3-Clause |
 | [Caddy](https://caddyserver.com) | Apache 2.0 |
 
-„Collabora" ist eine Marke der Collabora Productivity Ltd. Dieses Projekt
-steht in keiner Verbindung zu Collabora und wird von dort weder unterstützt
-noch geprüft. Es beschreibt lediglich, wie sich die frei verfügbare
-Development Edition selbst betreiben lässt.
+“Collabora” is a trademark of Collabora Productivity Ltd. This project has no
+connection to Collabora and is neither endorsed nor reviewed by them. It merely
+describes how the freely available Development Edition can be run by oneself.
 
-„Hetzner" und „Storage Box" sind Marken der Hetzner Online GmbH. Auch hier
-besteht keine Verbindung; Spind nutzt lediglich die öffentlich
-dokumentierten Schnittstellen SFTP, WebDAV und die Hetzner-API.
+“Hetzner” and “Storage Box” are trademarks of Hetzner Online GmbH. Here too there is no
+connection; Spind merely uses the publicly documented interfaces SFTP, WebDAV and the
+Hetzner API.

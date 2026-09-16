@@ -31,7 +31,7 @@ end-to-end gegen eine echte Storage Box getestet – aber bisher auf einem Mac
 mit einer Box, und Sync-Fehler können Daten kosten.
 
 **Vor dem Einsatz Snapshots auf der Storage Box einrichten**
-([docs/BACKUP.md](docs/BACKUP.md)). Der Versionsverlauf ersetzt kein Backup.
+([docs/BACKUP.de.md](docs/BACKUP.de.md)). Der Versionsverlauf ersetzt kein Backup.
 
 ## Roadmap
 
@@ -62,7 +62,7 @@ Die App liegt danach unter `dist/Spind.app`; der Einrichtungsassistent beim
 ersten Start erzeugt den SSH-Schlüssel und führt bis zur geprüften Verbindung.
 Für Freigaben braucht es zusätzlich einen Hetzner-API-Token (Lesen &
 Schreiben), für gemeinsames Bearbeiten einen eigenen Collabora-Server
-([server/collabora/README.md](server/collabora/README.md)).
+([server/collabora/README.de.md](server/collabora/README.de.md)).
 
 Nur Kommandozeile, ohne App:
 
@@ -91,4 +91,4 @@ Kompromisse: [SECURITY.de.md](SECURITY.de.md).
 ## Lizenz
 
 GNU AGPL v3 oder neuer, siehe [LICENSE](LICENSE). Fremdkomponenten:
-[NOTICE.md](NOTICE.md).
+[NOTICE.de.md](NOTICE.de.md).

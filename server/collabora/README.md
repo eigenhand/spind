@@ -1,24 +1,25 @@
-# Collabora Online für Spind (doc.example.de)
+# Collabora Online for Spind (doc.example.de)
 
-Kollaboratives Bearbeiten von Dokumenten, die auf der Hetzner Storage Box
-liegen. Zwei Container auf dem Gateway-Host (<server>):
+*English · [Deutsch](README.de.md)*
 
-| Dienst | Port (nur localhost) | Aufgabe |
+Collaborative editing of documents that live on the Hetzner Storage Box. Two containers
+on the gateway host (`<server>`):
+
+| Service | Port (localhost only) | Task |
 | --- | --- | --- |
-| `spind-collabora` | 9980 | Collabora Online (CODE) – rendert und editiert |
-| `spind-wopi` | 9981 | WOPI-Brücke – liefert/speichert Dateien via WebDAV |
+| `spind-collabora` | 9980 | Collabora Online (CODE) – renders and edits |
+| `spind-wopi` | 9981 | WOPI bridge – delivers and saves files over WebDAV |
 
-Collabora kann Dateien nicht selbst von WebDAV lesen; es spricht
-ausschließlich WOPI. Die Brücke ist dieser WOPI-Host.
+Collabora cannot read files from WebDAV itself; it speaks WOPI and nothing else. The
+bridge is that WOPI host.
 
-## Sicherheitsmodell
+## Security model
 
-Jeder Editor-Link enthält ein **AES-GCM-verschlüsseltes Token** mit
-Freigabe-Host, Zugangsdaten, Dateipfad, Schreibrecht und Ablaufzeit.
-Ohne das gemeinsame Geheimnis (`wopi.env` auf dem Server,
-Schlüsselbund auf dem Mac) lässt sich kein Token fälschen, und ein Token
-öffnet immer nur genau die eine Datei. Read-only-Freigaben erzeugen
-Tokens ohne Schreibrecht – Collabora öffnet sie dann im Nur-Lese-Modus.
+Every editor link carries an **AES-GCM-encrypted token** holding the share host, the
+credentials, the file path, the write permission and an expiry. Without the shared
+secret (`wopi.env` on the server, the keychain on the Mac) no token can be forged, and
+a token only ever opens that one file. Read-only shares produce tokens without write
+permission — Collabora then opens them in read-only mode.
 
 ## Deployment
 
@@ -27,40 +28,39 @@ rsync -a server/collabora/ <server>:~/spind-collabora/
 ssh <server> 'cd ~/spind-collabora && sudo docker compose -p spind-collabora up -d --build'
 ```
 
-`wopi.env` wird beim ersten Start einmalig mit einem Zufallsschlüssel
-angelegt (`SPIND_WOPI_SECRET`, base64, 32 Byte) und darf nicht ins Git.
+`wopi.env` is created once on first start with a random key (`SPIND_WOPI_SECRET`,
+base64, 32 bytes) and must not go into git.
 
-Caddy: Inhalt von `Caddyfile.snippet` an
-`Work-LifeOS/deploy/gateway/Caddyfile` anhängen, dann
+Caddy: append the contents of `Caddyfile.snippet` to
+`Work-LifeOS/deploy/gateway/Caddyfile`, then
 
 ```bash
 sudo docker exec lifeos-gateway caddy validate --config /etc/caddy/Caddyfile
 sudo docker compose -p lifeos-gateway -f deploy/gateway/docker-compose.yml restart gateway
 ```
 
-Der Gateway läuft mit `admin off`, deshalb Neustart statt `caddy reload`.
+The gateway runs with `admin off`, hence a restart instead of `caddy reload`.
 
-## Stolpersteine (verifiziert)
+## Stumbling blocks (verified)
 
-* **`no-new-privileges` verhindert den Start**: Collabora sperrt jedes
-  Dokument per setuid-Helfer `coolmount` in ein Jail. Der Container
-  braucht `cap_add: [MKNOD, SYS_ADMIN]` und darf *nicht* mit
-  `no-new-privileges` laufen, sonst hängt es in „Waiting for a new
-  child".
-* **Discovery-URLs enthalten den Anfrage-Host**: Fragt die Brücke
-  containerintern (`http://collabora:9980`), stehen in der Antwort
-  URLs mit `collabora:9980`, die kein Browser erreicht. Die Brücke
-  schreibt den Ursprung deshalb auf `PUBLIC_URL` um.
-* `sharedpresets/template`-Fehler im Log sind kosmetisch (CODE-Bug).
+* **`no-new-privileges` prevents the start**: Collabora locks every document into a
+  jail with the setuid helper `coolmount`. The container needs
+  `cap_add: [MKNOD, SYS_ADMIN]` and must *not* run with `no-new-privileges`, or it
+  hangs in “Waiting for a new child”.
+* **Discovery URLs contain the requesting host**: if the bridge asks from inside the
+  container network (`http://collabora:9980`), the answer holds URLs with
+  `collabora:9980` that no browser can reach. The bridge therefore rewrites the origin
+  to `PUBLIC_URL`.
+* `sharedpresets/template` errors in the log are cosmetic (a CODE bug).
 
-## Test
+## Testing
 
 ```bash
 curl https://doc.example.de/health              # -> ok
 curl -o /dev/null -w "%{http_code}\n" https://doc.example.de/hosting/discovery
 ```
 
-Editor-Link erzeugen (Token im Container, Passwort aus dem Keychain):
+Creating an editor link (token inside the container, password from the keychain):
 
 ```bash
 PW=$(security find-generic-password -w -s dev.eigenhand.spind.app -a share-pass-<subaccount>)
@@ -68,7 +68,7 @@ ssh <server> "sudo docker exec -e PW='$PW' spind-wopi python -c \"
 import base64,json,os,time
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 p={'h':'<sub>.your-storagebox.de','u':'<sub>','p':os.environ['PW'],
-   'f':'<datei.odt>','w':True,'e':time.time()+7200,'n':'Christoph'}
+   'f':'<file.odt>','w':True,'e':time.time()+7200,'n':'Christoph'}
 k=base64.urlsafe_b64decode(os.environ['SPIND_WOPI_SECRET']); n=os.urandom(12)
 print('https://doc.example.de/edit?t='+base64.urlsafe_b64encode(
     n+AESGCM(k).encrypt(n,json.dumps(p).encode(),None)).decode().rstrip('='))\""
