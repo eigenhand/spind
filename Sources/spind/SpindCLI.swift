@@ -217,7 +217,10 @@ struct Watch: AsyncParsableCommand {
             atPath: localRoot, withIntermediateDirectories: true
         )
 
-        func timestamp() -> String {
+        // A plain local function here is captured by the event closure,
+        // which runs on another thread — an error in the Swift 6 language
+        // mode. As a @Sendable value it may cross that boundary.
+        let timestamp: @Sendable () -> String = {
             let formatter = DateFormatter()
             formatter.dateFormat = "HH:mm:ss"
             return formatter.string(from: Date())

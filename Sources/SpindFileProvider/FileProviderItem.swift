@@ -72,8 +72,17 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
             return [.allowsReading, .allowsContentEnumerating, .allowsAddingSubItems,
                     .allowsRenaming, .allowsDeleting, .allowsReparenting]
         }
-        return [.allowsReading, .allowsWriting, .allowsRenaming,
-                .allowsDeleting, .allowsReparenting, .allowsEvicting]
+        var file: NSFileProviderItemCapabilities = [
+            .allowsReading, .allowsWriting, .allowsRenaming,
+            .allowsDeleting, .allowsReparenting,
+        ]
+        #if !os(macOS)
+        // On macOS the content policy below decides what may be evicted,
+        // and this flag has been deprecated since macOS 13. iOS has no
+        // content policy, so there it is still how eviction is allowed.
+        file.insert(.allowsEvicting)
+        #endif
+        return file
     }
 
     #if os(macOS)

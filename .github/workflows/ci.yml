@@ -31,8 +31,19 @@ jobs:
           key: spm-${{ runner.os }}-${{ hashFiles('Package.resolved') }}
           restore-keys: spm-${{ runner.os }}-
 
-      - name: Build the package
-        run: swift build
+      # Warnings creep back in unless something objects. Only our own
+      # sources count — a warning inside a dependency is not ours to fix.
+      - name: Build the package, and fail on warnings of our own
+        run: |
+          set -o pipefail
+          swift build 2>&1 | tee build.log
+          # Swift colourises when it sees a terminal, and the escape codes
+          # sit between the line number and the word "warning".
+          if sed $'s/\033\\[[0-9;]*m//g' build.log \
+              | grep -E "Sources/(Spind|spind)[^ ]*\.swift:[0-9]+:[0-9]+: *warning"; then
+            echo "::error::warnings in our own sources"
+            exit 1
+          fi
 
       # The sync planner, the version retention and the pairing code are
       # covered here. No network: the tests run against dictionaries.
