@@ -837,6 +837,7 @@ struct GeneralSettings: View {
     @State private var freeing = false
     @State private var freeResult: String?
     @AppStorage("uiLanguage") private var language: AppLanguage = .system
+    @AppStorage("uiAppearance") private var appearance: AppAppearance = .system
 
     var body: some View {
         Form {
@@ -848,10 +849,17 @@ struct GeneralSettings: View {
                 }
                 .accessibilityIdentifier("language-picker")
                 .onChange(of: language) { _, chosen in AppLanguage.apply(chosen) }
+                Picker("Erscheinungsbild", selection: $appearance) {
+                    ForEach(AppAppearance.allCases) { choice in
+                        Text(choice.label).tag(choice)
+                    }
+                }
+                .accessibilityIdentifier("appearance-picker")
+                .onChange(of: appearance) { _, chosen in chosen.apply() }
             } header: {
                 Text("Oberfläche")
             } footer: {
-                Text("Gilt für Spind selbst. Der Finder, die Freigabe-Seite im Browser und die Meldungen des Systems folgen weiterhin der Sprache des Rechners.")
+                Text("Gilt für Spind selbst. Der Finder, die Freigabe-Seite im Browser und die Meldungen des Systems folgen weiterhin dem Rechner.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

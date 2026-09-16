@@ -639,6 +639,17 @@
         }
       }
     },
+    "Dunkel": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dark"
+          }
+        }
+      }
+    },
     "Durchsuche den Verlauf …": {
       "localizations": {
         "en": {
@@ -745,6 +756,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Try again"
+          }
+        }
+      }
+    },
+    "Erscheinungsbild": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Appearance"
           }
         }
       }
@@ -969,12 +990,44 @@
         }
       }
     },
+    "Gilt für Spind selbst. Der Finder, die Freigabe-Seite im Browser und die Meldungen des Systems folgen weiterhin dem Rechner.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applies to Spind itself. The Finder, the share page in the browser and the system's own messages still follow this Mac."
+          }
+        }
+      }
+    },
     "Gilt für Spind selbst. Der Finder, die Freigabe-Seite im Browser und die Meldungen des Systems folgen weiterhin der Sprache des Rechners.": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Applies to Spind itself. The Finder, the share page in the browser and the system's own messages still follow the language of this Mac."
+          }
+        }
+      }
+    },
+    "Gilt für Spind selbst. Die Dateien-App und die Meldungen des Systems folgen weiterhin dem Gerät.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Applies to Spind itself. The Files app and the system's own messages still follow the device."
+          }
+        }
+      }
+    },
+    "Hell": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Light"
           }
         }
       }
@@ -2424,6 +2477,17 @@
           "stringUnit": {
             "state": "translated",
             "value": "Revoke"
+          }
+        }
+      }
+    },
+    "Wie das System": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Match the system"
           }
         }
       }

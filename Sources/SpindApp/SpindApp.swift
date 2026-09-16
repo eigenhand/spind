@@ -29,6 +29,8 @@ struct SpindApp: App {
         // eine Menueleisten-App nicht.
         AppLanguage.apply(UserDefaults.standard.string(forKey: "uiLanguage")
             .flatMap(AppLanguage.init(rawValue:)) ?? .system)
+        (UserDefaults.standard.string(forKey: "uiAppearance")
+            .flatMap(AppAppearance.init(rawValue:)) ?? .system).apply()
 
         let isPreview = ProcessInfo.processInfo.environment["SPIND_PREVIEW"] != nil
         NSApplication.shared.setActivationPolicy(isPreview ? .regular : .accessory)

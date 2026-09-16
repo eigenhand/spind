@@ -107,6 +107,7 @@ struct SpindMobileApp: App {
     @ObservedObject private var lock = AppLock.shared
     @State private var config = MobileStore.loadConfig()
     @AppStorage("uiLanguage") private var language: AppLanguage = .system
+    @AppStorage("uiAppearance") private var appearance: AppAppearance = .system
 
     var body: some Scene {
         WindowGroup {
@@ -137,6 +138,9 @@ struct SpindMobileApp: App {
                 AppLanguage.apply(chosen)
             }
             .environment(\.locale, language.locale ?? .autoupdatingCurrent)
+            // `nil` heisst: das Geraet entscheidet — und wechselt zur Daemmerung
+            // von selbst mit.
+            .preferredColorScheme(appearance.scheme)
         }
         .onChange(of: scenePhase) { _, phase in
             switch phase {
@@ -351,6 +355,8 @@ struct StatusView: View {
     @State private var refreshing = false
     @ObservedObject private var lock = AppLock.shared
     @ObservedObject private var backup = PhotoBackup.shared
+    @AppStorage("uiLanguage") private var language: AppLanguage = .system
+    @AppStorage("uiAppearance") private var appearance: AppAppearance = .system
 
     private let beat = Timer
         .publish(every: SpindDomain.foregroundInterval, on: .main, in: .common)
@@ -364,6 +370,7 @@ struct StatusView: View {
                 photoSection
                 recoverySection
                 lockSection
+                interfaceSection
                 keySection
                 resetSection
             }
@@ -387,6 +394,34 @@ struct StatusView: View {
 
     // Sections one by one: as a single expression the layout is too big
     // and the compiler gives up type-checking it.
+
+    /// Sprache und Erscheinungsbild.
+    ///
+    /// Dieselben Schluessel wie am Mac (`uiLanguage`, `uiAppearance`), aber die
+    /// Einstellung gehoert trotzdem hierher: Die beiden Apps teilen keinen Speicher,
+    /// und wer nur das iPhone hat, kaeme sonst nicht daran.
+    private var interfaceSection: some View {
+        Section {
+            Picker("Sprache", selection: $language) {
+                ForEach(AppLanguage.allCases) { choice in
+                    Text(choice.label).tag(choice)
+                }
+            }
+            .accessibilityIdentifier("language-picker")
+            .onChange(of: language) { _, chosen in AppLanguage.apply(chosen) }
+
+            Picker("Erscheinungsbild", selection: $appearance) {
+                ForEach(AppAppearance.allCases) { choice in
+                    Text(choice.label).tag(choice)
+                }
+            }
+            .accessibilityIdentifier("appearance-picker")
+        } header: {
+            Text("Oberfläche")
+        } footer: {
+            Text("Gilt für Spind selbst. Die Dateien-App und die Meldungen des Systems folgen weiterhin dem Gerät.")
+        }
+    }
 
     private var connectionSection: some View {
         Section("Verbindung") {
