@@ -51,9 +51,7 @@ struct PanelView: View {
             }
             Button("Abbrechen", role: .cancel) {}
         } message: {
-            Text("Prüfe vorher, ob dein Ordner vollständig ist – etwa nach einem "
-                 + "Umzug oder wenn eine Festplatte nicht eingebunden war. "
-                 + "Gelöschte Dateien lassen sich über die Versionen zurückholen.")
+            Text("Prüfe vorher, ob dein Ordner vollständig ist – etwa nach einem Umzug oder wenn eine Festplatte nicht eingebunden war. Gelöschte Dateien lassen sich über die Versionen zurückholen.")
         }
     }
 

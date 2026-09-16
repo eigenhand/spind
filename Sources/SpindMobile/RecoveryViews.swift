@@ -87,9 +87,7 @@ struct TrashView: View {
                 ContentUnavailableView(
                     "Nichts zu retten",
                     systemImage: "checkmark.circle",
-                    description: Text("Wird eine Datei gelöscht, die schon einmal "
-                                      + "gesichert wurde, taucht sie hier auf und "
-                                      + "lässt sich zurückholen.")
+                    description: Text("Wird eine Datei gelöscht, die schon einmal gesichert wurde, taucht sie hier auf und lässt sich zurückholen.")
                 )
             }
         }
@@ -108,8 +106,7 @@ struct TrashView: View {
             }
             Button("Abbrechen", role: .cancel) { pending = nil }
         } message: {
-            Text("Die zuletzt gesicherte Fassung kommt an ihren alten Platz "
-                 + "zurück – auf allen Geräten.")
+            Text("Die zuletzt gesicherte Fassung kommt an ihren alten Platz zurück – auf allen Geräten.")
         }
     }
 
@@ -237,8 +234,7 @@ struct VersionsView: View {
                 ContentUnavailableView(
                     "Noch keine früheren Fassungen",
                     systemImage: "clock.badge.questionmark",
-                    description: Text("Spind sichert eine Fassung, bevor eine Datei "
-                                      + "überschrieben oder gelöscht wird.")
+                    description: Text("Spind sichert eine Fassung, bevor eine Datei überschrieben oder gelöscht wird.")
                 )
             }
         }

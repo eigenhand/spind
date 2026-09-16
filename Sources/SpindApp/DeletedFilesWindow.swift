@@ -78,8 +78,7 @@ struct DeletedFilesView: View {
             }
             Button("Abbrechen", role: .cancel) { pendingRestore = nil }
         } message: {
-            Text("Die letzte gesicherte Fassung kommt an ihren alten Platz zurück "
-                 + "und wird beim nächsten Abgleich auch wieder lokal angelegt.")
+            Text("Die letzte gesicherte Fassung kommt an ihren alten Platz zurück und wird beim nächsten Abgleich auch wieder lokal angelegt.")
         }
     }
 
@@ -117,8 +116,7 @@ struct DeletedFilesView: View {
                     .font(.system(size: 30)).foregroundStyle(.tertiary)
                 Text("Nichts zu retten – alles an seinem Platz")
                     .font(.callout).foregroundStyle(.secondary)
-                Text("Wird eine Datei gelöscht, die schon mal gesichert wurde, "
-                     + "taucht sie hier auf und lässt sich zurückholen.")
+                Text("Wird eine Datei gelöscht, die schon mal gesichert wurde, taucht sie hier auf und lässt sich zurückholen.")
                     .font(.caption).foregroundStyle(.tertiary)
                     .multilineTextAlignment(.center)
             }

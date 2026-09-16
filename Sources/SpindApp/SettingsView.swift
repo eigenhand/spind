@@ -292,8 +292,7 @@ struct ConnectionSettings: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Zugang für eine andere Person")
                 .font(.headline)
-            Text("Spind legt dafür einen eigenen Ordner und einen eigenen "
-                 + "Zugang auf der Storage Box an.")
+            Text("Spind legt dafür einen eigenen Ordner und einen eigenen Zugang auf der Storage Box an.")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             Form {
@@ -358,9 +357,7 @@ struct ConnectionSettings: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Schlüssel eintragen")
                 .font(.headline)
-            Text("Für Geräte, die ihren Schlüssel selbst erzeugt haben: "
-                 + "öffentlichen Schlüssel hier einfügen, Spind trägt ihn auf "
-                 + "dem Server ein.")
+            Text("Für Geräte, die ihren Schlüssel selbst erzeugt haben: öffentlichen Schlüssel hier einfügen, Spind trägt ihn auf dem Server ein.")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             TextEditor(text: $enrollKey)
@@ -759,8 +756,7 @@ struct SharingSettings: View {
             }
             Button("Abbrechen", role: .cancel) { pendingRevoke = nil }
         } message: {
-            Text("Alle bereits verschickten Links zu diesem Ordner hören sofort auf "
-                 + "zu funktionieren. Die Dateien selbst bleiben unverändert.")
+            Text("Alle bereits verschickten Links zu diesem Ordner hören sofort auf zu funktionieren. Die Dateien selbst bleiben unverändert.")
         }
     }
 
@@ -969,10 +965,7 @@ struct GeneralSettings: View {
             Button("Neu aufbauen") { controller.rebuildFinderVolume() }
             Button("Abbrechen", role: .cancel) {}
         } message: {
-            Text("Spind startet dabei einmal neu und baut das Laufwerk frisch "
-                 + "aus der Storage Box auf. Deine Dateien bleiben unberührt – "
-                 + "nur »Auf dem Computer behalten«-Markierungen gehen verloren. "
-                 + "Hilft, wenn das Laufwerk im Finder hängt oder fehlt.")
+            Text("Spind startet dabei einmal neu und baut das Laufwerk frisch aus der Storage Box auf. Deine Dateien bleiben unberührt – nur »Auf dem Computer behalten«-Markierungen gehen verloren. Hilft, wenn das Laufwerk im Finder hängt oder fehlt.")
         }
     }
 }

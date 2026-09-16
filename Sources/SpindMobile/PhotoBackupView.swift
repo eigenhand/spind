@@ -103,9 +103,7 @@ struct PhotoBackupView: View {
                                : "\(waiting) Aufnahmen")
             }
         } footer: {
-            Text("Neue Aufnahmen landen von selbst im Spind, sobald die App "
-                 + "offen ist oder iOS sie im Hintergrund weckt. Nichts wird "
-                 + "vom iPhone gelöscht.")
+            Text("Neue Aufnahmen landen von selbst im Spind, sobald die App offen ist oder iOS sie im Hintergrund weckt. Nichts wird vom iPhone gelöscht.")
         }
     }
 
@@ -146,8 +144,7 @@ struct PhotoBackupView: View {
                 set: { backup.settings.wifiOnly = $0 }
             ))
         } footer: {
-            Text("Videos sind groß – im Mobilfunk kostet das Datenvolumen und Akku. "
-                 + "»Jetzt sichern« von Hand läuft auch ohne WLAN.")
+            Text("Videos sind groß – im Mobilfunk kostet das Datenvolumen und Akku. »Jetzt sichern« von Hand läuft auch ohne WLAN.")
         }
     }
 
@@ -169,10 +166,7 @@ struct PhotoBackupView: View {
                 LabeledContent("Zuletzt gesichert", value: Recovery.moment(last))
             }
         } footer: {
-            Text("Offene Aufnahmen gehen durch, solange diese App vorn ist – beim "
-                 + "Verlassen hält es an und macht später weiter. Wenn iOS die App "
-                 + "im Hintergrund weckt, sind es bis zu \(PhotoBackup.batchSize) "
-                 + "pro Weckruf. Ein zweites Mal hochgeladen wird nichts.")
+            Text("Offene Aufnahmen gehen durch, solange diese App vorn ist – beim Verlassen hält es an und macht später weiter. Wenn iOS die App im Hintergrund weckt, sind es bis zu \(PhotoBackup.batchSize) pro Weckruf. Ein zweites Mal hochgeladen wird nichts.")
         }
     }
 

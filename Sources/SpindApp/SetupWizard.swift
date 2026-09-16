@@ -149,16 +149,13 @@ struct SetupWizardView: View {
 
     private var welcomeStep: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Spind verbindet deinen Mac mit deinem eigenen Speicher – "
-                 + "wie ein Cloud-Laufwerk, nur ohne fremde Cloud.")
+            Text("Spind verbindet deinen Mac mit deinem eigenen Speicher – wie ein Cloud-Laufwerk, nur ohne fremde Cloud.")
             Text("Was du brauchst:").font(.callout.weight(.semibold))
             Label("Eine Hetzner Storage Box – oder einen beliebigen Server, "
                   + "der SFTP spricht", systemImage: "externaldrive")
             Label("Bei der Storage Box aktiviert: SSH-Zugang und externe "
                   + "Erreichbarkeit (Hetzner Console)", systemImage: "network")
-            Text("Ordner-Freigaben und gemeinsames Bearbeiten gibt es nur mit "
-                 + "einer Storage Box – Sync, Versionen und Finder-Laufwerk "
-                 + "funktionieren mit jedem Server. Den Rest übernehme ich.")
+            Text("Ordner-Freigaben und gemeinsames Bearbeiten gibt es nur mit einer Storage Box – Sync, Versionen und Finder-Laufwerk funktionieren mit jedem Server. Den Rest übernehme ich.")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
             Link("Hetzner Console öffnen",
@@ -168,9 +165,7 @@ struct SetupWizardView: View {
 
     private var keyStep: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Spind meldet sich mit einem Schlüsselpaar an, nicht mit einem "
-                 + "Passwort. Das ist sicherer, und dein Box-Passwort bleibt "
-                 + "unangetastet.")
+            Text("Spind meldet sich mit einem Schlüsselpaar an, nicht mit einem Passwort. Das ist sicherer, und dein Box-Passwort bleibt unangetastet.")
                 .fixedSize(horizontal: false, vertical: true)
 
             if publicKey.isEmpty {
@@ -191,8 +186,7 @@ struct SetupWizardView: View {
             } else {
                 Label("Schlüssel liegt bereit", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green).font(.callout)
-                Text("Jetzt den öffentlichen Teil in der Hetzner Console bei deiner "
-                     + "Storage Box hinterlegen – dort unter »SSH-Schlüssel«.")
+                Text("Jetzt den öffentlichen Teil in der Hetzner Console bei deiner Storage Box hinterlegen – dort unter »SSH-Schlüssel«.")
                     .font(.callout).fixedSize(horizontal: false, vertical: true)
                 Text(publicKey)
                     .font(.system(size: 10.5, design: .monospaced))
@@ -227,8 +221,7 @@ struct SetupWizardView: View {
 
     private var connectionStep: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Für die Storage Box stehen die Angaben in der Hetzner Console; "
-                 + "bei einem eigenen Server kennst du sie selbst.")
+            Text("Für die Storage Box stehen die Angaben in der Hetzner Console; bei einem eigenen Server kennst du sie selbst.")
                 .font(.callout).foregroundStyle(.secondary)
             Form {
                 TextField("Adresse", text: $host,
@@ -275,8 +268,7 @@ struct SetupWizardView: View {
 
     private var folderStep: some View {
         VStack(alignment: .leading, spacing: 14) {
-            Text("Zuletzt: Wo sollen die Dateien auf deinem Mac liegen? Dieser Ordner "
-                 + "wird mit der Storage Box abgeglichen.")
+            Text("Zuletzt: Wo sollen die Dateien auf deinem Mac liegen? Dieser Ordner wird mit der Storage Box abgeglichen.")
                 .fixedSize(horizontal: false, vertical: true)
             HStack {
                 Text((localRoot as NSString).abbreviatingWithTildeInPath)
@@ -284,8 +276,7 @@ struct SetupWizardView: View {
                     .lineLimit(1).truncationMode(.middle)
                 Button("Wählen …") { showingFolderPicker = true }
             }
-            Text("Zusätzlich erscheint Spind als Laufwerk in der Finder-Seitenleiste. "
-                 + "Dort liegen alle Dateien, belegen aber erst Platz, wenn du sie öffnest.")
+            Text("Zusätzlich erscheint Spind als Laufwerk in der Finder-Seitenleiste. Dort liegen alle Dateien, belegen aber erst Platz, wenn du sie öffnest.")
                 .font(.callout).foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

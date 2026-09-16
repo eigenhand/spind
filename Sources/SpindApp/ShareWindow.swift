@@ -277,7 +277,7 @@ struct ShareView: View {
         }
     }
 
-    private func copyRow(label: String, value: String, key: String) -> some View {
+    private func copyRow(label: LocalizedStringKey, value: String, key: String) -> some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(label).font(.caption).foregroundStyle(.secondary)
             HStack(spacing: 8) {

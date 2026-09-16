@@ -259,6 +259,16 @@
         }
       }
     },
+    "Alle bereits verschickten Links zu diesem Ordner hören sofort auf zu funktionieren. Die Dateien selbst bleiben unverändert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every link to this folder that has already been sent stops working immediately. The files themselves stay untouched."
+          }
+        }
+      }
+    },
     "Alle sichern": {
       "localizations": {
         "en": {
@@ -399,6 +409,16 @@
         }
       }
     },
+    "Beides liegt auf dem Server: Gelöschtes und frühere Fassungen sind hier auch dann zu finden, wenn dieses iPhone die Datei nie geladen hat.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Both live on the server: deleted files and earlier versions turn up here even when this iPhone never downloaded the file."
+          }
+        }
+      }
+    },
     "Beispiel": {
       "localizations": {
         "en": {
@@ -469,6 +489,16 @@
         }
       }
     },
+    "Danach erscheint Spind in der Dateien-App unter »Durchsuchen«. Dateien laden erst beim Öffnen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After that, Spind appears in the Files app under “Browse”. Files download when you open them."
+          }
+        }
+      }
+    },
     "Darf nur lesen, nicht ändern": {
       "localizations": {
         "en": {
@@ -499,6 +529,16 @@
         }
       }
     },
+    "Den QR-Code aus der Mac-App scannen (Einstellungen → Verbindung → »Gerät verbinden«).": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Scan the QR code from the Mac app (Settings → Connection → “Connect a device”)."
+          }
+        }
+      }
+    },
     "Der Freigabe-Server wird eingerichtet – das kann bis zu zwei Minuten dauern. Der Link erscheint, sobald er wirklich erreichbar ist.": {
       "localizations": {
         "en": {
@@ -519,6 +559,36 @@
         }
       }
     },
+    "Die aktuelle Fassung wird dabei als neue Version gesichert – du kannst also jederzeit zurück.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The current version is kept as a new version in the process — so you can go back at any time."
+          }
+        }
+      }
+    },
+    "Die letzte gesicherte Fassung kommt an ihren alten Platz zurück und wird beim nächsten Abgleich auch wieder lokal angelegt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last kept version returns to its old place and is created locally again at the next sync."
+          }
+        }
+      }
+    },
+    "Die zuletzt gesicherte Fassung kommt an ihren alten Platz zurück – auf allen Geräten.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The most recently kept version returns to its old place — on every device."
+          }
+        }
+      }
+    },
     "Diese Fassung wiederherstellen?": {
       "localizations": {
         "en": {
@@ -535,6 +605,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Scan this code — done"
+          }
+        }
+      }
+    },
+    "Diesen Schlüssel kannst du bei weiteren Boxen oder Servern hinterlegen – er bleibt auf diesem iPhone immer derselbe.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You can deposit this key with further boxes or servers — on this iPhone it always stays the same."
           }
         }
       }
@@ -639,6 +719,16 @@
         }
       }
     },
+    "Entfernt Zugang und Schlüssel von diesem iPhone. Auf dem Server ändert sich nichts.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removes the access and the key from this iPhone. Nothing changes on the server."
+          }
+        }
+      }
+    },
     "Entlädt lange ungenutzte Dateien aus dem Finder-Volume; sie bleiben in der Cloud verfügbar.": {
       "localizations": {
         "en": {
@@ -739,6 +829,16 @@
         }
       }
     },
+    "Fragt beim Öffnen der App nach. Schützt Zugang, Papierkorb und Verlauf – **nicht** die Dateien selbst: die stehen weiter in der Dateien-App.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Asks when the app is opened. Protects access, trash and history — **not** the files themselves: those remain in the Files app."
+          }
+        }
+      }
+    },
     "Freigabe erstellen": {
       "localizations": {
         "en": {
@@ -785,6 +885,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Free up when unused for"
+          }
+        }
+      }
+    },
+    "Für Geräte, die ihren Schlüssel selbst erzeugt haben: öffentlichen Schlüssel hier einfügen, Spind trägt ihn auf dem Server ein.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For devices that generated their own key: paste the public key here and Spind enters it on the server."
+          }
+        }
+      }
+    },
+    "Für die Storage Box stehen die Angaben in der Hetzner Console; bei einem eigenen Server kennst du sie selbst.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For a Storage Box the details are in the Hetzner Console; on your own server you know them yourself."
           }
         }
       }
@@ -959,6 +1079,16 @@
         }
       }
     },
+    "In der Hetzner Console bei deiner Storage Box unter »SSH-Schlüssel« einfügen – oder auf anderen Servern in ~/.ssh/authorized_keys.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paste it in the Hetzner Console under “SSH keys” on your Storage Box — or on other servers into ~/.ssh/authorized_keys."
+          }
+        }
+      }
+    },
     "In vier Schritten eingerichtet – Schlüssel erzeuge ich für dich.": {
       "localizations": {
         "en": {
@@ -975,6 +1105,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Free up space now"
+          }
+        }
+      }
+    },
+    "Jetzt den öffentlichen Teil in der Hetzner Console bei deiner Storage Box hinterlegen – dort unter »SSH-Schlüssel«.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Now deposit the public part in the Hetzner Console on your Storage Box — under “SSH keys”."
           }
         }
       }
@@ -1099,6 +1239,16 @@
         }
       }
     },
+    "Link (öffnet die Freigabe-Seite)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Link (opens the share page)"
+          }
+        }
+      }
+    },
     "Lokal gelöscht": {
       "localizations": {
         "en": {
@@ -1215,6 +1365,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Regenerate"
+          }
+        }
+      }
+    },
+    "Neue Aufnahmen landen von selbst im Spind, sobald die App offen ist oder iOS sie im Hintergrund weckt. Nichts wird vom iPhone gelöscht.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New photos land in Spind by themselves as soon as the app is open or iOS wakes it in the background. Nothing is deleted from the iPhone."
           }
         }
       }
@@ -1369,6 +1529,16 @@
         }
       }
     },
+    "Offene Aufnahmen gehen durch, solange diese App vorn ist – beim Verlassen hält es an und macht später weiter. Wenn iOS die App im Hintergrund weckt, sind es bis zu %lld pro Weckruf. Ein zweites Mal hochgeladen wird nichts.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pending photos go through while this app is in front — on leaving it pauses and carries on later. When iOS wakes the app in the background it is up to %lld per wake-up. Nothing is uploaded twice."
+          }
+        }
+      }
+    },
     "Offline – wartet auf Netzwerk": {
       "localizations": {
         "en": {
@@ -1419,6 +1589,16 @@
         }
       }
     },
+    "Ordner-Freigaben und gemeinsames Bearbeiten gibt es nur mit einer Storage Box – Sync, Versionen und Finder-Laufwerk funktionieren mit jedem Server. Den Rest übernehme ich.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Folder shares and collaborative editing exist only with a Storage Box — sync, versions and the Finder drive work with any server. I take care of the rest."
+          }
+        }
+      }
+    },
     "Ordner-Sync (%@)": {
       "extractionState": "stale",
       "localizations": {
@@ -1446,6 +1626,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trash"
+          }
+        }
+      }
+    },
+    "Passwort": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Password"
           }
         }
       }
@@ -1530,6 +1720,16 @@
         }
       }
     },
+    "Prüfe vorher, ob dein Ordner vollständig ist – etwa nach einem Umzug oder wenn eine Festplatte nicht eingebunden war. Gelöschte Dateien lassen sich über die Versionen zurückholen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check first whether your folder is complete — after a move, say, or when a disk was not mounted. Deleted files can be brought back through the versions."
+          }
+        }
+      }
+    },
     "Schließen": {
       "localizations": {
         "en": {
@@ -1610,6 +1810,16 @@
         }
       }
     },
+    "Schnellster Weg: In der Mac-App unter Einstellungen → Verbindung → »Gerät verbinden« einen Code erzeugen und hier scannen. Alles andere entfällt dann.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quickest way: in the Mac app under Settings → Connection → “Connect a device”, generate a code and scan it here. Everything else then falls away."
+          }
+        }
+      }
+    },
     "Schritt %lld von %lld · %@": {
       "localizations": {
         "de": {
@@ -1662,6 +1872,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "While Spind isn’t running, no changes are synced."
+          }
+        }
+      }
+    },
+    "Solange diese App offen ist, sieht Spind alle %lld Sekunden nach. Im Hintergrund entscheidet iOS, wann es die App dafür kurz aufweckt – das kann dauern. Ein SFTP-Server kann von sich aus nicht Bescheid geben; in der Dateien-App holt ein Zug nach unten den Stand sofort.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "While this app is open, Spind looks every %lld seconds. In the background iOS decides when to wake the app briefly — that can take a while. An SFTP server cannot report changes by itself; in the Files app a pull down fetches the current state at once."
           }
         }
       }
@@ -1736,6 +1956,16 @@
         }
       }
     },
+    "Spind bringt deine Hetzner Storage Box – oder jeden SFTP-Server – in die Dateien-App deines iPhones.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind brings your Hetzner Storage Box — or any SFTP server — into your iPhone's Files app."
+          }
+        }
+      }
+    },
     "Spind einrichten": {
       "localizations": {
         "en": {
@@ -1766,12 +1996,42 @@
         }
       }
     },
+    "Spind legt dafür einen eigenen Ordner und einen eigenen Zugang auf der Storage Box an.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For that Spind creates its own folder and its own account on the Storage Box."
+          }
+        }
+      }
+    },
     "Spind macht weiter, sobald das Netzwerk zurück ist.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Spind continues as soon as the network is back."
+          }
+        }
+      }
+    },
+    "Spind meldet sich mit einem Schlüsselpaar an, nicht mit einem Passwort. Das ist sicherer, und dein Box-Passwort bleibt unangetastet.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind signs in with a key pair, not with a password. That is safer, and your box password stays untouched."
+          }
+        }
+      }
+    },
+    "Spind sichert eine Fassung, bevor eine Datei überschrieben oder gelöscht wird.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind keeps a version before a file is overwritten or deleted."
           }
         }
       }
@@ -1786,12 +2046,32 @@
         }
       }
     },
+    "Spind startet dabei einmal neu und baut das Laufwerk frisch aus der Storage Box auf. Deine Dateien bleiben unberührt – nur »Auf dem Computer behalten«-Markierungen gehen verloren. Hilft, wenn das Laufwerk im Finder hängt oder fehlt.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind restarts once in the process and builds the drive freshly from the Storage Box. Your files stay untouched — only “Keep on this computer” marks are lost. Helps when the drive hangs or is missing in the Finder."
+          }
+        }
+      }
+    },
     "Spind synchronisieren": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "Sync Spind"
+          }
+        }
+      }
+    },
+    "Spind verbindet deinen Mac mit deinem eigenen Speicher – wie ein Cloud-Laufwerk, nur ohne fremde Cloud.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind connects your Mac to storage of your own — like a cloud drive, only without anyone else's cloud."
           }
         }
       }
@@ -2047,6 +2327,16 @@
         }
       }
     },
+    "Videos sind groß – im Mobilfunk kostet das Datenvolumen und Akku. »Jetzt sichern« von Hand läuft auch ohne WLAN.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Videos are large — on mobile data that costs allowance and battery. “Back up now” by hand runs without Wi-Fi too."
+          }
+        }
+      }
+    },
     "Vom Sync ausgeschlossen": {
       "localizations": {
         "en": {
@@ -2178,6 +2468,26 @@
         }
       }
     },
+    "Wird eine Datei gelöscht, die schon einmal gesichert wurde, taucht sie hier auf und lässt sich zurückholen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When a file that has been kept before is deleted, it turns up here and can be brought back."
+          }
+        }
+      }
+    },
+    "Wird eine Datei gelöscht, die schon mal gesichert wurde, taucht sie hier auf und lässt sich zurückholen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When a file that has been kept before is deleted, it turns up here and can be brought back."
+          }
+        }
+      }
+    },
     "Wird vorbereitet …": {
       "localizations": {
         "en": {
@@ -2258,6 +2568,16 @@
         }
       }
     },
+    "Zuletzt: Wo sollen die Dateien auf deinem Mac liegen? Dieser Ordner wird mit der Storage Box abgeglichen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lastly: where should the files live on your Mac? This folder is synced with the Storage Box."
+          }
+        }
+      }
+    },
     "Zum **Teilen** brauchst du einmalig einen Hetzner-API-Token – der Weg dorthin steht in Einstellungen → Teilen.": {
       "localizations": {
         "en": {
@@ -2304,6 +2624,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Reset"
+          }
+        }
+      }
+    },
+    "Zusätzlich erscheint Spind als Laufwerk in der Finder-Seitenleiste. Dort liegen alle Dateien, belegen aber erst Platz, wenn du sie öffnest.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spind also appears as a drive in the Finder sidebar. Every file lives there, but takes up space only when you open it."
           }
         }
       }

@@ -79,8 +79,7 @@ struct VersionsView: View {
             }
             Button("Abbrechen", role: .cancel) { pendingRestore = nil }
         } message: {
-            Text("Die aktuelle Fassung wird dabei als neue Version gesichert – "
-                 + "du kannst also jederzeit zurück.")
+            Text("Die aktuelle Fassung wird dabei als neue Version gesichert – du kannst also jederzeit zurück.")
         }
     }
 

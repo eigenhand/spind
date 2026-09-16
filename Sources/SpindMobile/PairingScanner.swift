@@ -93,8 +93,7 @@ struct PairingView: View {
                             .multilineTextAlignment(.center)
                             .fixedSize(horizontal: false, vertical: true)
                     } else {
-                        Text("Den QR-Code aus der Mac-App scannen "
-                             + "(Einstellungen → Verbindung → »Gerät verbinden«).")
+                        Text("Den QR-Code aus der Mac-App scannen (Einstellungen → Verbindung → »Gerät verbinden«).")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)

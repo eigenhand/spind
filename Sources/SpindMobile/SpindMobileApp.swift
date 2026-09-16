@@ -183,8 +183,7 @@ struct OnboardingView: View {
             Form {
                 Section {
                     Label {
-                        Text("Spind bringt deine Hetzner Storage Box – oder jeden "
-                             + "SFTP-Server – in die Dateien-App deines iPhones.")
+                        Text("Spind bringt deine Hetzner Storage Box – oder jeden SFTP-Server – in die Dateien-App deines iPhones.")
                     } icon: {
                         Image(systemName: "externaldrive.badge.icloud")
                             .foregroundStyle(.blue)
@@ -198,9 +197,7 @@ struct OnboardingView: View {
                         Label("Per QR-Code vom Mac verbinden", systemImage: "qrcode.viewfinder")
                     }
                 } footer: {
-                    Text("Schnellster Weg: In der Mac-App unter Einstellungen → "
-                         + "Verbindung → »Gerät verbinden« einen Code erzeugen und "
-                         + "hier scannen. Alles andere entfällt dann.")
+                    Text("Schnellster Weg: In der Mac-App unter Einstellungen → Verbindung → »Gerät verbinden« einen Code erzeugen und hier scannen. Alles andere entfällt dann.")
                 }
 
                 Section("1 · Schlüssel") {
@@ -218,9 +215,7 @@ struct OnboardingView: View {
                             Label(copied ? "Kopiert!" : "Öffentlichen Schlüssel kopieren",
                                   systemImage: copied ? "checkmark" : "doc.on.doc")
                         }
-                        Text("In der Hetzner Console bei deiner Storage Box unter "
-                             + "»SSH-Schlüssel« einfügen – oder auf anderen Servern "
-                             + "in ~/.ssh/authorized_keys.")
+                        Text("In der Hetzner Console bei deiner Storage Box unter »SSH-Schlüssel« einfügen – oder auf anderen Servern in ~/.ssh/authorized_keys.")
                             .font(.footnote).foregroundStyle(.secondary)
                     } else {
                         Button("Schlüsselpaar erzeugen") {
@@ -287,8 +282,7 @@ struct OnboardingView: View {
                     Button("Fertig – in der Dateien-App aktivieren") { finish() }
                         .disabled(testResult?.ok != true)
                 } footer: {
-                    Text("Danach erscheint Spind in der Dateien-App unter "
-                         + "»Durchsuchen«. Dateien laden erst beim Öffnen.")
+                    Text("Danach erscheint Spind in der Dateien-App unter »Durchsuchen«. Dateien laden erst beim Öffnen.")
                 }
             }
             .navigationTitle("Spind einrichten")
@@ -445,12 +439,7 @@ struct StatusView: View {
                 SpindDomain.register()
             }
         } footer: {
-            Text("Solange diese App offen ist, sieht Spind alle "
-                 + "\(Int(SpindDomain.foregroundInterval)) Sekunden nach. "
-                 + "Im Hintergrund entscheidet iOS, wann es die App dafür "
-                 + "kurz aufweckt – das kann dauern. Ein SFTP-Server kann "
-                 + "von sich aus nicht Bescheid geben; in der Dateien-App "
-                 + "holt ein Zug nach unten den Stand sofort.")
+            Text("Solange diese App offen ist, sieht Spind alle \(Int(SpindDomain.foregroundInterval)) Sekunden nach. Im Hintergrund entscheidet iOS, wann es die App dafür kurz aufweckt – das kann dauern. Ein SFTP-Server kann von sich aus nicht Bescheid geben; in der Dateien-App holt ein Zug nach unten den Stand sofort.")
         }
     }
 
@@ -494,9 +483,7 @@ struct StatusView: View {
             Section {
                 Toggle("Mit \(lock.methodName) öffnen", isOn: $lock.enabled)
             } footer: {
-                Text("Fragt beim Öffnen der App nach. Schützt Zugang, Papierkorb "
-                     + "und Verlauf – **nicht** die Dateien selbst: die stehen "
-                     + "weiter in der Dateien-App.")
+                Text("Fragt beim Öffnen der App nach. Schützt Zugang, Papierkorb und Verlauf – **nicht** die Dateien selbst: die stehen weiter in der Dateien-App.")
             }
         }
     }
@@ -516,9 +503,7 @@ struct StatusView: View {
         } header: {
             Text("Wiederherstellen")
         } footer: {
-            Text("Beides liegt auf dem Server: Gelöschtes und frühere "
-                 + "Fassungen sind hier auch dann zu finden, wenn dieses "
-                 + "iPhone die Datei nie geladen hat.")
+            Text("Beides liegt auf dem Server: Gelöschtes und frühere Fassungen sind hier auch dann zu finden, wenn dieses iPhone die Datei nie geladen hat.")
         }
     }
 
@@ -540,9 +525,7 @@ struct StatusView: View {
             } header: {
                 Text("Öffentlicher Schlüssel")
             } footer: {
-                Text("Diesen Schlüssel kannst du bei weiteren Boxen oder "
-                     + "Servern hinterlegen – er bleibt auf diesem iPhone "
-                     + "immer derselbe.")
+                Text("Diesen Schlüssel kannst du bei weiteren Boxen oder Servern hinterlegen – er bleibt auf diesem iPhone immer derselbe.")
             }
         }
     }
@@ -553,8 +536,7 @@ struct StatusView: View {
                 confirmReset = true
             }
         } footer: {
-            Text("Entfernt Zugang und Schlüssel von diesem iPhone. "
-                 + "Auf dem Server ändert sich nichts.")
+            Text("Entfernt Zugang und Schlüssel von diesem iPhone. Auf dem Server ändert sich nichts.")
         }
     }
 
