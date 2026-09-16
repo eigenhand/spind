@@ -89,6 +89,7 @@ The connection to the box runs exclusively over SSH keys with a pinned host
 key; Spind never stores passwords. Share links deliberately carry credentials –
 whoever has the link has access. Details and the trade-offs behind them:
 [SECURITY.md](SECURITY.md).
+How it is put together: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## Licence
 
