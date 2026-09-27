@@ -297,6 +297,7 @@ final class SyncController: ObservableObject {
 
         loopTask = Task { [weak self] in
             await self?.runOnce()
+            self?.maintainSharesIfDue()
             for await _ in events {
                 try? await Task.sleep(for: .seconds(2))
                 self?.processMaterializeRequests()
@@ -304,6 +305,7 @@ final class SyncController: ObservableObject {
                 self?.processEditRequests()
                 self?.processVersionRequests()
                 await self?.runOnce()
+                self?.maintainSharesIfDue()
             }
         }
 
@@ -599,6 +601,45 @@ final class SyncController: ObservableObject {
     func noteShareCreated(_ name: String) {
         recordShare(name)
         refreshSharedBadges()
+    }
+
+    private var lastShareMaintenance: Date?
+
+    /// Expiry has no server behind it: whichever Mac runs Spind removes
+    /// shares whose day has come and sweeps up leftover share files. Once
+    /// an hour is plenty — the granularity of an expiry is a day.
+    private func maintainSharesIfDue() {
+        guard let config, config.isHetznerBox, isOnline,
+              KeychainHelper.load(account: HetznerAPI.tokenAccount) != nil
+        else { return }
+        if let last = lastShareMaintenance, Date().timeIntervalSince(last) < 3600 { return }
+        lastShareMaintenance = Date()
+        let shareConfig = config
+        Task.detached(priority: .utility) { [weak self] in
+            do {
+                let report = try await ShareManager.maintain(config: shareConfig)
+                await MainActor.run { [weak self] in
+                    guard let self else { return }
+                    for folder in report.expired {
+                        self.logInfo("Freigabe »\(folder)« ist abgelaufen und wurde entfernt")
+                        self.notify(
+                            "Spind – Freigabe abgelaufen",
+                            "»\(folder)« ist nicht mehr geteilt. Der Link funktioniert nicht mehr."
+                        )
+                    }
+                    for folder in report.swept {
+                        self.logInfo("Freigabe-Dateien in »\(folder)« aufgeräumt")
+                    }
+                    if !report.expired.isEmpty || !report.swept.isEmpty {
+                        self.refreshSharedBadges()
+                    }
+                }
+            } catch {
+                await MainActor.run { [weak self] in
+                    self?.logInfo("Freigabe-Prüfung: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 
     /// Rewrites the shared-folder badge list and tells Finder to refresh

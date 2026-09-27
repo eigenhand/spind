@@ -390,6 +390,7 @@ const T = {
   "%@ Dateien": "%@ files",
   "gemeinsam bearbeitbar": "editable together",
   "nur Lesen": "read-only",
+  "läuft am %@ ab": "expires on %@",
   "Vorschau": "Preview",
   "Umbenennen": "Rename",
   "Umbenannt": "Renamed",
@@ -591,6 +592,11 @@ async function load(target) {
   parts.push(count(files.length, "1 Datei", "%@ Dateien"));
   if (total) parts.push(fmtSize(total));
   parts.push(t(manifest?.canEdit ? "gemeinsam bearbeitbar" : "nur Lesen"));
+  if (manifest?.expires) {
+    const day = new Date(manifest.expires * 1000)
+      .toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" });
+    parts.push(t("läuft am %@ ab").replace("%@", day));
+  }
   document.getElementById("summary").textContent = parts.join(" · ");
 }
 

@@ -63,6 +63,16 @@
         }
       }
     },
+    "%lld Tage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld days"
+          }
+        }
+      }
+    },
     "%lld frühere Fassungen": {
       "localizations": {
         "en": {
@@ -85,6 +95,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld of %lld"
+          }
+        }
+      }
+    },
+    "%lld von %lld Unterkonten der Box belegt – Freigaben, verbundene Zugänge und Collabora zusammen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld of %2$lld of the box's sub-accounts in use – shares, paired accesses and Collabora together."
           }
         }
       }
@@ -129,6 +149,16 @@
         }
       }
     },
+    "1 Jahr": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 year"
+          }
+        }
+      }
+    },
     "1 · Schlüssel": {
       "localizations": {
         "en": {
@@ -159,6 +189,16 @@
         }
       }
     },
+    "30 Tage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30 days"
+          }
+        }
+      }
+    },
     "30 Tagen": {
       "localizations": {
         "en": {
@@ -179,6 +219,16 @@
         }
       }
     },
+    "90 Tage": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "90 days"
+          }
+        }
+      }
+    },
     "90 Tagen": {
       "localizations": {
         "en": {
@@ -195,6 +245,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cancel"
+          }
+        }
+      }
+    },
+    "Ablauf noch nicht geprüft – Spind prüft ihn stündlich, solange es läuft.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expiry not checked yet – Spind checks it hourly while it runs."
+          }
+        }
+      }
+    },
+    "Ablauf zuletzt geprüft %@ – von diesem Mac.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Expiry last checked %@ – by this Mac."
           }
         }
       }
@@ -255,6 +325,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "All versions …"
+          }
+        }
+      }
+    },
+    "Alle bereits verschickten Links hören sofort auf zu funktionieren. Die Dateien selbst bleiben unverändert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every link already sent stops working immediately. The files themselves stay untouched."
           }
         }
       }
@@ -479,6 +559,16 @@
         }
       }
     },
+    "Bis zum Widerruf": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Until revoked"
+          }
+        }
+      }
+    },
     "Collabora-Server": {
       "localizations": {
         "en": {
@@ -495,6 +585,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "After that, Spind appears in the Files app under “Browse”. Files download when you open them."
+          }
+        }
+      }
+    },
+    "Danach wird die Freigabe entfernt, sobald Spind läuft. Verlängern geht jederzeit, ohne dass der Link sich ändert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After that the share is removed once Spind runs. It can be extended at any time without the link changing."
           }
         }
       }
@@ -549,12 +649,52 @@
         }
       }
     },
+    "Der Link enthält das Passwort. Ein Messenger reicht es an seine Link-Vorschau weiter, und beim Empfänger bleibt es im Browser-Verlauf.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The link contains the password. A messenger hands it to its link preview, and it stays in the recipient's browser history."
+          }
+        }
+      }
+    },
     "Der Port muss zwischen 1 und 65535 liegen – Storage Boxen nutzen 23.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "The port must be between 1 and 65535 — Storage Boxes use 23."
+          }
+        }
+      }
+    },
+    "Der bisherige Link hört sofort auf zu funktionieren; wer ihn hat, braucht den neuen. Die Freigabe selbst und ihr Ablaufdatum bleiben.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The previous link stops working immediately; whoever has it needs the new one. The share itself and its expiry stay."
+          }
+        }
+      }
+    },
+    "Die Box hat keine freien Unterkonten mehr. Widerrufe eine Freigabe, die nicht mehr gebraucht wird.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The box has no free sub-accounts left. Revoke a share that is no longer needed."
+          }
+        }
+      }
+    },
+    "Die Freigabe bleibt, bis du sie widerrufst. Jede Freigabe belegt eines von %lld Unterkonten der Box.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The share stays until you revoke it. Every share takes one of the box's %lld sub-accounts."
           }
         }
       }
@@ -615,6 +755,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "You can deposit this key with further boxes or servers — on this iPhone it always stays the same."
+          }
+        }
+      }
+    },
+    "Dieser Ordner ist bereits geteilt, aber die Zugangsdaten sind weder auf diesem Mac noch im Ordner auf der Box auffindbar. Ein neues Passwort macht den bisherigen Link ungültig; die Freigabe selbst und ihr Ablaufdatum bleiben.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This folder is already shared, but its credentials can be found neither on this Mac nor in the folder on the box. A new password invalidates the previous link; the share itself and its expiry stay."
           }
         }
       }
@@ -1021,6 +1171,26 @@
         }
       }
     },
+    "Gültig": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid for"
+          }
+        }
+      }
+    },
+    "Gültig, bis du die Freigabe widerrufst.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Valid until you revoke the share."
+          }
+        }
+      }
+    },
     "Hell": {
       "extractionState": "manual",
       "localizations": {
@@ -1302,6 +1472,16 @@
         }
       }
     },
+    "Link kopieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy link"
+          }
+        }
+      }
+    },
     "Lokal gelöscht": {
       "localizations": {
         "en": {
@@ -1458,6 +1638,36 @@
           "stringUnit": {
             "state": "translated",
             "value": "Generate a new access link?"
+          }
+        }
+      }
+    },
+    "Neues Passwort": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "New password"
+          }
+        }
+      }
+    },
+    "Neues Passwort erzeugen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate a new password"
+          }
+        }
+      }
+    },
+    "Neues Passwort erzeugen?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Generate a new password?"
           }
         }
       }
@@ -1779,6 +1989,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Check first whether your folder is complete — after a move, say, or when a disk was not mounted. Deleted files can be brought back through the versions."
+          }
+        }
+      }
+    },
+    "Prüfung schlägt fehl, erstmals %@: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check failing, first %1$@: %2$@"
           }
         }
       }
@@ -2340,6 +2560,16 @@
         }
       }
     },
+    "Verlängern": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Extend"
+          }
+        }
+      }
+    },
     "Verschoben – ohne Neuübertragung": {
       "localizations": {
         "en": {
@@ -2532,6 +2762,16 @@
         }
       }
     },
+    "Wird ab dem %@ entfernt, sobald Spind läuft.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Removed from %@ on, once Spind runs."
+          }
+        }
+      }
+    },
     "Wird eine Datei gelöscht, die schon einmal gesichert wurde, taucht sie hier auf und lässt sich zurückholen.": {
       "localizations": {
         "en": {
@@ -2608,6 +2848,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Access for “%@” is ready"
+          }
+        }
+      }
+    },
+    "Zugangsdaten getrennt kopieren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Copy credentials separately"
           }
         }
       }

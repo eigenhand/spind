@@ -55,6 +55,9 @@ enum CollaboraService {
             )
         }
 
+        guard ShareRules.remainingSlots(used: accounts.count) > 0 else {
+            throw HetznerAPI.APIError.limitReached(used: accounts.count)
+        }
         // Same home directory as the sync account: every path in the
         // Finder volume maps 1:1 into this account.
         let home = accounts.first(where: { $0.username == config.username })?.homeDirectory ?? ""

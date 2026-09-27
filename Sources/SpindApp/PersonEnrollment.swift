@@ -62,6 +62,10 @@ enum PersonEnrollment {
         // 2. Create the subaccount with precisely that home.
         let api = try HetznerAPI()
         let box = try await api.findBox(forUser: config.username)
+        let used = try await api.subaccounts(boxID: box.id).count
+        guard ShareRules.remainingSlots(used: used) > 0 else {
+            throw HetznerAPI.APIError.limitReached(used: used)
+        }
         let home = box.username + "/" + relative
         let description = descriptionPrefix + label
         try await api.createSubaccount(

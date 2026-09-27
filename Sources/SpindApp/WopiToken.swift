@@ -50,13 +50,18 @@ enum WopiToken {
     /// Token covering a whole share (no file path). The share page turns
     /// it into per-file editor links via the bridge, so files added later
     /// are editable without regenerating the page.
+    /// `notAfter` caps the lifetime at the share's own expiry: a token
+    /// that outlived its share would be useless anyway (the account is
+    /// gone), but the date it shows must not lie.
     static func makeShareToken(
         host: String, username: String, password: String,
-        writable: Bool, validFor days: Int = 30
+        writable: Bool, validFor days: Int = 30, notAfter: Date? = nil
     ) -> String? {
-        seal([
+        var expiry = Date().addingTimeInterval(Double(days) * 86_400)
+        if let notAfter { expiry = min(expiry, notAfter) }
+        return seal([
             "h": host, "u": username, "p": password, "w": writable, "n": "Gast",
-            "e": Date().addingTimeInterval(Double(days) * 86_400).timeIntervalSince1970,
+            "e": expiry.timeIntervalSince1970,
         ])
     }
 

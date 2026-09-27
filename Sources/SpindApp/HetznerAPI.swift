@@ -14,6 +14,7 @@
 // License along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 import Foundation
+import SpindCore
 
 /// Client for the Hetzner API (api.hetzner.com) — used to create scoped,
 /// read-only WebDAV sub-accounts as folder shares.
@@ -23,6 +24,7 @@ struct HetznerAPI {
         case http(Int, String)
         case boxNotFound
         case shareNotReady
+        case limitReached(used: Int)
 
         var errorDescription: String? {
             switch self {
@@ -34,6 +36,11 @@ struct HetznerAPI {
                 return "Keine passende Storage Box zum konfigurierten Benutzer gefunden"
             case .shareNotReady:
                 return "Freigabe wurde angelegt, ist aber noch nicht abrufbar"
+            case .limitReached(let used):
+                return "Die Storage Box hat bereits \(used) von \(ShareRules.subaccountLimit) "
+                    + "Unterkonten. Jede Freigabe, jeder verbundene Zugang und der "
+                    + "Collabora-Zugang belegen eines. Widerrufe eine Freigabe, die "
+                    + "nicht mehr gebraucht wird."
             }
         }
     }
@@ -51,6 +58,10 @@ struct HetznerAPI {
         let homeDirectory: String
         let description: String
         let readonly: Bool
+        var labels: [String: String] = [:]
+
+        /// The day the share is removed from; nil means "until revoked".
+        var expiresOn: Date? { ShareRules.expiryDate(fromLabels: labels) }
     }
 
     static let tokenAccount = "hetzner-api-token"
@@ -115,7 +126,8 @@ struct HetznerAPI {
                 server: entry["server"] as? String ?? "",
                 homeDirectory: entry["home_directory"] as? String ?? "",
                 description: entry["description"] as? String ?? "",
-                readonly: access["readonly"] as? Bool ?? false
+                readonly: access["readonly"] as? Bool ?? false,
+                labels: entry["labels"] as? [String: String] ?? [:]
             )
         }
     }
@@ -124,12 +136,14 @@ struct HetznerAPI {
     ///   false for plain web shares.
     func createSubaccount(
         boxID: Int, homeDirectory: String, password: String,
-        description: String, readonly: Bool, sshEnabled: Bool = false
+        description: String, readonly: Bool, sshEnabled: Bool = false,
+        labels: [String: String] = [:]
     ) async throws {
         _ = try await request("POST", "storage_boxes/\(boxID)/subaccounts", body: [
             "home_directory": homeDirectory,
             "password": password,
             "description": description,
+            "labels": labels,
             "access_settings": [
                 "webdav_enabled": true,
                 "samba_enabled": false,
@@ -142,5 +156,27 @@ struct HetznerAPI {
 
     func deleteSubaccount(boxID: Int, subaccountID: Int) async throws {
         _ = try await request("DELETE", "storage_boxes/\(boxID)/subaccounts/\(subaccountID)")
+    }
+
+    /// Changes description and labels in place. Credentials stay as they
+    /// are, so every link already handed out keeps working — this is how a
+    /// share is extended.
+    func updateSubaccount(
+        boxID: Int, subaccountID: Int, description: String, labels: [String: String]
+    ) async throws {
+        _ = try await request(
+            "PUT", "storage_boxes/\(boxID)/subaccounts/\(subaccountID)",
+            body: ["description": description, "labels": labels]
+        )
+    }
+
+    /// New password, same account: the old links stop working, the labels
+    /// and the count of sub-accounts do not change.
+    func resetSubaccountPassword(boxID: Int, subaccountID: Int, password: String) async throws {
+        _ = try await request(
+            "POST",
+            "storage_boxes/\(boxID)/subaccounts/\(subaccountID)/actions/reset_subaccount_password",
+            body: ["password": password]
+        )
     }
 }
