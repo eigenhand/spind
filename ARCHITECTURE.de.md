@@ -159,6 +159,17 @@ Ordner selbst, nie außerhalb – das ist eine Invariante, keine Bequemlichkeit
 (`SECURITY.de.md`): Die Zugangsdaten einer Freigabe verlassen den Ordner nicht, für den
 sie gelten.
 
+## Verzeichnisstruktur
+
+| Verzeichnis | Inhalt |
+| --- | --- |
+| `Sources/SpindCore` | Sync-Motor, SFTP-Client, Metadaten-Datenbank, Versionsverlauf |
+| `Sources/SpindApp` | macOS-Menüleisten-App, Einstellungen, Freigaben, Weboberfläche |
+| `Sources/SpindMobile` | iPhone-App: Einrichtung, Status, Fotosicherung, App-Sperre |
+| `Sources/SpindFileProvider` | Finder-Laufwerk und Dateien-App-Integration (File-Provider-Erweiterung, gebaut für macOS und iOS) |
+| `Sources/spind` | Kommandozeile |
+| `server/collabora` | Collabora Online und WOPI-Brücke (optional, Docker) |
+
 ## Bauen
 
 Es gibt zwei Wege zu bauen, und sie liefern nicht dasselbe:

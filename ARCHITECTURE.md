@@ -151,6 +151,17 @@ that only Spind can read. The two share files live inside the shared folder itse
 outside it – an invariant, not a convenience (`SECURITY.md`): a share's credentials never
 leave the folder they grant access to.
 
+## Repository layout
+
+| Directory | Contents |
+| --- | --- |
+| `Sources/SpindCore` | Sync engine, SFTP client, metadata database, version history |
+| `Sources/SpindApp` | macOS menu bar app, settings, shares, web interface |
+| `Sources/SpindMobile` | iPhone app: setup, status, photo backup, app lock |
+| `Sources/SpindFileProvider` | Finder volume and Files app integration (File Provider extension, built for macOS and iOS) |
+| `Sources/spind` | Command line |
+| `server/collabora` | Collabora Online and the WOPI bridge (optional, Docker) |
+
 ## Building
 
 There are two ways to build, and they do not produce the same thing:
