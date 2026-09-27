@@ -30,7 +30,7 @@ and collaborative editing need a Storage Box.
   address and password separately, chosen per share; shares expire after 30
   days and can be extended without a new link
 - Shares and collaborative editing need a Hetzner Storage Box – they rely on
-  its sub-accounts (100 per box). Sync, versions and the drive work with any
+  its sub-accounts, of which Hetzner allows 100 per Storage Box. Sync, versions and the drive work with any
   SFTP server
 - Optional collaborative editing of office documents in the browser
   (your own Collabora server)

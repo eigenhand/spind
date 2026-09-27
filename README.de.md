@@ -32,7 +32,7 @@ SFTP-Server; Freigaben und gemeinsames Bearbeiten benötigen eine Storage Box.
   Adresse und Passwort getrennt, nach Wahl pro Freigabe; Freigaben laufen
   nach 30 Tagen ab und lassen sich ohne neuen Link verlängern
 - Freigaben und gemeinsames Bearbeiten benötigen eine Hetzner Storage Box –
-  sie beruhen auf deren Unterkonten (100 je Box). Sync, Versionen und Laufwerk
+  sie beruhen auf deren Unterkonten, von denen Hetzner 100 je Storage Box erlaubt. Sync, Versionen und Laufwerk
   funktionieren mit jedem SFTP-Server
 - Optional gemeinsames Bearbeiten von Office-Dokumenten im Browser
   (eigener Collabora-Server)
