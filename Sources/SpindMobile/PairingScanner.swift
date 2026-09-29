@@ -104,7 +104,7 @@ struct PairingView: View {
                 Task {
                     guard let data = try? await item.loadTransferable(type: Data.self),
                           let code = Self.readQR(from: data) else {
-                        message = "In diesem Bild war kein Spind-Code zu finden."
+                        message = String(localized: "In diesem Bild war kein Spind-Code zu finden.")
                         return
                     }
                     apply(code)
@@ -127,7 +127,7 @@ struct PairingView: View {
 
     private func apply(_ text: String) {
         guard let code = PairingCode.decode(text) else {
-            message = "Das ist kein Spind-Kopplungscode."
+            message = String(localized: "Das ist kein Spind-Kopplungscode.")
             return
         }
         do {

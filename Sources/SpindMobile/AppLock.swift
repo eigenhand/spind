@@ -43,7 +43,7 @@ final class AppLock: ObservableObject {
         case .faceID: return "Face ID"
         case .touchID: return "Touch ID"
         case .opticID: return "Optic ID"
-        default: return "Code"
+        default: return String(localized: "Code")
         }
     }
 
@@ -54,14 +54,14 @@ final class AppLock: ObservableObject {
     func unlock() async {
         guard locked else { return }
         let context = LAContext()
-        context.localizedCancelTitle = "Abbrechen"
+        context.localizedCancelTitle = String(localized: "Abbrechen")
         do {
             // deviceOwnerAuthentication rather than …WithBiometrics: with
             // a mask on or wet fingers the passcode remains a way in —
             // otherwise you lock yourself out of your own app.
             let ok = try await context.evaluatePolicy(
                 .deviceOwnerAuthentication,
-                localizedReason: "Spind entsperren"
+                localizedReason: String(localized: "Spind entsperren")
             )
             locked = !ok
             failure = nil

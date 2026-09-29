@@ -78,7 +78,7 @@ because a mistake in them costs data rather than pixels.
   called from the sync engine and from the file provider.
 
 Everything else in the core is infrastructure: `StorageBoxClient` (SFTP over Citadel),
-`ConnectionPool`, `MetadataStore` (GRDB), `FolderWatcher`, `ProcessLock`, `HostKey`,
+`ConnectionPool`, `MetadataStore` (GRDB), `FolderWatcher`, `ProcessLock`, `HostKey`, `ProtectedFile`,
 `SSHKeyGen`, `PairingCode`, `DeviceEnrollment`, `RsyncTransfer` (delta transfers for
 large files on the Mac, falling back to a full SFTP transfer if rsync fails).
 
@@ -133,7 +133,10 @@ Nothing secret. It may be copied.
 **The Keychain** — the Hetzner API token, share passwords, the Collabora secret. The SSH
 key itself is a file, and the file provider extension gets a copy in the app group
 container at mode 0600, because an extension cannot reach the app's keychain items. That
-is written down in `SECURITY.md` rather than hidden.
+is written down in `SECURITY.md` rather than hidden. On the iPhone there is no keychain
+split: key and config live in the app group container only, readable after first unlock
+and excluded from backups (`ProtectedFile`); the host key is pinned there on the first
+login, by whichever of app and extension connects first.
 
 **The metadata store (GRDB)** — what the last listing looked like, which file is
 materialised, what was already uploaded. This is the state that makes a sync incremental,

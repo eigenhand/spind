@@ -13,14 +13,17 @@ public actor StorageBoxConnectionPool {
     }
 
     private let config: SpindConfig
+    private let pinStore: URL?
     private let maxConnections: Int
     private let healthCheckAfterIdle: TimeInterval = 30
     private var idle: [PooledClient] = []
     private var liveCount = 0
     private var waiters: [CheckedContinuation<Void, Never>] = []
 
-    public init(config: SpindConfig, maxConnections: Int = 3) {
+    /// - Parameter pinStore: see `StorageBoxClient.init(config:pinStore:)`.
+    public init(config: SpindConfig, maxConnections: Int = 3, pinStore: URL? = nil) {
         self.config = config
+        self.pinStore = pinStore
         self.maxConnections = maxConnections
     }
 
@@ -66,7 +69,7 @@ public actor StorageBoxConnectionPool {
             if liveCount < maxConnections {
                 liveCount += 1
                 do {
-                    let client = StorageBoxClient(config: config)
+                    let client = StorageBoxClient(config: config, pinStore: pinStore)
                     try await client.connect()
                     return client
                 } catch {

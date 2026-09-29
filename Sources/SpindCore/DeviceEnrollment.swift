@@ -12,8 +12,7 @@ public enum DeviceEnrollment {
         case invalidKey
 
         public var errorDescription: String? {
-            "Das ist kein öffentlicher SSH-Schlüssel. Erwartet wird eine "
-            + "Zeile wie »ssh-ed25519 AAAA… gerätename«."
+            String(localized: "Das ist kein öffentlicher SSH-Schlüssel. Erwartet wird eine Zeile wie »ssh-ed25519 AAAA… gerätename«.")
         }
     }
 

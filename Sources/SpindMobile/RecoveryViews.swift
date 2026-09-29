@@ -13,7 +13,7 @@ enum Recovery {
         _ config: SpindConfig,
         _ body: (StorageBoxClient, SpindConfig) async throws -> T
     ) async throws -> T {
-        let client = StorageBoxClient(config: config)
+        let client = MobileStore.client(config)
         try await client.connect()
         defer { Task { await client.disconnect() } }
         return try await body(client, config)
@@ -125,7 +125,7 @@ struct TrashView: View {
         if !folder.isEmpty { parts.append(folder) }
         parts.append(Recovery.moment(file.latest.date))
         parts.append(Recovery.size(file.latest.size))
-        if file.versionCount > 1 { parts.append("\(file.versionCount) Fassungen") }
+        if file.versionCount > 1 { parts.append(String(localized: "\(file.versionCount) Fassungen")) }
         return parts.joined(separator: " · ")
     }
 
@@ -155,7 +155,7 @@ struct TrashView: View {
             }
             // So the file is back in the Files app right away.
             await SpindDomain.refresh()
-            message = "»\(name(of: file.relativePath))« ist wieder da."
+            message = String(localized: "»\(name(of: file.relativePath))« ist wieder da.")
             await load()
         } catch {
             message = connectionHint(for: error)
@@ -243,9 +243,8 @@ struct VersionsView: View {
             Button("Abbrechen", role: .cancel) { pending = nil }
         } message: {
             Text(wasDeleted
-                 ? "Die Datei kommt an ihren alten Platz zurück – auf allen Geräten."
-                 : "Die aktuelle Fassung wird vorher gesichert – du kannst also "
-                   + "jederzeit zurück.")
+                 ? String(localized: "Die Datei kommt an ihren alten Platz zurück – auf allen Geräten.")
+                 : String(localized: "Die aktuelle Fassung wird vorher gesichert – du kannst also jederzeit zurück."))
         }
     }
 
@@ -297,7 +296,7 @@ struct VersionsView: View {
                 )
             }
             await SpindDomain.refresh()
-            message = "Fassung vom \(Recovery.moment(version.date)) ist jetzt die aktuelle."
+            message = String(localized: "Fassung vom \(Recovery.moment(version.date)) ist jetzt die aktuelle.")
             await load()
         } catch {
             message = connectionHint(for: error)
@@ -347,7 +346,7 @@ struct RemoteBrowserView: View {
             }
         }
         .navigationTitle(relative.isEmpty
-                         ? "Versionsverlauf"
+                         ? String(localized: "Versionsverlauf")
                          : (relative as NSString).lastPathComponent)
         .navigationBarTitleDisplayMode(.inline)
         .overlay {

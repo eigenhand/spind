@@ -40,16 +40,20 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
 
     required init(domain: NSFileProviderDomain) {
         self.domain = domain
-        if let container = FileManager.default.containerURL(
+        let configURL = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
-        ) {
-            self.config = try? SpindConfig.load(
-                from: container.appendingPathComponent("spind/config.json")
-            )
-        } else {
-            self.config = nil
-        }
-        self.pool = config.map { StorageBoxConnectionPool(config: $0) }
+        )?.appendingPathComponent("spind/config.json")
+        self.config = configURL.flatMap { try? SpindConfig.load(from: $0) }
+        #if os(iOS)
+        // The iPhone has no ssh-keyscan: host key pinning happens on first
+        // login, against the same file the app pins into — whichever of
+        // the two connects first.
+        let pinStore = configURL
+        #else
+        // The Mac app pins via ssh-keyscan and hands the pin over itself.
+        let pinStore: URL? = nil
+        #endif
+        self.pool = config.map { StorageBoxConnectionPool(config: $0, pinStore: pinStore) }
         super.init()
         extLog("init: config \(config == nil ? "FEHLT" : "geladen"), gruppe=\(appGroupID), container=\(FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)?.path ?? "NIL")")
     }
@@ -71,7 +75,8 @@ final class FileProviderExtension: NSObject, NSFileProviderReplicatedExtension {
             case .privateKeyUnreadable: return NSFileProviderError(.notAuthenticated)
             case .notConnected: return NSFileProviderError(.serverUnreachable)
             // Wrong host key: deliberately refused, not "gone".
-            case .hostKeyMismatch: return NSFileProviderError(.notAuthenticated)
+            case .hostKeyMismatch, .hostKeyPinUnreadable:
+                return NSFileProviderError(.notAuthenticated)
             }
         }
         let text = String(describing: error).lowercased()

@@ -174,7 +174,9 @@ struct SetupWizardView: View {
             } else {
                 Label("Schlüssel liegt bereit", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green).font(.callout)
-                Text("Jetzt den öffentlichen Teil in der Hetzner Console bei deiner Storage Box hinterlegen – dort unter »SSH-Schlüssel«.")
+                // The Hetzner Console only offers keys while a box is being
+                // created; an existing box takes them in its authorized_keys.
+                Text("Jetzt den öffentlichen Teil auf dem Server in ~/.ssh/authorized_keys eintragen – bei einer bestehenden Hetzner Storage Box so, wie es Hetzners Anleitung zu SSH-Schlüsseln beschreibt.")
                     .font(.callout).fixedSize(horizontal: false, vertical: true)
                 Text(publicKey)
                     .font(.system(size: 10.5, design: .monospaced))
@@ -196,8 +198,8 @@ struct SetupWizardView: View {
                               systemImage: copied ? "checkmark" : "doc.on.doc")
                     }
                     .buttonStyle(.borderedProminent)
-                    Link("Hetzner Console öffnen",
-                         destination: URL(string: "https://console.hetzner.com")!)
+                    Link("Hetzners Anleitung öffnen",
+                         destination: URL(string: "https://docs.hetzner.com/storage/storage-box/backup-space-ssh-keys/")!)
                 }
             }
             if let keyMessage {
@@ -381,20 +383,20 @@ struct SetupWizardView: View {
 
     /// Translate errors into instructions instead of passing them on.
     private func hint(for error: Error) -> String {
+        // Matched by case, not by text: the description is translated.
+        if case StorageBoxError.privateKeyUnreadable = error {
+            return String(localized: "Der Schlüssel wurde nicht gefunden. Gehe zurück zu Schritt 2.")
+        }
+        if let boxError = error as? StorageBoxError { return boxError.localizedDescription }
         let text = String(describing: error).lowercased()
         if text.contains("authent") {
-            return "Anmeldung abgelehnt. Ist der Schlüssel aus Schritt 2 in der "
-                + "Hetzner Console hinterlegt und SSH für den Zugang aktiviert?"
-        }
-        if text.contains("privatekeyunreadable") {
-            return "Der Schlüssel wurde nicht gefunden. Gehe zurück zu Schritt 2."
+            return String(localized: "Anmeldung abgelehnt. Ist der Schlüssel aus Schritt 2 auf dem Server in ~/.ssh/authorized_keys eingetragen und SSH für den Zugang aktiviert?")
         }
         if text.contains("timed out") || text.contains("connection refused")
             || text.contains("network") {
-            return "Keine Verbindung. Prüfe die Adresse und ob »externe "
-                + "Erreichbarkeit« in der Hetzner Console aktiv ist."
+            return String(localized: "Keine Verbindung. Prüfe die Adresse und ob »externe Erreichbarkeit« in der Hetzner Console aktiv ist.")
         }
-        return "Verbindung fehlgeschlagen: \(error.localizedDescription)"
+        return String(localized: "Verbindung fehlgeschlagen: \(error.localizedDescription)")
     }
 
     private func finish() {

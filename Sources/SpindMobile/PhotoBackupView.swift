@@ -30,9 +30,8 @@ struct PhotoBackupView: View {
             Button("Abbrechen", role: .cancel) { backup.settings.enabled = false }
         } message: {
             Text(backup.waiting.map {
-                "In deiner Mediathek liegen \($0) Aufnahmen. Alle zu sichern kann "
-                + "dauern und braucht Platz auf der Box."
-            } ?? "Alles Vorhandene zu sichern kann dauern und braucht Platz auf der Box.")
+                String(localized: "In deiner Mediathek liegen \($0) Aufnahmen. Alle zu sichern kann dauern und braucht Platz auf der Box.")
+            } ?? String(localized: "Alles Vorhandene zu sichern kann dauern und braucht Platz auf der Box."))
         }
     }
 
@@ -56,7 +55,8 @@ struct PhotoBackupView: View {
                     ProgressView(value: run.fraction)
                     // Several transfers run at once — naming "this one"
                     // would be a lie, so name the last one finished.
-                    Text(run.current.map { "zuletzt: \($0)" } ?? "Wird vorbereitet …")
+                    Text(run.current.map { String(localized: "zuletzt: \($0)") }
+                         ?? String(localized: "Wird vorbereitet …"))
                         .font(.caption).foregroundStyle(.secondary)
                         .lineLimit(1).truncationMode(.middle)
                 }
@@ -65,9 +65,7 @@ struct PhotoBackupView: View {
             } header: {
                 Text("Läuft")
             } footer: {
-                Label("Lass die App offen und den Bildschirm an, bis es fertig ist – "
-                      + "im Hintergrund friert iOS den Upload ein. Der Bildschirm "
-                      + "bleibt so lange von selbst wach.",
+                Label("Lass die App offen und den Bildschirm an, bis es fertig ist – im Hintergrund friert iOS den Upload ein. Der Bildschirm bleibt so lange von selbst wach.",
                       systemImage: "exclamationmark.triangle")
                     .foregroundStyle(.orange)
             }
@@ -87,8 +85,8 @@ struct PhotoBackupView: View {
             ))
             if let waiting = backup.waiting, backup.run == nil {
                 LabeledContent("Wartet", value: waiting == 0
-                               ? "nichts – alles gesichert"
-                               : "\(waiting) Aufnahmen")
+                               ? String(localized: "nichts – alles gesichert")
+                               : String(localized: "\(waiting) Aufnahmen"))
             }
         } footer: {
             Text("Neue Aufnahmen landen von selbst im Spind, sobald die App offen ist oder iOS sie im Hintergrund weckt. Nichts wird vom iPhone gelöscht.")

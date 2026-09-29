@@ -20,25 +20,52 @@ public enum StorageBoxError: LocalizedError, CustomStringConvertible {
     case privateKeyUnreadable(String)
     case notConnected
     case hostKeyMismatch(String)
+    /// The stored pin cannot be read — refused rather than trusted blindly.
+    case hostKeyPinUnreadable(String)
 
     public var description: String {
         switch self {
         case .privateKeyUnreadable(let path):
-            return """
+            return String(localized: """
                 Der SSH-Schlüssel unter »\(path)« konnte nicht gelesen werden. \
                 Prüfe in den Einstellungen, ob der Pfad stimmt und die Datei \
                 existiert.
-                """
+                """)
         case .notConnected:
-            return "Keine Verbindung zur Storage Box."
+            return String(localized: "Keine Verbindung zur Storage Box.")
         case .hostKeyMismatch(let host):
-            return """
+            #if os(iOS)
+            return String(localized: """
+                »\(host)« meldet sich mit einem anderen Server-Schlüssel als \
+                beim ersten Mal. Zur Sicherheit wurde nichts übertragen. Das \
+                passiert bei einem Serverumzug – oder wenn sich jemand \
+                dazwischenschaltet. Wenn du dem Server vertraust, setze die \
+                Einrichtung zurück und verbinde dich neu.
+                """)
+            #else
+            return String(localized: """
                 »\(host)« meldet sich mit einem anderen Server-Schlüssel als \
                 beim ersten Mal. Zur Sicherheit wurde nichts übertragen. Das \
                 passiert bei einem Serverumzug – oder wenn sich jemand \
                 dazwischenschaltet. Wenn du dem Server vertraust, speichere \
                 die Verbindung in den Einstellungen neu.
-                """
+                """)
+            #endif
+        case .hostKeyPinUnreadable(let host):
+            #if os(iOS)
+            return String(localized: """
+                Der gespeicherte Server-Schlüssel für »\(host)« ist beschädigt. \
+                Zur Sicherheit wurde keine Verbindung aufgebaut. Setze die \
+                Einrichtung zurück und verbinde dich neu – am besten per \
+                QR-Code vom Mac.
+                """)
+            #else
+            return String(localized: """
+                Der gespeicherte Server-Schlüssel für »\(host)« ist beschädigt. \
+                Zur Sicherheit wurde keine Verbindung aufgebaut. Speichere die \
+                Verbindung in den Einstellungen neu.
+                """)
+            #endif
         }
     }
 
@@ -48,11 +75,23 @@ public enum StorageBoxError: LocalizedError, CustomStringConvertible {
 /// SFTP client for a Hetzner Storage Box, authenticated via ed25519 key.
 public final class StorageBoxClient {
     private let config: SpindConfig
+    private let pinStore: URL?
     private var ssh: SSHClient?
     private var sftp: SFTPClient?
 
-    public init(config: SpindConfig) {
+    /// The host key the server presented on the last successful connect
+    /// (OpenSSH format).
+    public private(set) var observedHostKey: String?
+
+    /// - Parameter pinStore: the config file that keeps the host key pin.
+    ///   When given, trust on first use is done here: a pin stored there
+    ///   by another process counts even if `config` predates it, and the
+    ///   key seen at the first successful login is written back. Without
+    ///   it an unpinned config accepts any key (the Mac pins via
+    ///   ssh-keyscan instead).
+    public init(config: SpindConfig, pinStore: URL? = nil) {
         self.config = config
+        self.pinStore = pinStore
     }
 
     public func connect() async throws {
@@ -69,13 +108,16 @@ public final class StorageBoxClient {
 
         // Pinned host key (TOFU): seen once, demanded ever after. Without
         // a pin (first contact, older configs) the first contact is
-        // accepted; the app fetches and stores the key afterwards.
+        // accepted and the key it presented recorded.
+        let pinned = HostKey.pin(for: config, storedAt: pinStore)
+        let recorder = HostKeyRecorder()
         let validator: SSHHostKeyValidator
-        if let pinned = config.hostPublicKey,
-           let parsed = try? NIOSSHPublicKey(openSSHPublicKey: pinned) {
-            validator = .trustedKeys([parsed])
+        if let pinned {
+            // A pin that cannot be read fails closed: falling back to
+            // "accept anything" would quietly switch the protection off.
+            validator = .trustedKeys([try Self.parsePin(pinned, host: config.host)])
         } else {
-            validator = .acceptAnything()
+            validator = .custom(recorder)
         }
 
         let client: SSHClient
@@ -90,8 +132,22 @@ public final class StorageBoxClient {
         } catch let error where String(describing: error).contains("InvalidHostKey") {
             throw StorageBoxError.hostKeyMismatch(config.host)
         }
+        observedHostKey = pinned ?? recorder.key
+        // Pinned only now, after the login went through — a server that
+        // refuses us leaves no pin behind.
+        if pinned == nil, let pinStore, let key = recorder.key {
+            try? HostKey.pinOnFirstUse(key, for: config, storedAt: pinStore)
+        }
         self.ssh = client
         self.sftp = try await client.openSFTP()
+    }
+
+    static func parsePin(_ pin: String, host: String) throws -> NIOSSHPublicKey {
+        do {
+            return try NIOSSHPublicKey(openSSHPublicKey: pin)
+        } catch {
+            throw StorageBoxError.hostKeyPinUnreadable(host)
+        }
     }
 
     public func disconnect() async {
@@ -274,5 +330,24 @@ public final class StorageBoxClient {
     /// Quotes a path for the box shell.
     public static func quote(_ path: String) -> String {
         "'" + path.replacingOccurrences(of: "'", with: "'\\''") + "'"
+    }
+}
+
+/// Accepts any host key and remembers it — the first contact of trust
+/// on first use. Called once per handshake on the channel's event loop.
+private final class HostKeyRecorder: NIOSSHClientServerAuthenticationDelegate, @unchecked Sendable {
+    private let lock = NSLock()
+    private var recorded: String?
+
+    var key: String? {
+        lock.lock(); defer { lock.unlock() }
+        return recorded
+    }
+
+    func validateHostKey(hostKey: NIOSSHPublicKey, validationCompletePromise: EventLoopPromise<Void>) {
+        lock.lock()
+        recorded = String(openSSHPublicKey: hostKey)
+        lock.unlock()
+        validationCompletePromise.succeed(())
     }
 }

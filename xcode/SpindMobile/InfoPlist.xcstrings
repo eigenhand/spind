@@ -1,0 +1,57 @@
+{
+  "sourceLanguage": "de",
+  "strings": {
+    "NSCameraUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Zum Scannen des Kopplungscodes aus der Mac-App."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To scan the pairing code from the Mac app."
+          }
+        }
+      }
+    },
+    "NSFaceIDUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Um die App beim Öffnen zu entsperren."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To unlock the app when you open it."
+          }
+        }
+      }
+    },
+    "NSPhotoLibraryUsageDescription": {
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "new",
+            "value": "Um deine Aufnahmen in deinen eigenen Spind zu sichern. Spind liest nur und löscht nichts vom iPhone."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To back up your photos and videos to your own Spind. Spind only reads and never deletes anything from your iPhone."
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}

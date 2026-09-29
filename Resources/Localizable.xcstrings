@@ -43,6 +43,26 @@
         }
       }
     },
+    "%lld Aufnahmen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld items"
+          }
+        }
+      }
+    },
+    "%lld Fassungen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld versions"
+          }
+        }
+      }
+    },
     "%lld Löschungen bestätigen": {
       "localizations": {
         "en": {
@@ -83,6 +103,36 @@
         }
       }
     },
+    "%lld gesichert – fertig.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld backed up – done."
+          }
+        }
+      }
+    },
+    "%lld gesichert, %lld noch offen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$lld backed up, %2$lld still to go."
+          }
+        }
+      }
+    },
+    "%lld gesichert, angehalten – der Rest folgt später.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld backed up, paused – the rest follows later."
+          }
+        }
+      }
+    },
     "%lld von %lld": {
       "localizations": {
         "de": {
@@ -109,6 +159,16 @@
         }
       }
     },
+    "%lld warten": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld waiting"
+          }
+        }
+      }
+    },
     "%lld wiederherstellbar": {
       "localizations": {
         "en": {
@@ -125,6 +185,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld skipped"
+          }
+        }
+      }
+    },
+    "%lld übersprungen.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld skipped."
           }
         }
       }
@@ -359,6 +429,36 @@
         }
       }
     },
+    "Alles Vorhandene zu sichern kann dauern und braucht Platz auf der Box.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backing up everything already there can take a while and needs space on the box."
+          }
+        }
+      }
+    },
+    "Alles gesichert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything is backed up."
+          }
+        }
+      }
+    },
+    "Alles in einen Ordner": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Everything in one folder"
+          }
+        }
+      }
+    },
     "Alles kopieren (mit Anleitung)": {
       "localizations": {
         "en": {
@@ -399,6 +499,26 @@
         }
       }
     },
+    "Anmeldung abgelehnt. Ist der Schlüssel aus Schritt 2 auf dem Server in ~/.ssh/authorized_keys eingetragen und SSH für den Zugang aktiviert?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login refused. Is the key from step 2 in ~/.ssh/authorized_keys on the server, and is SSH enabled for the account?"
+          }
+        }
+      }
+    },
+    "Anmeldung abgelehnt. Ist der öffentliche Schlüssel bei der Box hinterlegt und SSH-Support aktiviert?": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Login refused. Is the public key registered with the box, and is SSH support enabled?"
+          }
+        }
+      }
+    },
     "Anna": {
       "localizations": {
         "en": {
@@ -429,6 +549,16 @@
         }
       }
     },
+    "Auf dem Server in ~/.ssh/authorized_keys eintragen – bei einer bestehenden Hetzner Storage Box so, wie es Hetzners Anleitung zu SSH-Schlüsseln beschreibt. Am einfachsten geht es per QR-Code vom Mac.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Add it to ~/.ssh/authorized_keys on the server – for an existing Hetzner Storage Box as described in Hetzner’s guide to SSH keys. The easiest way is the QR code from the Mac."
+          }
+        }
+      }
+    },
     "Auf dem neuen Gerät Spind öffnen": {
       "localizations": {
         "en": {
@@ -455,6 +585,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Split"
+          }
+        }
+      }
+    },
+    "Aus": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Off"
           }
         }
       }
@@ -569,6 +709,16 @@
         }
       }
     },
+    "Code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Passcode"
+          }
+        }
+      }
+    },
     "Collabora-Server": {
       "localizations": {
         "en": {
@@ -605,6 +755,26 @@
           "stringUnit": {
             "state": "translated",
             "value": "May only read, not change"
+          }
+        }
+      }
+    },
+    "Das ist kein Spind-Kopplungscode.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That is not a Spind pairing code."
+          }
+        }
+      }
+    },
+    "Das ist kein öffentlicher SSH-Schlüssel. Erwartet wird eine Zeile wie »ssh-ed25519 AAAA… gerätename«.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That is not a public SSH key. Expected a line like “ssh-ed25519 AAAA… devicename”."
           }
         }
       }
@@ -669,6 +839,37 @@
         }
       }
     },
+    "Der SSH-Schlüssel unter »%@« konnte nicht gelesen werden. Prüfe in den Einstellungen, ob der Pfad stimmt und die Datei existiert.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The SSH key at “%@” could not be read. Check in the settings that the path is right and the file exists."
+          }
+        }
+      }
+    },
+    "Der Schlüssel wurde nicht gefunden. Gehe zurück zu Schritt 2.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The key was not found. Go back to step 2."
+          }
+        }
+      }
+    },
+    "Der Server-Schlüssel von »%@« ließ sich nicht abrufen.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not fetch the server key of “%@”."
+          }
+        }
+      }
+    },
     "Der bisherige Link hört sofort auf zu funktionieren; wer ihn hat, braucht den neuen. Die Freigabe selbst und ihr Ablaufdatum bleiben.": {
       "localizations": {
         "en": {
@@ -679,12 +880,44 @@
         }
       }
     },
+    "Der gespeicherte Server-Schlüssel für »%@« ist beschädigt. Zur Sicherheit wurde keine Verbindung aufgebaut. Setze die Einrichtung zurück und verbinde dich neu – am besten per QR-Code vom Mac.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The stored server key for “%@” is damaged. To be safe, no connection was made. Reset the setup and connect again – ideally with the QR code from the Mac."
+          }
+        }
+      }
+    },
+    "Der gespeicherte Server-Schlüssel für »%@« ist beschädigt. Zur Sicherheit wurde keine Verbindung aufgebaut. Speichere die Verbindung in den Einstellungen neu.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The stored server key for “%@” is damaged. To be safe, no connection was made. Save the connection again in the settings."
+          }
+        }
+      }
+    },
     "Die Box hat keine freien Unterkonten mehr. Widerrufe eine Freigabe, die nicht mehr gebraucht wird.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "The box has no free sub-accounts left. Revoke a share that is no longer needed."
+          }
+        }
+      }
+    },
+    "Die Datei kommt an ihren alten Platz zurück – auf allen Geräten.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The file returns to its old place – on all devices."
           }
         }
       }
@@ -705,6 +938,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "The current version is kept as a new version in the process — so you can go back at any time."
+          }
+        }
+      }
+    },
+    "Die aktuelle Fassung wird vorher gesichert – du kannst also jederzeit zurück.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The current version is saved first – so you can always go back."
           }
         }
       }
@@ -806,6 +1049,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Searching the history …"
+          }
+        }
+      }
+    },
+    "Ein Bild ging nicht: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "One picture failed: %@"
           }
         }
       }
@@ -926,6 +1179,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Creating share …"
+          }
+        }
+      }
+    },
+    "Fassung vom %@ ist jetzt die aktuelle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The version from %@ is now the current one."
           }
         }
       }
@@ -1242,6 +1505,16 @@
         }
       }
     },
+    "Hetzners Anleitung öffnen": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Hetzner’s guide"
+          }
+        }
+      }
+    },
     "Hinzufügen": {
       "localizations": {
         "en": {
@@ -1302,12 +1575,22 @@
         }
       }
     },
-    "In der Hetzner Console bei deiner Storage Box unter »SSH-Schlüssel« einfügen – oder auf anderen Servern in ~/.ssh/authorized_keys.": {
+    "In deiner Mediathek liegen %lld Aufnahmen. Alle zu sichern kann dauern und braucht Platz auf der Box.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Paste it in the Hetzner Console under “SSH keys” on your Storage Box — or on other servers into ~/.ssh/authorized_keys."
+            "value": "Your library holds %lld items. Backing them all up can take a while and needs space on the box."
+          }
+        }
+      }
+    },
+    "In diesem Bild war kein Spind-Code zu finden.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No Spind code was found in this image."
           }
         }
       }
@@ -1322,6 +1605,26 @@
         }
       }
     },
+    "Jahr / Monat (2026 / 08)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year / month (2026 / 08)"
+          }
+        }
+      }
+    },
+    "Jahr / Monatsname (2026 / August)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year / month name (2026 / August)"
+          }
+        }
+      }
+    },
     "Jetzt Speicher freigeben": {
       "localizations": {
         "en": {
@@ -1332,12 +1635,12 @@
         }
       }
     },
-    "Jetzt den öffentlichen Teil in der Hetzner Console bei deiner Storage Box hinterlegen – dort unter »SSH-Schlüssel«.": {
+    "Jetzt den öffentlichen Teil auf dem Server in ~/.ssh/authorized_keys eintragen – bei einer bestehenden Hetzner Storage Box so, wie es Hetzners Anleitung zu SSH-Schlüsseln beschreibt.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Now deposit the public part in the Hetzner Console on your Storage Box — under “SSH keys”."
+            "value": "Now add the public part to ~/.ssh/authorized_keys on the server – for an existing Hetzner Storage Box as described in Hetzner’s guide to SSH keys."
           }
         }
       }
@@ -1382,12 +1685,52 @@
         }
       }
     },
+    "Kein Zugriff auf die Fotos. In den iPhone-Einstellungen unter Datenschutz → Fotos freigeben.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No access to photos. Allow it in the iPhone Settings under Privacy → Photos."
+          }
+        }
+      }
+    },
     "Keine Verbindung": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
             "value": "No connection"
+          }
+        }
+      }
+    },
+    "Keine Verbindung zum Server. Stimmen Adresse und Port, und ist »externe Erreichbarkeit« für die Box aktiv? In manchen WLANs hilft testweise Mobilfunk.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection to the server. Are address and port right, and is “external reachability” enabled for the box? On some Wi-Fi networks, trying mobile data helps."
+          }
+        }
+      }
+    },
+    "Keine Verbindung zur Storage Box.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection to the storage box."
+          }
+        }
+      }
+    },
+    "Keine Verbindung. Prüfe die Adresse und ob »externe Erreichbarkeit« in der Hetzner Console aktiv ist.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No connection. Check the address and whether “external reachability” is enabled in the Hetzner Console."
           }
         }
       }
@@ -1448,6 +1791,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Long-unused files are removed locally and stay visible in Finder as cloud placeholders — opening one downloads it again automatically. Files marked “Keep downloaded” (right-click in Finder) and changes not yet uploaded are exempt."
+          }
+        }
+      }
+    },
+    "Lass die App offen und den Bildschirm an, bis es fertig ist – im Hintergrund friert iOS den Upload ein. Der Bildschirm bleibt so lange von selbst wach.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep the app open and the screen on until it is done – in the background iOS freezes the upload. The screen stays awake by itself meanwhile."
           }
         }
       }
@@ -1728,6 +2081,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Normally your files live only on the box and in the Finder under “Spind”; they take up space only when you open them. With this switch on, Spind also keeps a complete copy in the folder — handy for offline work and backups, but everything then counts twice."
+          }
+        }
+      }
+    },
+    "Nur Jahr (2026)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Year only (2026)"
           }
         }
       }
@@ -2139,6 +2502,16 @@
         }
       }
     },
+    "Sichert %lld von %lld …": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Backing up %1$lld of %2$lld …"
+          }
+        }
+      }
+    },
     "Solange Spind nicht läuft, werden keine Änderungen übertragen.": {
       "localizations": {
         "en": {
@@ -2249,6 +2622,16 @@
         }
       }
     },
+    "Spind entsperren": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock Spind"
+          }
+        }
+      }
+    },
     "Spind ist gesperrt": {
       "localizations": {
         "en": {
@@ -2349,12 +2732,12 @@
         }
       }
     },
-    "Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Hinterlege den öffentlichen Schlüssel in der Hetzner Console bei deiner Storage Box (SSH-Support aktivieren).": {
+    "Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Trage den öffentlichen Schlüssel auf dem Server in ~/.ssh/authorized_keys ein – bei einer Hetzner Storage Box so, wie es Hetzners Anleitung zu SSH-Schlüsseln beschreibt (SSH-Support aktivieren).": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Spind connects exclusively via SSH key — a password is never stored. Add the public key to your storage box in the Hetzner Console (enable SSH support)."
+            "value": "Spind connects exclusively with an SSH key – a password is never stored. Add the public key to ~/.ssh/authorized_keys on the server – for a Hetzner Storage Box as described in Hetzner’s guide to SSH keys (enable SSH support)."
           }
         }
       }
@@ -2550,6 +2933,26 @@
         }
       }
     },
+    "Verbindung fehlgeschlagen: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection failed: %@"
+          }
+        }
+      }
+    },
+    "Verbindung steht – %lld Einträge gefunden": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connected – %lld items found"
+          }
+        }
+      }
+    },
     "Verbindung testen": {
       "localizations": {
         "en": {
@@ -2657,6 +3060,16 @@
           "stringUnit": {
             "state": "translated",
             "value": "Waiting"
+          }
+        }
+      }
+    },
+    "Wartet auf WLAN.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for Wi-Fi."
           }
         }
       }
@@ -3012,6 +3425,16 @@
         }
       }
     },
+    "nichts – alles gesichert": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "nothing – everything backed up"
+          }
+        }
+      }
+    },
     "u123456": {
       "localizations": {
         "en": {
@@ -3068,6 +3491,37 @@
           "stringUnit": {
             "state": "translated",
             "value": "last: %@"
+          }
+        }
+      }
+    },
+    "»%@« ist wieder da.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” is back."
+          }
+        }
+      }
+    },
+    "»%@« meldet sich mit einem anderen Server-Schlüssel als beim ersten Mal. Zur Sicherheit wurde nichts übertragen. Das passiert bei einem Serverumzug – oder wenn sich jemand dazwischenschaltet. Wenn du dem Server vertraust, setze die Einrichtung zurück und verbinde dich neu.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” presents a different server key than the first time. To be safe, nothing was transferred. This happens when a server moves – or when someone is intercepting the connection. If you trust the server, reset the setup and connect again."
+          }
+        }
+      }
+    },
+    "»%@« meldet sich mit einem anderen Server-Schlüssel als beim ersten Mal. Zur Sicherheit wurde nichts übertragen. Das passiert bei einem Serverumzug – oder wenn sich jemand dazwischenschaltet. Wenn du dem Server vertraust, speichere die Verbindung in den Einstellungen neu.": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@” presents a different server key than the first time. To be safe, nothing was transferred. This happens when a server moves – or when someone is intercepting the connection. If you trust the server, save the connection again in the settings."
           }
         }
       }

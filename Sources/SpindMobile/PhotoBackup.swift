@@ -166,19 +166,18 @@ final class PhotoBackup: ObservableObject {
         }
 
         guard await requestAccess() else {
-            status = "Kein Zugriff auf die Fotos. In den iPhone-Einstellungen "
-                + "unter Datenschutz → Fotos freigeben."
+            status = String(localized: "Kein Zugriff auf die Fotos. In den iPhone-Einstellungen unter Datenschutz → Fotos freigeben.")
             return
         }
         if settings.wifiOnly, !manual, await !Self.onWiFi() {
-            status = "Wartet auf WLAN."
+            status = String(localized: "Wartet auf WLAN.")
             return
         }
 
         let pending = fetchPending()
         waiting = pending.count
         guard pending.count > 0 else {
-            status = "Alles gesichert."
+            status = String(localized: "Alles gesichert.")
             return
         }
         // During a pass in front the screen must not go dark — in sleep
@@ -195,7 +194,9 @@ final class PhotoBackup: ObservableObject {
         // videos quickly half a gigabyte — then rather fewer at once, or
         // the space on the iPhone runs out.
         let slots = settings.includeVideos ? 2 : Self.parallelUploads
-        let pool = StorageBoxConnectionPool(config: config, maxConnections: slots)
+        let pool = StorageBoxConnectionPool(
+            config: config, maxConnections: slots, pinStore: MobileStore.configURL
+        )
         defer { Task { await pool.drain() } }
         let coordinator = UploadCoordinator()
 
@@ -231,7 +232,7 @@ final class PhotoBackup: ObservableObject {
                     // it is up again.
                     failed += 1
                     state.failed = failed
-                    status = "Ein Bild ging nicht: \(failure)"
+                    status = String(localized: "Ein Bild ging nicht: \(failure)")
                 } else {
                     done += 1
                     remember(outcome.item, in: &progress)
@@ -246,11 +247,13 @@ final class PhotoBackup: ObservableObject {
         settings = progress
         let left = pending.count - batch.count
         status = cancellation.isSet
-            ? "\(done) gesichert, angehalten – der Rest folgt später."
+            ? String(localized: "\(done) gesichert, angehalten – der Rest folgt später.")
             : (left > 0
-               ? "\(done) gesichert, \(left) noch offen."
-               : "\(done) gesichert – fertig.")
-        if failed > 0 { status = (status ?? "") + " \(failed) übersprungen." }
+               ? String(localized: "\(done) gesichert, \(left) noch offen.")
+               : String(localized: "\(done) gesichert – fertig."))
+        if failed > 0 {
+            status = (status ?? "") + " " + String(localized: "\(failed) übersprungen.")
+        }
         if done > 0 { await SpindDomain.refresh() }
     }
 

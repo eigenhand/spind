@@ -19,6 +19,14 @@ dies ist ein Freizeitprojekt ohne zugesagte Reaktionszeiten.
   Benutzername, Pfade und den Ort des Schlüssels.
 * Die File-Provider-Erweiterung braucht Zugriff auf den Schlüssel und bekommt
   dafür eine Kopie im App-Gruppen-Container (Rechte 0600).
+* **Auf dem iPhone** liegen Schlüssel und Konfiguration nur im
+  App-Gruppen-Container (Schlüssel mit Rechten 0600). Beide sind erst nach dem
+  ersten Entsperren seit dem Start lesbar (damit die Dateien-App auch bei
+  gesperrtem Gerät funktioniert) und **vom Backup ausgenommen**: Nach der
+  Wiederherstellung auf einem neuen Gerät will Spind neu eingerichtet werden.
+  Der **Server-Schlüssel** wird bei der ersten erfolgreichen Verbindung
+  angepinnt (oder aus dem QR-Kopplungscode übernommen); danach lehnen App und
+  Dateien-Erweiterung jeden anderen ab.
 
 ## Bewusste Kompromisse
 

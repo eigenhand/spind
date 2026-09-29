@@ -91,6 +91,8 @@ public struct SpindConfig: Codable, Sendable {
         )
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-        try encoder.encode(self).write(to: url, options: .atomic)
+        // On the iPhone the config names the account and carries the host
+        // key pin; it goes together with the key — see ProtectedFile.
+        try ProtectedFile.write(encoder.encode(self), to: url)
     }
 }

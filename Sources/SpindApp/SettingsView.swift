@@ -444,9 +444,13 @@ struct ConnectionSettings: View {
             } header: {
                 Text("Authentifizierung")
             } footer: {
-                Text("Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Hinterlege den öffentlichen Schlüssel in der Hetzner Console bei deiner Storage Box (SSH-Support aktivieren).")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Spind verbindet sich ausschließlich per SSH-Schlüssel – ein Passwort wird nie gespeichert. Trage den öffentlichen Schlüssel auf dem Server in ~/.ssh/authorized_keys ein – bei einer Hetzner Storage Box so, wie es Hetzners Anleitung zu SSH-Schlüsseln beschreibt (SSH-Support aktivieren).")
+                        .foregroundStyle(.secondary)
+                    Link("Hetzners Anleitung öffnen",
+                         destination: URL(string: "https://docs.hetzner.com/storage/storage-box/backup-space-ssh-keys/")!)
+                }
+                .font(.caption)
             }
 
             Section {

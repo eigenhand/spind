@@ -27,43 +27,57 @@ enum MobileStore {
         return try? SpindConfig.load(from: url)
     }
 
+    /// A client that pins the server's host key on first login into the
+    /// shared config — the file provider extension demands the same pin.
+    static func client(_ config: SpindConfig) -> StorageBoxClient {
+        StorageBoxClient(config: config, pinStore: configURL)
+    }
+
+    /// Key and config are readable after the first unlock and stay out of
+    /// backups (see ProtectedFile). Every write does this; this catches
+    /// installs from before it did, once per launch.
+    static func protectExistingFiles() {
+        for url in [keyURL, publicKeyURL, configURL].compactMap({ $0 }) {
+            try? ProtectedFile.protect(url)
+        }
+    }
+
     /// The key, once generated, survives every app restart — otherwise
     /// the public half registered at Hetzner would be worthless at once.
+    /// Without its private half it is worthless as well (it does not come
+    /// back from a backup), so then there is none.
     static func existingPublicLine() -> String? {
-        guard let url = publicKeyURL,
+        guard let url = publicKeyURL, let keyURL,
+              FileManager.default.fileExists(atPath: keyURL.path),
               let line = try? String(contentsOf: url, encoding: .utf8) else { return nil }
         return line.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private static func storeKey(privateKey: String, publicLine: String) throws {
+        guard let dir = directory, let keyURL, let publicKeyURL else {
+            throw CocoaError(.fileNoSuchFile)
+        }
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        try ProtectedFile.write(Data(privateKey.utf8), to: keyURL)
+        try FileManager.default.setAttributes(
+            [.posixPermissions: 0o600], ofItemAtPath: keyURL.path
+        )
+        try ProtectedFile.write(Data(publicLine.utf8), to: publicKeyURL)
     }
 
     /// Generates a key pair and stores it AT ONCE — not only at the
     /// connection test, so that copy → leave app → register is safe.
     static func generateAndStoreKey() throws -> String {
-        guard let dir = directory, let keyURL = keyURL, let pubURL = publicKeyURL else {
-            throw CocoaError(.fileNoSuchFile)
-        }
         let pair = SSHKeyGen.generate(comment: "spind-iphone")
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        try pair.privateOpenSSH.write(to: keyURL, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes(
-            [.posixPermissions: 0o600], ofItemAtPath: keyURL.path
-        )
-        try pair.publicLine.write(to: pubURL, atomically: true, encoding: .utf8)
+        try storeKey(privateKey: pair.privateOpenSSH, publicLine: pair.publicLine)
         return pair.publicLine
     }
 
     /// Takes over a scanned pairing code: key and access land in the app
     /// group, and the Files app gets its entry.
     static func applyPairing(_ code: PairingCode) throws {
-        guard let dir = directory, let keyURL = keyURL,
-              let pubURL = publicKeyURL, let configURL = configURL else {
-            throw CocoaError(.fileNoSuchFile)
-        }
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        try code.privateKey.write(to: keyURL, atomically: true, encoding: .utf8)
-        try FileManager.default.setAttributes(
-            [.posixPermissions: 0o600], ofItemAtPath: keyURL.path
-        )
-        try code.publicLine.write(to: pubURL, atomically: true, encoding: .utf8)
+        guard let keyURL, let configURL else { throw CocoaError(.fileNoSuchFile) }
+        try storeKey(privateKey: code.privateKey, publicLine: code.publicLine)
         var config = SpindConfig(
             host: code.host, port: code.port, username: code.username,
             privateKeyPath: keyURL.path, remoteRoot: ".", localRoot: "~"
@@ -75,16 +89,16 @@ enum MobileStore {
 
 /// Turns connection errors into instructions instead of error codes.
 func connectionHint(for error: Error) -> String {
+    // Our own errors already say what to do — and their (translated) text
+    // must not be mistaken for one of the patterns below.
+    if let boxError = error as? StorageBoxError { return boxError.localizedDescription }
     let text = String(describing: error).lowercased()
     if text.contains("authent") || text.contains("sshclienterror") {
-        return "Anmeldung abgelehnt. Ist der öffentliche Schlüssel bei der "
-            + "Box hinterlegt und SSH-Support aktiviert?"
+        return String(localized: "Anmeldung abgelehnt. Ist der öffentliche Schlüssel bei der Box hinterlegt und SSH-Support aktiviert?")
     }
     if text.contains("nioconnection") || text.contains("timed out")
         || text.contains("refused") || text.contains("network") {
-        return "Keine Verbindung zum Server. Stimmen Adresse und Port, und ist "
-            + "»externe Erreichbarkeit« für die Box aktiv? In manchen WLANs "
-            + "hilft testweise Mobilfunk."
+        return String(localized: "Keine Verbindung zum Server. Stimmen Adresse und Port, und ist »externe Erreichbarkeit« für die Box aktiv? In manchen WLANs hilft testweise Mobilfunk.")
     }
     return error.localizedDescription
 }
@@ -96,6 +110,10 @@ struct SpindMobileApp: App {
     @State private var config = MobileStore.loadConfig()
     @AppStorage("uiLanguage") private var language: AppLanguage = .system
     @AppStorage("uiAppearance") private var appearance: AppAppearance = .system
+
+    init() {
+        MobileStore.protectExistingFiles()
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -165,6 +183,9 @@ struct OnboardingView: View {
     @State private var portEdited = false
     @State private var testing = false
     @State private var testResult: (ok: Bool, text: String)?
+    /// The host key seen by the successful test, and for which server —
+    /// it becomes the pin when setup is finished.
+    @State private var testedHostKey: (server: String, key: String)?
     @State private var copied = false
     @State private var showingPairing = false
 
@@ -205,8 +226,14 @@ struct OnboardingView: View {
                             Label(copied ? "Kopiert!" : "Öffentlichen Schlüssel kopieren",
                                   systemImage: copied ? "checkmark" : "doc.on.doc")
                         }
-                        Text("In der Hetzner Console bei deiner Storage Box unter »SSH-Schlüssel« einfügen – oder auf anderen Servern in ~/.ssh/authorized_keys.")
+                        // The Hetzner Console only offers keys while a box is being created;
+                        // an existing box takes them in its authorized_keys.
+                        Text("Auf dem Server in ~/.ssh/authorized_keys eintragen – bei einer bestehenden Hetzner Storage Box so, wie es Hetzners Anleitung zu SSH-Schlüsseln beschreibt. Am einfachsten geht es per QR-Code vom Mac.")
                             .font(.footnote).foregroundStyle(.secondary)
+                        Link("Hetzners Anleitung öffnen", destination: URL(
+                            string: "https://docs.hetzner.com/storage/storage-box/backup-space-ssh-keys/"
+                        )!)
+                        .font(.footnote)
                     } else {
                         Button("Schlüsselpaar erzeugen") {
                             publicLine = try? MobileStore.generateAndStoreKey()
@@ -307,7 +334,8 @@ struct OnboardingView: View {
                 try await client.connect()
                 let items = try await client.listDirectory(config.remoteRoot)
                 await client.disconnect()
-                testResult = (true, "Verbindung steht – \(items.count) Einträge gefunden")
+                testedHostKey = client.observedHostKey.map { (Self.server(of: config), $0) }
+                testResult = (true, String(localized: "Verbindung steht – \(items.count) Einträge gefunden"))
             } catch {
                 testResult = (false, connectionHint(for: error))
             }
@@ -315,9 +343,18 @@ struct OnboardingView: View {
         }
     }
 
+    private static func server(of config: SpindConfig) -> String {
+        "\(config.host.lowercased()):\(config.port)"
+    }
+
     private func finish() {
-        guard let config = currentConfig(), let configURL = MobileStore.configURL
+        guard var config = currentConfig(), let configURL = MobileStore.configURL
         else { return }
+        // Pin the key the test saw — only if host and port are still the
+        // ones tested. Otherwise the first login pins it.
+        if let testedHostKey, testedHostKey.server == Self.server(of: config) {
+            config.hostPublicKey = testedHostKey.key
+        }
         do {
             try config.save(to: configURL)
             SpindDomain.register()
@@ -487,11 +524,11 @@ struct StatusView: View {
     /// to go in first.
     private var photoSubtitle: String {
         if let run = backup.run {
-            return "Sichert \(run.done) von \(run.total) …"
+            return String(localized: "Sichert \(run.done) von \(run.total) …")
         }
-        guard backup.settings.enabled else { return "Aus" }
+        guard backup.settings.enabled else { return String(localized: "Aus") }
         if let waiting = backup.waiting, waiting > 0 {
-            return "\(waiting) warten"
+            return String(localized: "\(waiting) warten")
         }
         return backup.settings.layout.path(
             for: Date(), folder: backup.settings.folder, fileName: "…"
@@ -566,11 +603,11 @@ struct StatusView: View {
         testResult = nil
         Task {
             do {
-                let client = StorageBoxClient(config: config)
+                let client = MobileStore.client(config)
                 try await client.connect()
                 let items = try await client.listDirectory(config.remoteRoot)
                 await client.disconnect()
-                testResult = (true, "Verbindung steht – \(items.count) Einträge gefunden")
+                testResult = (true, String(localized: "Verbindung steht – \(items.count) Einträge gefunden"))
             } catch {
                 testResult = (false, connectionHint(for: error))
             }

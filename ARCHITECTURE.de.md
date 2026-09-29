@@ -81,7 +81,7 @@ alle vier haben Tests, weil ein Fehler darin Daten kostet und nicht Pixel.
   Wenige Zeilen, aufgerufen vom Sync-Motor und von der File-Provider-Erweiterung.
 
 Alles andere im Kern ist Unterbau: `StorageBoxClient` (SFTP über Citadel),
-`ConnectionPool`, `MetadataStore` (GRDB), `FolderWatcher`, `ProcessLock`, `HostKey`,
+`ConnectionPool`, `MetadataStore` (GRDB), `FolderWatcher`, `ProcessLock`, `HostKey`, `ProtectedFile`,
 `SSHKeyGen`, `PairingCode`, `DeviceEnrollment`, `RsyncTransfer` (Delta-Übertragung
 großer Dateien auf dem Mac; scheitert rsync, folgt eine vollständige Übertragung per
 SFTP).
@@ -140,7 +140,10 @@ Nichts Geheimes. Du darfst sie kopieren.
 Der SSH-Schlüssel selbst liegt als Datei, und die File-Provider-Erweiterung bekommt eine
 Kopie im App-Gruppen-Container mit Rechten 0600, weil eine Erweiterung nicht an die
 Schlüsselbund-Einträge der App kommt. Das steht in `SECURITY.de.md` und ist nicht
-versteckt.
+versteckt. Auf dem iPhone liegen Schlüssel und Konfiguration nur im App-Gruppen-Container,
+lesbar nach dem ersten Entsperren und vom Backup ausgenommen (`ProtectedFile`); der
+Server-Schlüssel wird dort beim ersten Login angepinnt, von App oder Erweiterung, je
+nachdem, wer zuerst verbindet.
 
 **Der Metadatenspeicher (GRDB)** — wie die letzte Liste aussah, welche Datei
 materialisiert ist, was schon hochgeladen wurde. Das ist der Zustand, der einen Abgleich

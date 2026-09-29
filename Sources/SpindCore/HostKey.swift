@@ -13,9 +13,42 @@ public enum HostKey {
         public var errorDescription: String? {
             switch self {
             case .scanFailed(let host):
-                return "Der Server-Schlüssel von »\(host)« ließ sich nicht abrufen."
+                return String(localized: "Der Server-Schlüssel von »\(host)« ließ sich nicht abrufen.")
             }
         }
+    }
+
+    // MARK: - Trust on first use without ssh-keyscan
+
+    /// The pin that applies to `config`: its own, or — when it carries none —
+    /// the one stored in the config file at `store`, provided that file
+    /// describes the same server. Another process (app or extension) may
+    /// have pinned in the meantime; an in-memory copy does not see that.
+    public static func pin(for config: SpindConfig, storedAt store: URL?) -> String? {
+        if let own = config.hostPublicKey { return own }
+        guard let store, let stored = try? SpindConfig.load(from: store),
+              sameServer(stored, config)
+        else { return nil }
+        return stored.hostPublicKey
+    }
+
+    /// Writes `key` as the pin into the config file at `store` — only if
+    /// that file describes the same server and carries no pin yet. An
+    /// existing pin is never replaced here. Returns true when written.
+    @discardableResult
+    public static func pinOnFirstUse(
+        _ key: String, for config: SpindConfig, storedAt store: URL
+    ) throws -> Bool {
+        guard var stored = try? SpindConfig.load(from: store),
+              sameServer(stored, config), stored.hostPublicKey == nil
+        else { return false }
+        stored.hostPublicKey = key
+        try stored.save(to: store)
+        return true
+    }
+
+    static func sameServer(_ a: SpindConfig, _ b: SpindConfig) -> Bool {
+        a.host.lowercased() == b.host.lowercased() && a.port == b.port
     }
 
     #if os(macOS)

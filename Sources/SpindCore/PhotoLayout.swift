@@ -18,10 +18,10 @@ public enum PhotoLayout: String, Codable, CaseIterable, Sendable {
 
     public var label: String {
         switch self {
-        case .yearMonth: return "Jahr / Monat (2026 / 08)"
-        case .yearMonthName: return "Jahr / Monatsname (2026 / August)"
-        case .year: return "Nur Jahr (2026)"
-        case .flat: return "Alles in einen Ordner"
+        case .yearMonth: return String(localized: "Jahr / Monat (2026 / 08)")
+        case .yearMonthName: return String(localized: "Jahr / Monatsname (2026 / August)")
+        case .year: return String(localized: "Nur Jahr (2026)")
+        case .flat: return String(localized: "Alles in einen Ordner")
         }
     }
 

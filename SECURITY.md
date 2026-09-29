@@ -18,6 +18,13 @@ spare-time project without a promised response time.
   name, paths and the location of the key.
 * The File Provider extension needs the key and gets a copy in the app group
   container for it (mode 0600).
+* **On the iPhone** key and configuration live only in the app group container
+  (key mode 0600). Both are readable only after the first unlock since boot
+  (so the Files app works while the phone is locked) and are **excluded from
+  backups**: after restoring onto a new device, Spind asks to be set up again.
+  The server's **host key** is pinned on the first successful connection (or
+  taken from the QR pairing code); from then on the app and the Files
+  extension refuse any other key.
 
 ## Deliberate trade-offs
 

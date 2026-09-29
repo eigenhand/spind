@@ -88,7 +88,18 @@ cat > "$ARCHIVE-export.plist" <<'EOF'
 	<key>destination</key>
 	<string>upload</string>
 	<key>signingStyle</key>
-	<string>automatic</string>
+	<string>manual</string>
+	<key>teamID</key>
+	<string>YHLVKSU86M</string>
+	<key>signingCertificate</key>
+	<string>Apple Distribution</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>dev.eigenhand.spind.ios</key>
+		<string>Spind App Store - (API)</string>
+		<key>dev.eigenhand.spind.ios.fileprovider</key>
+		<string>Spind File Provider App Store - (API)</string>
+	</dict>
 	<key>manageAppVersionAndBuildNumber</key>
 	<false/>
 </dict>
