@@ -1,29 +1,17 @@
 #!/bin/bash
-# Puts the AGPL licence header at the top of every source file.
+# Puts the licence header (Apache 2.0, SPDX) at the top of every source file.
 # Repeatable: files that already carry it are left alone.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 read -r -d '' HEADER <<'EOF' || true
 Spind — Copyright (C) 2026 Christoph Lindl-Guk
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU Affero General Public License as
-published by the Free Software Foundation, either version 3 of the
-License, or (at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-GNU Affero General Public License for more details.
-
-You should have received a copy of the GNU Affero General Public
-License along with this program. If not, see <https://www.gnu.org/licenses/>.
+SPDX-License-Identifier: Apache-2.0
 EOF
 
 stamp() {
     local file=$1 prefix=$2
-    grep -q "GNU Affero" "$file" && return 0
+    grep -q "SPDX-License-Identifier" "$file" && return 0
     local tmp perms
     perms=$(stat -f "%Lp" "$file")   # mv would otherwise lose the executable bit
     tmp=$(mktemp)

@@ -104,5 +104,5 @@ Designentscheidungen: [ARCHITECTURE.de.md](ARCHITECTURE.de.md).
 
 ## Lizenz
 
-GNU AGPL v3 oder neuer, siehe [LICENSE](LICENSE). Fremdkomponenten:
+Apache License 2.0, siehe [LICENSE](LICENSE). Fremdkomponenten:
 [NOTICE.de.md](NOTICE.de.md).

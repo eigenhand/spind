@@ -97,5 +97,5 @@ Structure, repository layout and design decisions:
 
 ## License
 
-GNU AGPL v3 or later, see [LICENSE](LICENSE). Third-party components:
+Apache License 2.0, see [LICENSE](LICENSE). Third-party components:
 [NOTICE.md](NOTICE.md).

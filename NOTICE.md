@@ -2,9 +2,9 @@
 
 *English · [Deutsch](NOTICE.de.md)*
 
-Spind – Copyright (C) 2026 Christoph Lindl-Guk – is licensed under the GNU Affero
-General Public License v3 or later (see `LICENSE`). It uses the following libraries and
-services, whose licence terms continue to apply.
+Spind – Copyright (C) 2026 Christoph Lindl-Guk – is licensed under the Apache License
+2.0 (see `LICENSE`). It uses the following libraries and services, whose licence terms
+continue to apply.
 
 ## Swift dependencies (contained in the app)
 
