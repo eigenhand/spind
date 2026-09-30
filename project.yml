@@ -99,7 +99,9 @@ targets:
         NSPhotoLibraryUsageDescription: Um deine Aufnahmen in deinen eigenen Spind
           zu sichern. Spind liest nur und löscht nichts vom iPhone.
         NSFaceIDUsageDescription: Um die App beim Öffnen zu entsperren.
-        ITSAppUsesNonExemptEncryption: false
+        # SSH runs on BoringSSL (standard algorithms, not the OS's crypto): declared,
+        # App Store Connect then asks the export questions (French declaration or no France).
+        ITSAppUsesNonExemptEncryption: true
         # SFTP cannot report of its own accord that something was deleted
         # elsewhere. iOS wakes the app occasionally so that it can nudge the
         # Files app into taking a look.
